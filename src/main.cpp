@@ -4,6 +4,7 @@
 
 #include "./command-line-utils.cpp"
 #include "./utils.cpp"
+#include "./sql-parse-context.hpp"
 
 int main(int argc, const char* argv[])
 {
@@ -20,6 +21,13 @@ int main(int argc, const char* argv[])
   std::string sql_command = std::string(argv[1]);
 
   if (is_verbose) std::cout << "SQL: " << sql_command << std::endl;
+
+  SQL_Parse_Context parser(sql_command);
+
+  while (!parser.is_finished())
+  {
+    parser.eat_char();
+  }
 
   return EXIT_SUCCESS;
 }
