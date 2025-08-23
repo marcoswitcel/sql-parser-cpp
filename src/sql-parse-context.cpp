@@ -3,6 +3,7 @@
 #include <string>
 #include <assert.h>
 #include <cstdint>
+#include <cctype>
 
 #include "./sql-parse-context.hpp"
 
@@ -43,6 +44,17 @@ int32_t SQL_Parse_Context::peek_char()
   return static_cast<int32_t>(this->source[this->index]);
 }
 
+int32_t SQL_Parse_Context::peek_n_char(size_t n)
+{
+  size_t index_with_n = this->index + n;
+
+  if (index_with_n >= this->source.length()) return END_OF_SOURCE;
+
+  return static_cast<int32_t>(this->source[index_with_n]);
+}
+
+
+
 int32_t SQL_Parse_Context::eat_char()
 {
   if (this->is_finished()) return END_OF_SOURCE;
@@ -78,10 +90,12 @@ Token SQL_Parse_Context::eat_token()
 {
   this->skip_whitespace();
 
-  bool success = false;
   Token token = { .type = NONE };
-
+  
+  bool success = false;
   try_parse_select(this, &token, &success);
+
+  this->error = !success;
 
   return token;
 }
@@ -89,10 +103,35 @@ Token SQL_Parse_Context::eat_token()
 
 void try_parse_select(SQL_Parse_Context* parser, Token *token, bool *success)
 {
-  int32_t c = parser->peek_char();
+  std::string token_identifier = "select";
+  const auto index_after_last_char = token_identifier.size();
+  
+  bool equal = true;
+  for (size_t i = 0; i < token_identifier.size(); i++)
+  {
+    char c = std::tolower(parser->peek_n_char(i));
+    if (c != token_identifier.at(i))
+    {
+      equal = false;
+      break;
+    }
+  }
 
+  if (equal &&
+    parser->peek_n_char(index_after_last_char) != END_OF_SOURCE &&
+    parser->is_whitespace(parser->peek_n_char(index_after_last_char)))
+  {
+    for (size_t i = 0; i < token_identifier.size(); i++)
+    {
+      parser->eat_char();
+    }
+    parser->eat_char();
 
-  token->type = Token_Type::SELECT;
-
+    token->type = Token_Type::SELECT;
+    *success = true;
+    return;
+  }
+  
+  token->type = Token_Type::NONE;
   *success = false;
 }

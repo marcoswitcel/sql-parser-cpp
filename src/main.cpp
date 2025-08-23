@@ -27,8 +27,14 @@ int main(int argc, const char* argv[])
   while (!parser.is_finished())
   {
     Token token = parser.eat_token();
+    
+    if (parser.error)
+    {
+      std::cout << "Error: tokenização não terminou" << std::endl;
+      break;
+    }
+    
     std::cout << token.to_string() << std::endl;
-    // @wip João, terminar aqui...
   }
 
   return EXIT_SUCCESS;

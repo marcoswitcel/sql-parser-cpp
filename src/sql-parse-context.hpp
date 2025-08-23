@@ -52,10 +52,12 @@ struct SQL_Parse_Context
 {
   std::string source;
   uint64_t index = 0;
+  bool error = false;
 
   SQL_Parse_Context(std::string source);
 
   int32_t peek_char();
+  int32_t peek_n_char(size_t n);
 
   int32_t eat_char();
 
