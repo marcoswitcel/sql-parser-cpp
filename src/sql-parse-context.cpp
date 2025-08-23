@@ -85,18 +85,33 @@ void SQL_Parse_Context::skip_whitespace()
   }
 }
 
+Parse_Function terminals[] = {
+  try_parse_select
+};
+
+constexpr size_t terminals_length = sizeof(terminals[0]) / sizeof(terminals) ;
+
 
 Token SQL_Parse_Context::eat_token()
 {
-  this->skip_whitespace();
-
   Token token = { .type = NONE };
+
+  this->skip_whitespace();
   
-  bool success = false;
-  try_parse_select(this, &token, &success);
+  for (size_t i = 0; i < terminals_length; i++)
+  {
+    Parse_Function func = terminals[i];
+    bool success = false;
 
-  this->error = !success;
+    func(this, &token, &success);
+  
+    if (success)
+    {
+      return token;
+    }
+  }
 
+  this->error = true;
   return token;
 }
 
