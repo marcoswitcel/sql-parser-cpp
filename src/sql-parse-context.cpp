@@ -86,10 +86,11 @@ void SQL_Parse_Context::skip_whitespace()
 }
 
 Parse_Function terminals[] = {
-  try_parse_select
+  try_parse_select,
+  try_parse_asterisk
 };
 
-constexpr size_t terminals_length = sizeof(terminals[0]) / sizeof(terminals) ;
+constexpr size_t terminals_length = sizeof(terminals) / sizeof(terminals[0]) ;
 
 
 Token SQL_Parse_Context::eat_token()
@@ -97,7 +98,7 @@ Token SQL_Parse_Context::eat_token()
   Token token = { .type = NONE };
 
   this->skip_whitespace();
-  
+
   for (size_t i = 0; i < terminals_length; i++)
   {
     Parse_Function func = terminals[i];
@@ -107,6 +108,7 @@ Token SQL_Parse_Context::eat_token()
   
     if (success)
     {
+      this->error = false;
       return token;
     }
   }
@@ -150,3 +152,17 @@ void try_parse_select(SQL_Parse_Context* parser, Token *token, bool *success)
   token->type = Token_Type::NONE;
   *success = false;
 }
+
+void try_parse_asterisk(SQL_Parse_Context* parser, Token *token, bool *success)
+{
+  if (parser->peek_char() != '*' || !parser->is_whitespace(parser->peek_n_char(1)))
+  {
+    token->type = Token_Type::NONE;
+    *success = false;
+  }
+
+  parser->eat_char();
+  token->type = Token_Type::ASTERISK;
+  *success = true;
+}
+
