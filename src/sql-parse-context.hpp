@@ -12,6 +12,8 @@ enum Token_Type {
   IDENT
 };
 
+struct None {};
+
 struct Select_Token {};
 
 struct From_Token {};
@@ -34,7 +36,7 @@ struct Token
     From_Token from;
     Asterisk_Token asterisk;
     Ident_Token ident;
-  };
+  } data;
 };
 
 // typedef void (*Parse_Function)(SQL_Parse_Context*, Token *, bool *);
@@ -99,11 +101,11 @@ struct SQL_Parse_Context
     this->skip_whitespace();
 
     bool success = false;
-    // Token token;
-    // token.type = NONE;
+    token.type = NONE;
 
-    // Parse_Function func = try_parse_select(this, &token, &success);
+    Parse_Function func = try_parse_select(this, &token, &success);
 
+    return token;
   }
 };
 
