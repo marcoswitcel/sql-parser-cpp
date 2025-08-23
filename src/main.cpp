@@ -4,7 +4,7 @@
 
 #include "./command-line-utils.cpp"
 #include "./utils.cpp"
-#include "./sql-parse-context.hpp"
+#include "./sql-parse-context.cpp"
 
 int main(int argc, const char* argv[])
 {
@@ -26,7 +26,9 @@ int main(int argc, const char* argv[])
 
   while (!parser.is_finished())
   {
-    parser.eat_char();
+    Token token = parser.eat_token();
+    std::cout << token.to_string() << std::endl;
+    // @wip João, terminar aqui...
   }
 
   return EXIT_SUCCESS;
