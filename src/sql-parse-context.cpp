@@ -159,6 +159,7 @@ void try_parse_asterisk(SQL_Parse_Context* parser, Token *token, bool *success)
   {
     token->type = Token_Type::NONE;
     *success = false;
+    return;
   }
 
   parser->eat_char();
