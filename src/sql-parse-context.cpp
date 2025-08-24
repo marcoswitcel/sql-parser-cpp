@@ -88,7 +88,9 @@ void SQL_Parse_Context::skip_whitespace()
 Parse_Function terminals[] = {
   try_parse_select,
   try_parse_from,
-  try_parse_asterisk
+  try_parse_asterisk,
+  // non-terminals
+  try_parse_ident,
 };
 
 constexpr size_t terminals_length = sizeof(terminals) / sizeof(terminals[0]) ;
@@ -201,6 +203,34 @@ void try_parse_asterisk(SQL_Parse_Context* parser, Token *token, bool *success)
   parser->eat_char();
   parser->eat_char(); // @note o espaço não é obrigatório? se não for deixar condicional esse eat_char
   token->type = Token_Type::ASTERISK;
+  *success = true;
+}
+
+void try_parse_ident(SQL_Parse_Context* parser, Token *token, bool *success)
+{
+  size_t i = 0;
+  int32_t c = parser->peek_n_char(i);
+  while (c != END_OF_SOURCE && !parser->is_whitespace(c))
+  {
+    if (!isalnum(c))
+    {
+      token->type = Token_Type::NONE;
+      *success = false;
+      return;
+    }
+
+    i++;
+    c = parser->peek_n_char(i);
+  }
+
+  for (size_t j = 0; j < i; j++)
+  {
+    parser->eat_char();
+  }
+
+  parser->eat_char();
+
+  token->type = Token_Type::IDENT;
   *success = true;
 }
 
