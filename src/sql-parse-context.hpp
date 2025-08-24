@@ -8,6 +8,7 @@ enum Token_Type {
   SELECT,
   FROM,
   ASTERISK,
+  COMMA,
   // non-terminal
   IDENT
 };
@@ -73,4 +74,5 @@ typedef void (*Parse_Function)(SQL_Parse_Context*, Token *, bool *);
 void try_parse_select(SQL_Parse_Context* parser, Token *token, bool *success);
 void try_parse_from(SQL_Parse_Context* parser, Token *token, bool *success);
 void try_parse_asterisk(SQL_Parse_Context* parser, Token *token, bool *success);
+void try_parse_comma(SQL_Parse_Context* parser, Token *token, bool *success);
 void try_parse_ident(SQL_Parse_Context* parser, Token *token, bool *success);

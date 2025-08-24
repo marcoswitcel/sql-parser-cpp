@@ -16,6 +16,7 @@ std::string get_description(Token_Type &token_type)
     case SELECT: return "SELECT";
     case FROM: return "FROM";
     case ASTERISK: return "ASTERISK";
+    case COMMA: return "COMMA";
     case IDENT: return "IDENT";
   }
 
@@ -89,6 +90,7 @@ Parse_Function terminals[] = {
   try_parse_select,
   try_parse_from,
   try_parse_asterisk,
+  try_parse_comma,
   // non-terminals
   try_parse_ident,
 };
@@ -206,11 +208,26 @@ void try_parse_asterisk(SQL_Parse_Context* parser, Token *token, bool *success)
   *success = true;
 }
 
+void try_parse_comma(SQL_Parse_Context* parser, Token *token, bool *success)
+{
+  if (parser->peek_char() != ',')
+  {
+    token->type = Token_Type::NONE;
+    *success = false;
+    return;
+  }
+
+  parser->eat_char();
+  token->type = Token_Type::COMMA;
+  *success = true;
+}
+
+
 void try_parse_ident(SQL_Parse_Context* parser, Token *token, bool *success)
 {
   size_t i = 0;
   int32_t c = parser->peek_n_char(i);
-  while (c != END_OF_SOURCE && !parser->is_whitespace(c))
+  while (c != END_OF_SOURCE && !parser->is_whitespace(c) && c != ',')
   {
     if (!isalnum(c))
     {
@@ -228,7 +245,7 @@ void try_parse_ident(SQL_Parse_Context* parser, Token *token, bool *success)
     parser->eat_char();
   }
 
-  parser->eat_char();
+  if (c != ',') parser->eat_char();
 
   token->type = Token_Type::IDENT;
   *success = true;
