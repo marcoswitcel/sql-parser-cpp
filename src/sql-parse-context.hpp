@@ -16,14 +16,6 @@ enum Token_Type {
 std::string get_description(Token_Type &token_type);
 
 
-struct None {};
-
-struct Select_Token {};
-
-struct From_Token {};
-
-struct Asterisk_Token {};
-
 struct Ident_Token
 {
   std::string ident;
@@ -35,12 +27,7 @@ struct Ident_Token
 struct Token
 {
   Token_Type type;
-  /* union {
-    Select_Token select;
-    From_Token from;
-    Asterisk_Token asterisk;
-    Ident_Token ident;
-  } data; */
+  void* data;
 
   std::string to_string();
 };

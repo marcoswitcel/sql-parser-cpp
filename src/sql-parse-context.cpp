@@ -28,7 +28,8 @@ std::string get_description(Token_Type &token_type)
 
 std::string Token::to_string()
 {
-  return "Token@{ .type = " + get_description(this->type) + " }";
+  // @todo João, printar o ident name no caso de type Ident
+  return "Token@{ .type = " + get_description(this->type) + ", .data = ?? }";
 }
 
 
@@ -100,7 +101,7 @@ constexpr size_t terminals_length = sizeof(terminals) / sizeof(terminals[0]) ;
 
 Token SQL_Parse_Context::eat_token()
 {
-  Token token = { .type = NONE };
+  Token token = { .type = NONE, .data = NULL, };
 
   this->skip_whitespace();
 
@@ -240,6 +241,7 @@ void try_parse_ident(SQL_Parse_Context* parser, Token *token, bool *success)
     c = parser->peek_n_char(i);
   }
 
+  std::string ident_name = parser->source.substr(parser->index, i);
   for (size_t j = 0; j < i; j++)
   {
     parser->eat_char();
@@ -248,6 +250,14 @@ void try_parse_ident(SQL_Parse_Context* parser, Token *token, bool *success)
   if (c != ',') parser->eat_char();
 
   token->type = Token_Type::IDENT;
+
+  Ident_Token *ident = new Ident_Token();
+  token->data = ident;
+
+  ident->dotted = false;
+  ident->quoted = false;
+  ident->ident = ident_name;
+  
   *success = true;
 }
 
