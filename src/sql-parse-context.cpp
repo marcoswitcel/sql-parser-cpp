@@ -26,10 +26,28 @@ std::string get_description(Token_Type &token_type)
   return "[Invalid Token_Type]";
 }
 
+  
+std::string Ident_Token::to_string()
+{
+  return "Ident_Token { .ident = '" + this->ident + "' }";
+}
+
 std::string Token::to_string()
 {
-  // @todo João, printar o ident name no caso de type Ident
-  return "Token@{ .type = " + get_description(this->type) + ", .data = ?? }";
+  std::string desc = "Token { .type = " + get_description(this->type) + ", .data = ";
+
+  if (this->data && this->type == Token_Type::IDENT)
+  {
+    desc += static_cast<Ident_Token*>(this->data)->to_string();
+  }
+  else
+  {
+    desc += "NULL";  
+  }
+
+  desc += " }";
+  return desc;
+
 }
 
 

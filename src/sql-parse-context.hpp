@@ -21,6 +21,8 @@ struct Ident_Token
   std::string ident;
   bool quoted;
   bool dotted;
+  
+  std::string to_string();
 };
 
 
