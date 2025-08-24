@@ -87,6 +87,7 @@ void SQL_Parse_Context::skip_whitespace()
 
 Parse_Function terminals[] = {
   try_parse_select,
+  try_parse_from,
   try_parse_asterisk
 };
 
@@ -153,6 +154,41 @@ void try_parse_select(SQL_Parse_Context* parser, Token *token, bool *success)
   *success = false;
 }
 
+void try_parse_from(SQL_Parse_Context* parser, Token *token, bool *success)
+{
+  std::string token_identifier = "from";
+  const auto index_after_last_char = token_identifier.size();
+  
+  bool equal = true;
+  for (size_t i = 0; i < token_identifier.size(); i++)
+  {
+    char c = std::tolower(parser->peek_n_char(i));
+    if (c != token_identifier.at(i))
+    {
+      equal = false;
+      break;
+    }
+  }
+
+  if (equal &&
+    parser->peek_n_char(index_after_last_char) != END_OF_SOURCE &&
+    parser->is_whitespace(parser->peek_n_char(index_after_last_char)))
+  {
+    for (size_t i = 0; i < token_identifier.size(); i++)
+    {
+      parser->eat_char();
+    }
+    parser->eat_char();
+
+    token->type = Token_Type::FROM;
+    *success = true;
+    return;
+  }
+  
+  token->type = Token_Type::NONE;
+  *success = false;
+}
+
 void try_parse_asterisk(SQL_Parse_Context* parser, Token *token, bool *success)
 {
   if (parser->peek_char() != '*' || !parser->is_whitespace(parser->peek_n_char(1)))
@@ -163,6 +199,7 @@ void try_parse_asterisk(SQL_Parse_Context* parser, Token *token, bool *success)
   }
 
   parser->eat_char();
+  parser->eat_char(); // @note o espaço não é obrigatório? se não for deixar condicional esse eat_char
   token->type = Token_Type::ASTERISK;
   *success = true;
 }

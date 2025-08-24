@@ -71,4 +71,5 @@ struct SQL_Parse_Context
 typedef void (*Parse_Function)(SQL_Parse_Context*, Token *, bool *);
 
 void try_parse_select(SQL_Parse_Context* parser, Token *token, bool *success);
+void try_parse_from(SQL_Parse_Context* parser, Token *token, bool *success);
 void try_parse_asterisk(SQL_Parse_Context* parser, Token *token, bool *success);
