@@ -10,7 +10,8 @@ SOURCE_FOLDER_NAME=src
 TESTS_FOLDER_NAME=tests
 BUILD_FOLDER_NAME=target
 
-RUN_ARGS= "SELECT * FROM DUAL" --verbose
+#RUN_ARGS= "SELECT * FROM DUAL" --verbose
+RUN_ARGS= "Select Phone1 , Phone2 From customers " --verbose
 
 build-folder-setup:
 	@ mkdir -p $(BUILD_FOLDER_NAME)
@@ -23,7 +24,7 @@ tests: build-folder-setup ./$(TESTS_FOLDER_NAME)/main.cpp
 
 run: main
 	@echo "cd ./$(BUILD_FOLDER_NAME)"
-	@echo ./main $(RUN_ARGS)
+	@echo './main $(RUN_ARGS)'
 	@echo "================"
 	@cd ./$(BUILD_FOLDER_NAME) && ./main $(RUN_ARGS)
 	@echo "\n================\n"
