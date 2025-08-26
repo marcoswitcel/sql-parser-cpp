@@ -96,12 +96,18 @@ inline bool SQL_Parse_Context::is_whitespace(char value)
 void SQL_Parse_Context::skip_whitespace()
 {
   
-  while (this->is_finished())
+  while (!this->is_finished())
   {
     int32_t value = this->peek_char();
-    if (value < 0) return;
-
-    if (!this->is_whitespace(static_cast<char>(value))) return;
+    
+    if (this->is_whitespace(static_cast<char>(value)))
+    {
+      this->eat_char();
+    }
+    else
+    {
+      return;
+    }
   }
 }
 
