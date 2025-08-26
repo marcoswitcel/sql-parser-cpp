@@ -271,6 +271,7 @@ void try_parse_ident(SQL_Parse_Context* parser, Token *token, bool *success)
     parser->eat_char();
   }
 
+  // @todo João, necessário achar um forma de remover esse trecho
   if (c != ',') parser->eat_char();
 
   token->type = Token_Type::IDENT;
