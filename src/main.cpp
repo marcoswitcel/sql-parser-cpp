@@ -23,12 +23,18 @@ int main(int argc, const char* argv[])
   if (is_verbose) std::cout << "SQL: " << sql_command << std::endl;
 
   SQL_Parse_Context parser(sql_command);
+  Select_Node select = {};
 
   parser.skip_whitespace();
 
   while (!parser.is_finished())
   {
     Token token = parser.eat_token();
+
+    if (token.type == Token_Type::IDENT)
+    {
+      select.fields.push_back(*static_cast<Ident_Token*>(token.data));
+    }
   
     if (parser.error)
     {

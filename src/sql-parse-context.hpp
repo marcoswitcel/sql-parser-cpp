@@ -58,6 +58,12 @@ struct SQL_Parse_Context
   inline void skip_whitespace();
 };
 
+struct Select_Node
+{
+  std::vector<Ident_Token> fields;
+  std::string from;
+};
+
 typedef void (*Parse_Function)(SQL_Parse_Context*, Token *, bool *);
 
 void try_parse_select(SQL_Parse_Context* parser, Token *token, bool *success);
