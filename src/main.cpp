@@ -24,15 +24,19 @@ int main(int argc, const char* argv[])
 
   SQL_Parse_Context parser(sql_command);
 
+  parser.skip_whitespace();
+
   while (!parser.is_finished())
   {
     Token token = parser.eat_token();
-    
+  
     if (parser.error)
     {
       std::cout << "Error: tokenização não terminou" << std::endl;
       break;
     }
+  
+    parser.skip_whitespace();
     
     std::cout << token.to_string() << std::endl;
   }

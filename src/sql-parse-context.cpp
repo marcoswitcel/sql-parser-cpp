@@ -172,7 +172,6 @@ void try_parse_select(SQL_Parse_Context* parser, Token *token, bool *success)
     {
       parser->eat_char();
     }
-    parser->eat_char();
 
     token->type = Token_Type::SELECT;
     *success = true;
@@ -207,7 +206,6 @@ void try_parse_from(SQL_Parse_Context* parser, Token *token, bool *success)
     {
       parser->eat_char();
     }
-    parser->eat_char();
 
     token->type = Token_Type::FROM;
     *success = true;
@@ -228,7 +226,6 @@ void try_parse_asterisk(SQL_Parse_Context* parser, Token *token, bool *success)
   }
 
   parser->eat_char();
-  parser->eat_char(); // @note o espaço não é obrigatório? se não for deixar condicional esse eat_char
   token->type = Token_Type::ASTERISK;
   *success = true;
 }
@@ -270,9 +267,6 @@ void try_parse_ident(SQL_Parse_Context* parser, Token *token, bool *success)
   {
     parser->eat_char();
   }
-
-  // @todo João, necessário achar um forma de remover esse trecho
-  if (c != ',') parser->eat_char();
 
   token->type = Token_Type::IDENT;
 
