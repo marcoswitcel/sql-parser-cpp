@@ -209,7 +209,7 @@ void try_parse_from(SQL_Parse_Context* parser, Token *token, bool *success)
 
 void try_parse_asterisk(SQL_Parse_Context* parser, Token *token, bool *success)
 {
-  if (parser->peek_char() != '*' || !parser->is_whitespace(parser->peek_n_char(1)))
+  if (parser->peek_char() != '*')
   {
     token->type = Token_Type::NONE;
     *success = false;
