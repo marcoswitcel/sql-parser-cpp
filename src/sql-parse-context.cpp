@@ -147,10 +147,8 @@ Token SQL_Parse_Context::eat_token()
   return token;
 }
 
-
-void try_parse_select(SQL_Parse_Context* parser, Token *token, bool *success)
+static inline bool try_consume_keyword(SQL_Parse_Context *parser, std::string token_identifier)
 {
-  std::string token_identifier = "select";
   const auto index_after_last_char = token_identifier.size();
   
   bool equal = true;
@@ -173,6 +171,18 @@ void try_parse_select(SQL_Parse_Context* parser, Token *token, bool *success)
       parser->eat_char();
     }
 
+    return true;
+  }
+
+  return false;
+}
+
+void try_parse_select(SQL_Parse_Context* parser, Token *token, bool *success)
+{
+  bool is_consumed = try_consume_keyword(parser, "select");
+  
+  if (is_consumed)
+  {
     token->type = Token_Type::SELECT;
     *success = true;
     return;
@@ -184,29 +194,10 @@ void try_parse_select(SQL_Parse_Context* parser, Token *token, bool *success)
 
 void try_parse_from(SQL_Parse_Context* parser, Token *token, bool *success)
 {
-  std::string token_identifier = "from";
-  const auto index_after_last_char = token_identifier.size();
+  bool is_consumed = try_consume_keyword(parser, "from"); 
   
-  bool equal = true;
-  for (size_t i = 0; i < token_identifier.size(); i++)
+  if (is_consumed)
   {
-    char c = std::tolower(parser->peek_n_char(i));
-    if (c != token_identifier.at(i))
-    {
-      equal = false;
-      break;
-    }
-  }
-
-  if (equal &&
-    parser->peek_n_char(index_after_last_char) != END_OF_SOURCE &&
-    parser->is_whitespace(parser->peek_n_char(index_after_last_char)))
-  {
-    for (size_t i = 0; i < token_identifier.size(); i++)
-    {
-      parser->eat_char();
-    }
-
     token->type = Token_Type::FROM;
     *success = true;
     return;
