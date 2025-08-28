@@ -5,6 +5,7 @@
 #include "./command-line-utils.cpp"
 #include "./utils.cpp"
 #include "./sql-parse-context.cpp"
+#include "./ast_node.hpp"
 
 int main(int argc, const char* argv[])
 {
@@ -23,7 +24,10 @@ int main(int argc, const char* argv[])
   if (is_verbose) std::cout << "SQL: " << sql_command << std::endl;
 
   SQL_Parse_Context parser(sql_command);
-  Select_Node select = {};
+
+  // Select_Ast_Node select;
+  // select.fields.push_back(std::make_shared<Ident_Ast_Node>());
+  // std::cout << select.to_string() << std::endl;
 
   parser.skip_whitespace();
 
@@ -31,11 +35,6 @@ int main(int argc, const char* argv[])
   {
     Token token = parser.eat_token();
 
-    if (token.type == Token_Type::IDENT)
-    {
-      select.fields.push_back(*static_cast<Ident_Token*>(token.data));
-    }
-  
     if (parser.error)
     {
       std::cout << "Error: tokenização não terminou" << std::endl;
