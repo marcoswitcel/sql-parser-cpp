@@ -26,14 +26,7 @@ struct Ast_Node
     // std::cout << "destruído" << this->serial_number << std::endl;
   }
 
-  virtual std::string to_string()
-  {
-    std::string desc = "Ast_Node { serial: ";
-    desc += std::to_string(this->serial_number);
-    desc += " }";
-
-    return desc;
-  }
+  virtual std::string to_string() = 0;
 };
 
 uint64_t Ast_Node::serial_counter = 0;
@@ -67,12 +60,18 @@ struct Select_Ast_Node: Ast_Node
     std::string desc = "Select_Ast_Node { serial: ";
     desc += std::to_string(this->serial_number);
     desc += ", fields: [ ";
-    for (auto &field : fields)
+    for (size_t i = 0; i < fields.size(); i++)
     {
+      if (i > 0)
+      {
+        desc += " , ";
+      }
+      auto &field = fields.at(i);
       desc += field.get()->to_string();
     }
-    desc += " ]";
-
+    desc += " ], ";
+    desc += "from: ";
+    desc += from.get()->to_string();
     desc += " }";
 
     return desc;

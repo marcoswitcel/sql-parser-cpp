@@ -4,6 +4,7 @@
 #include <cstdint>
 
 #include "./token.hpp"
+#include "./ast_node.hpp"
 
 
 constexpr int32_t END_OF_SOURCE = -9999;
@@ -22,6 +23,8 @@ struct SQL_Parse_Context
   int32_t eat_char();
 
   Token eat_token();
+
+  Ast_Node* eat_node();
 
   inline bool is_finished();
   inline bool is_whitespace(char value);

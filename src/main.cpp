@@ -25,10 +25,15 @@ int main(int argc, const char* argv[])
 
   SQL_Parse_Context parser(sql_command);
 
-  // Select_Ast_Node select;
-  // select.fields.push_back(std::make_shared<Ident_Ast_Node>());
-  // std::cout << select.to_string() << std::endl;
+  Ast_Node* node = parser.eat_node();
+  
+  if (node)
+  {
+    auto select = dynamic_cast<Select_Ast_Node*>(node);
+    std::cout << select->to_string() << std::endl;
+  }
 
+  /*
   parser.skip_whitespace();
 
   while (!parser.is_finished())
@@ -45,6 +50,7 @@ int main(int argc, const char* argv[])
     
     std::cout << token.to_string() << std::endl;
   }
+  */
 
   return EXIT_SUCCESS;
 }

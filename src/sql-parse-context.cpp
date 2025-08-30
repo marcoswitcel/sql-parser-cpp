@@ -111,6 +111,77 @@ void SQL_Parse_Context::skip_whitespace()
   }
 }
 
+Ast_Node* SQL_Parse_Context::eat_node()
+{
+  Token token = this->eat_token();
+  
+  if (this->error)
+  {
+    return NULL;
+  }
+  
+  if (token.type == Token_Type::SELECT)
+  {
+    auto select = new Select_Ast_Node();
+
+    this->skip_whitespace();
+
+    while (!this->is_finished())
+    {
+      Token token = this->eat_token();
+
+      if (this->error)
+      {
+        return NULL;
+      }
+
+      if (token.type == Token_Type::IDENT)
+      {
+        auto ident = std::make_shared<Ident_Ast_Node>();
+        ident.get()->ident_name = static_cast<Ident_Token*>(token.data)->ident;
+        select->fields.push_back(ident);
+
+        token = this->eat_token();
+
+        if (token.type == Token_Type::FROM)
+        {
+          token = this->eat_token();
+
+          if (token.type == Token_Type::IDENT)
+          {
+            select->from = std::unique_ptr<Ident_Ast_Node>(new Ident_Ast_Node());
+            select->from.get()->ident_name = static_cast<Ident_Token*>(token.data)->ident;
+
+            return select;
+          }
+          else
+          {
+            return NULL;
+          }
+        }
+        else if (token.type == Token_Type::COMMA)
+        {
+
+        }
+        else
+        {
+          return NULL;  
+        }
+      }
+      else
+      {
+        return NULL;
+      }
+    
+      this->skip_whitespace();
+    }
+
+    return select;
+  }
+  
+  return NULL;
+}
+
 Parse_Function terminals[] = {
   try_parse_select,
   try_parse_from,
