@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <cstdint>
+#include <assert.h>
 #include <memory>
 
 enum class Ast_Node_Type
@@ -32,6 +33,7 @@ struct Ast_Node
 
   ~Ast_Node()
   {
+    assert(this->type != Ast_Node_Type::None);
     // @note apenas para depuração
     // std::cout << "destruído" << this->serial_number << std::endl;
   }
@@ -81,10 +83,22 @@ struct From_Ast_Node: Ast_Node
   }
 };
 
+struct Expression_Ast_Node: Ast_Node
+{
+
+};
+
+struct Literal_Expression_Ast_Node: Expression_Ast_Node
+{
+
+};
+
 struct Select_Ast_Node: Ast_Node
 {
   std::vector<std::shared_ptr<Ident_Ast_Node>> fields;
   std::shared_ptr<From_Ast_Node> from;
+  // @todo joão, implementar where
+  std::vector<std::unique_ptr<Expression_Ast_Node>> where;
 
   Select_Ast_Node()
   {
