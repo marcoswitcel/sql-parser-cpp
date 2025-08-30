@@ -7,6 +7,9 @@
 #include <assert.h>
 #include <memory>
 
+#include "./trace.hpp"
+
+
 enum class Ast_Node_Type
 {
   None,
@@ -43,7 +46,12 @@ struct Ast_Node
 
 uint64_t Ast_Node::serial_counter = 0;
 
-struct Ident_Ast_Node: Ast_Node
+struct Expression_Ast_Node: Ast_Node
+{
+  virtual std::string to_string() = 0;
+};
+
+struct Ident_Ast_Node: Expression_Ast_Node
 {
   std::string ident_name;
   
@@ -83,14 +91,25 @@ struct From_Ast_Node: Ast_Node
   }
 };
 
-struct Expression_Ast_Node: Ast_Node
-{
-
-};
-
 struct Literal_Expression_Ast_Node: Expression_Ast_Node
 {
+  Literal_Expression_Ast_Node()
+  {
+    Trace("Rodei %ld", this->serial_counter);
+  }
+};
 
+struct Binary_Expression_Ast_Node: Expression_Ast_Node
+{
+  // @note João, por hora string mas pode ser um enum no futuro?
+  std::string op;
+  std::unique_ptr<Expression_Ast_Node> left;
+  std::unique_ptr<Expression_Ast_Node> right;
+
+  Binary_Expression_Ast_Node()
+  {
+    Trace("Rodei %ld", this->serial_counter);
+  }
 };
 
 struct Select_Ast_Node: Ast_Node

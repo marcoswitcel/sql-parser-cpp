@@ -10,6 +10,7 @@ enum Token_Type {
   FROM,
   ASTERISK,
   COMMA,
+  WHERE,
   // non-terminal
   IDENT
 };

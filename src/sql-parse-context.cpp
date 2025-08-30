@@ -18,6 +18,7 @@ std::string get_description(Token_Type &token_type)
     case ASTERISK: return "ASTERISK";
     case COMMA: return "COMMA";
     case IDENT: return "IDENT";
+    case WHERE: return "WHERE";
   }
 
   assert(false);
@@ -152,7 +153,22 @@ Ast_Node* SQL_Parse_Context::eat_node()
             select->from = std::unique_ptr<From_Ast_Node>(new From_Ast_Node());
             select->from.get()->ident_name = static_cast<Ident_Token*>(token.data)->ident;
 
-            return select;
+            token = this->eat_token();
+
+            if (token.type == Token_Type::WHERE)
+            {
+              // @todo João, terminar aqui... tentar um método try_eat_expression_node ou coisa parecida...
+              return select;
+            }
+            else if (this->is_finished())
+            {
+              return select;
+            }
+            else
+            {
+              // erros de parsing ou outros tokens vão aqui...
+              return NULL;
+            }
           }
           else
           {
