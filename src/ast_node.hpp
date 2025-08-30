@@ -11,6 +11,7 @@ enum class Ast_Node_Type
   None,
   Ident_Ast_Node,
   Select_Ast_Node,
+  From_Ast_Node,
 };
 
 struct Ast_Node
@@ -60,10 +61,30 @@ struct Ident_Ast_Node: Ast_Node
   }
 };
 
+struct From_Ast_Node: Ast_Node
+{
+  std::string ident_name;
+  
+  From_Ast_Node()
+  {
+    this->type = Ast_Node_Type::From_Ast_Node;
+    // std::cout << "construído ident" << this->serial_number << std::endl;
+  }
+
+  std::string to_string() override
+  {
+    std::string desc = "From_Ast_Node { serial: ";
+    desc += std::to_string(this->serial_number);
+    desc += ", ident_name: \"" + this->ident_name +  "\" }";
+
+    return desc;
+  }
+};
+
 struct Select_Ast_Node: Ast_Node
 {
   std::vector<std::shared_ptr<Ident_Ast_Node>> fields;
-  std::shared_ptr<Ident_Ast_Node> from;
+  std::shared_ptr<From_Ast_Node> from;
 
   Select_Ast_Node()
   {
