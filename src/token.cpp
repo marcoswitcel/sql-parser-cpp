@@ -8,13 +8,13 @@ std::string get_description(Token_Type &token_type)
 {
   switch (token_type)
   {
-    case NONE: return "NONE";
-    case SELECT: return "SELECT";
-    case FROM: return "FROM";
-    case ASTERISK: return "ASTERISK";
-    case COMMA: return "COMMA";
-    case IDENT: return "IDENT";
-    case WHERE: return "WHERE";
+    case Token_Type::None: return "None";
+    case Token_Type::Select: return "Select";
+    case Token_Type::From: return "From";
+    case Token_Type::Asterisk: return "Asterisk";
+    case Token_Type::Comma: return "Comma";
+    case Token_Type::Ident: return "Ident";
+    case Token_Type::Where: return "Where";
   }
 
   assert(false);

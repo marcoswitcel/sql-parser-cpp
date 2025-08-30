@@ -18,7 +18,7 @@ std::string Token::to_string()
 {
   std::string desc = "Token { .type = " + get_description(this->type) + ", .data = ";
 
-  if (this->data && this->type == Token_Type::IDENT)
+  if (this->data && this->type == Token_Type::Ident)
   {
     desc += static_cast<Ident_Token*>(this->data)->to_string();
   }
@@ -102,7 +102,7 @@ Ast_Node* SQL_Parse_Context::eat_node()
     return NULL;
   }
   
-  if (token.type == Token_Type::SELECT)
+  if (token.type == Token_Type::Select)
   {
     auto select = new Select_Ast_Node();
 
@@ -117,7 +117,7 @@ Ast_Node* SQL_Parse_Context::eat_node()
         return NULL;
       }
 
-      if (token.type == Token_Type::IDENT)
+      if (token.type == Token_Type::Ident)
       {
         auto ident = std::make_shared<Ident_Ast_Node>();
         ident.get()->ident_name = static_cast<Ident_Token*>(token.data)->ident;
@@ -125,18 +125,18 @@ Ast_Node* SQL_Parse_Context::eat_node()
 
         token = this->eat_token();
 
-        if (token.type == Token_Type::FROM)
+        if (token.type == Token_Type::From)
         {
           token = this->eat_token();
 
-          if (token.type == Token_Type::IDENT)
+          if (token.type == Token_Type::Ident)
           {
             select->from = std::unique_ptr<From_Ast_Node>(new From_Ast_Node());
             select->from.get()->ident_name = static_cast<Ident_Token*>(token.data)->ident;
 
             token = this->eat_token();
 
-            if (token.type == Token_Type::WHERE)
+            if (token.type == Token_Type::Where)
             {
               // @todo João, terminar aqui... tentar um método try_eat_expression_node ou coisa parecida...
               return select;
@@ -156,7 +156,7 @@ Ast_Node* SQL_Parse_Context::eat_node()
             return NULL;
           }
         }
-        else if (token.type == Token_Type::COMMA)
+        else if (token.type == Token_Type::Comma)
         {
 
         }
@@ -193,7 +193,7 @@ constexpr size_t terminals_length = sizeof(terminals) / sizeof(terminals[0]) ;
 
 Token SQL_Parse_Context::eat_token()
 {
-  Token token = { .type = NONE, .data = NULL, };
+  Token token = { .type = Token_Type::None, .data = NULL, };
 
   this->skip_whitespace();
 
@@ -251,12 +251,12 @@ void try_parse_select(SQL_Parse_Context* parser, Token *token, bool *success)
   
   if (is_consumed)
   {
-    token->type = Token_Type::SELECT;
+    token->type = Token_Type::Select;
     *success = true;
     return;
   }
   
-  token->type = Token_Type::NONE;
+  token->type = Token_Type::None;
   *success = false;
 }
 
@@ -266,12 +266,12 @@ void try_parse_from(SQL_Parse_Context* parser, Token *token, bool *success)
   
   if (is_consumed)
   {
-    token->type = Token_Type::FROM;
+    token->type = Token_Type::From;
     *success = true;
     return;
   }
   
-  token->type = Token_Type::NONE;
+  token->type = Token_Type::None;
   *success = false;
 }
 
@@ -279,13 +279,13 @@ void try_parse_asterisk(SQL_Parse_Context* parser, Token *token, bool *success)
 {
   if (parser->peek_char() != '*')
   {
-    token->type = Token_Type::NONE;
+    token->type = Token_Type::None;
     *success = false;
     return;
   }
 
   parser->eat_char();
-  token->type = Token_Type::ASTERISK;
+  token->type = Token_Type::Asterisk;
   *success = true;
 }
 
@@ -293,13 +293,13 @@ void try_parse_comma(SQL_Parse_Context* parser, Token *token, bool *success)
 {
   if (parser->peek_char() != ',')
   {
-    token->type = Token_Type::NONE;
+    token->type = Token_Type::None;
     *success = false;
     return;
   }
 
   parser->eat_char();
-  token->type = Token_Type::COMMA;
+  token->type = Token_Type::Comma;
   *success = true;
 }
 
@@ -313,7 +313,7 @@ void try_parse_ident(SQL_Parse_Context* parser, Token *token, bool *success)
   {
     if (!isalnum(c))
     {
-      token->type = Token_Type::NONE;
+      token->type = Token_Type::None;
       *success = false;
       return;
     }
@@ -328,7 +328,7 @@ void try_parse_ident(SQL_Parse_Context* parser, Token *token, bool *success)
     parser->eat_char();
   }
 
-  token->type = Token_Type::IDENT;
+  token->type = Token_Type::Ident;
 
   Ident_Token *ident = new Ident_Token();
   token->data = ident;

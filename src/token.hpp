@@ -4,15 +4,15 @@
 #include <cstdint>
 
 
-enum Token_Type {
-  NONE, // não inicializado
-  SELECT,
-  FROM,
-  ASTERISK,
-  COMMA,
-  WHERE,
+enum class Token_Type {
+  None, // não inicializado
+  Select,
+  From,
+  Asterisk,
+  Comma,
+  Where,
   // non-terminal
-  IDENT
+  Ident
 };
 
 std::string get_description(Token_Type &token_type);
