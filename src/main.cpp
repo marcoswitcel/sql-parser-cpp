@@ -27,7 +27,7 @@ int main(int argc, const char* argv[])
 
   Ast_Node* node = parser.eat_node();
   
-  if (node)
+  if (node && node->type == Ast_Node_Type::Select_Ast_Node)
   {
     auto select = dynamic_cast<Select_Ast_Node*>(node);
     std::cout << select->to_string() << std::endl;
