@@ -1,11 +1,55 @@
 #include <iostream>
 #include <string>
-#include <algorithm>
+#include <vector>
 
 #include "./command-line-utils.cpp"
 #include "./utils.cpp"
 #include "./sql-parse-context.cpp"
 #include "./ast_node.hpp"
+
+using std::vector;
+
+bool run_select_on_table(Select_Ast_Node &select, std::vector<std::string> &table_def, std::vector<std::vector<std::string>> &table)
+{
+  vector<size_t> index_to_and_order;
+
+  for (size_t i = 0; i < select.fields.size(); i++)
+  {
+    Ident_Ast_Node *ident = select.fields.at(i).get();
+    int64_t index = index_of(table_def, ident->ident_name);
+
+    if (index < 0)
+    {
+      return false;
+    }
+
+    index_to_and_order.push_back(static_cast<size_t>(index));
+  }
+
+  if (table.size() == 0) return false;;
+  
+  for (std::vector<std::string> &data_row: table)
+  {
+    // @note João, inserir alertas?
+    if (table_def.size() != data_row.size()) return false;;
+  }
+
+  std::cout << "| Printando table |" << std::endl;
+  // @todo João, printar header...
+  for (std::vector<std::string> &data_row: table)
+  {
+    // @todo João, falta impĺementar where
+
+    std::cout << "|";
+    for (size_t i : index_to_and_order)
+    {
+      std::cout << data_row.at(i) << "|";
+    }
+    std::cout << std::endl;
+  }
+
+  return true;
+}
 
 int main(int argc, const char* argv[])
 {
@@ -31,6 +75,15 @@ int main(int argc, const char* argv[])
   {
     auto select = dynamic_cast<Select_Ast_Node*>(node);
     std::cout << select->to_string() << std::endl;
+
+    std::vector<std::string> table_def = {"Phone1", "Phone2", "Name"};
+    std::vector<std::vector<std::string>> table_data;
+
+    table_data.push_back({"55 9xxxx-9999", "(55) 9xxxx-9999", "Marcelson"});
+    table_data.push_back({"55 9xxxx-8888", "(55) 9xxxx-8888", "Jucelson"});
+
+    //  checa campos do select
+    run_select_on_table(*select, table_def, table_data);
   }
 
   /*

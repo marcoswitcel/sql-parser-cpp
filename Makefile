@@ -11,7 +11,8 @@ TESTS_FOLDER_NAME=tests
 BUILD_FOLDER_NAME=target
 
 #RUN_ARGS= "SELECT * FROM DUAL" --verbose
-RUN_ARGS= "Select Phone1 , Phone2 From customers " --verbose
+RUN_ARGS= "Select Name, Phone1 , Phone2 From customers " --verbose
+#RUN_ARGS= "Select * From customers " --verbose
 
 build-folder-setup:
 	@ mkdir -p $(BUILD_FOLDER_NAME)

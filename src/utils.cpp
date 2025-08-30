@@ -3,6 +3,8 @@
 #include <vector>
 #include <iostream>
 #include <sstream>
+#include <vector>
+#include <algorithm>
 #include <string>
 
 #include "./trace.hpp"
@@ -48,3 +50,22 @@ bool contains(std::string text, char needle)
 
   return false;
 }
+
+bool contains(std::vector<std::string> &list, std::string &neddle_value)
+{
+  return std::find(list.begin(), list.end(), neddle_value) != list.end();
+}
+
+int64_t index_of(std::vector<std::string> &list, std::string &neddle_value)
+{
+  for (size_t i = 0; i < list.size(); i++)
+  {
+    if (list.at(i) == neddle_value)
+    {
+      return i;
+    }
+  }
+
+  return -1;
+}
+
