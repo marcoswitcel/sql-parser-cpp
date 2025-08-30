@@ -174,6 +174,8 @@ struct Select_Ast_Node: Ast_Node
     desc += " ], ";
     desc += "from: ";
     desc += from.get()->to_string();
+    desc += ", where: ";
+    desc += (this->where.get()) ? this->where->to_string() : "{}";
     desc += " }";
 
     return desc;

@@ -139,6 +139,8 @@ Ast_Node* SQL_Parse_Context::eat_node()
             if (token.type == Token_Type::Where)
             {
               // @todo João, terminar aqui... tentar um método try_eat_expression_node ou coisa parecida...
+              select->where = std::unique_ptr<Where_Ast_Node>(new Where_Ast_Node());
+
               return select;
             }
             else if (this->is_finished())
