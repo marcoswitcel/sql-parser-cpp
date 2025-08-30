@@ -16,6 +16,7 @@ enum class Ast_Node_Type
   Ident_Ast_Node,
   Select_Ast_Node,
   From_Ast_Node,
+  Where_Ast_Node,
 };
 
 struct Ast_Node
@@ -112,12 +113,44 @@ struct Binary_Expression_Ast_Node: Expression_Ast_Node
   }
 };
 
+struct Where_Ast_Node: Ast_Node
+{
+  std::vector<std::unique_ptr<Binary_Expression_Ast_Node>> conditions;
+  
+  Where_Ast_Node()
+  {
+    this->type = Ast_Node_Type::Where_Ast_Node;
+    // std::cout << "construído ident" << this->serial_number << std::endl;
+  }
+
+  std::string to_string() override
+  {
+    std::string desc = "Where_Ast_Node { serial: ";
+    desc += std::to_string(this->serial_number);
+
+    desc += ", conditions: [ ";
+    for (size_t i = 0; i < this->conditions.size(); i++)
+    {
+      if (i > 0)
+      {
+        desc += " , ";
+      }
+      auto &condition = this->conditions.at(i);
+      desc += condition.get()->to_string();
+    }
+    desc += " ] ";
+    desc += "}";
+
+    return desc;
+  }
+};
+
 struct Select_Ast_Node: Ast_Node
 {
   std::vector<std::shared_ptr<Ident_Ast_Node>> fields;
   std::shared_ptr<From_Ast_Node> from;
   // @todo joão, implementar where
-  std::vector<std::unique_ptr<Expression_Ast_Node>> where;
+  std::unique_ptr<Where_Ast_Node> where;
 
   Select_Ast_Node()
   {
