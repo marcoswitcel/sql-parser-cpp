@@ -141,6 +141,13 @@ Ast_Node* SQL_Parse_Context::eat_node()
               // @todo João, terminar aqui... tentar um método try_eat_expression_node ou coisa parecida...
               select->where = std::unique_ptr<Where_Ast_Node>(new Where_Ast_Node());
 
+              Binary_Expression_Ast_Node* bin_exp = this->eat_binary_expression_ast_node();
+              // @todo João, em caso de nullo deveria retornar nullo pra sinalizar o erro, por hora, pelo menos...
+              if (bin_exp)
+              {
+                select->where->conditions.push_back(std::unique_ptr<Binary_Expression_Ast_Node>(bin_exp));
+              }
+
               return select;
             }
             else if (this->is_finished())
@@ -181,11 +188,18 @@ Ast_Node* SQL_Parse_Context::eat_node()
   return NULL;
 }
 
+Binary_Expression_Ast_Node* SQL_Parse_Context::eat_binary_expression_ast_node()
+{
+  // @todo João, terminar de implementar
+  return NULL;
+}
+
 Parse_Function terminals[] = {
   try_parse_select,
   try_parse_from,
   try_parse_where,
   try_parse_asterisk,
+  try_parse_equals,
   try_parse_comma,
   // non-terminals
   try_parse_ident,
@@ -304,6 +318,20 @@ void try_parse_asterisk(SQL_Parse_Context* parser, Token *token, bool *success)
 
   parser->eat_char();
   token->type = Token_Type::Asterisk;
+  *success = true;
+}
+
+void try_parse_equals(SQL_Parse_Context* parser, Token *token, bool *success)
+{
+  if (parser->peek_char() != '=')
+  {
+    token->type = Token_Type::None;
+    *success = false;
+    return;
+  }
+
+  parser->eat_char();
+  token->type = Token_Type::Equals;
   *success = true;
 }
 

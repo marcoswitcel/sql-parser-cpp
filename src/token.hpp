@@ -9,6 +9,7 @@ enum class Token_Type {
   Select,
   From,
   Asterisk,
+  Equals,
   Comma,
   Where,
   // non-terminal

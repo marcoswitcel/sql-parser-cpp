@@ -86,7 +86,8 @@ int main(int argc, const char* argv[])
     run_select_on_table(*select, table_def, table_data);
   }
 
-  /*
+  parser = SQL_Parse_Context(sql_command);
+
   parser.skip_whitespace();
 
   while (!parser.is_finished())
@@ -103,7 +104,6 @@ int main(int argc, const char* argv[])
     
     std::cout << token.to_string() << std::endl;
   }
-  */
 
   return EXIT_SUCCESS;
 }

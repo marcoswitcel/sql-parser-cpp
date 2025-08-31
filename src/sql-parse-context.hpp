@@ -25,6 +25,7 @@ struct SQL_Parse_Context
   Token eat_token();
 
   Ast_Node* eat_node();
+  Binary_Expression_Ast_Node* eat_binary_expression_ast_node();
 
   inline bool is_finished();
   inline bool is_whitespace(char value);
@@ -37,6 +38,7 @@ void try_parse_select(SQL_Parse_Context* parser, Token *token, bool *success);
 void try_parse_from(SQL_Parse_Context* parser, Token *token, bool *success);
 void try_parse_where(SQL_Parse_Context* parser, Token *token, bool *success);
 void try_parse_asterisk(SQL_Parse_Context* parser, Token *token, bool *success);
+void try_parse_equals(SQL_Parse_Context* parser, Token *token, bool *success);
 void try_parse_comma(SQL_Parse_Context* parser, Token *token, bool *success);
 void try_parse_ident(SQL_Parse_Context* parser, Token *token, bool *success);
 // @todo João, falta: number_literal, string_literal, equals (e afins) para poder parsear mais expressões além de identificadores

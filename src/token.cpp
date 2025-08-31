@@ -12,6 +12,7 @@ std::string get_description(Token_Type &token_type)
     case Token_Type::Select: return "Select";
     case Token_Type::From: return "From";
     case Token_Type::Asterisk: return "Asterisk";
+    case Token_Type::Equals: return "Equals";
     case Token_Type::Comma: return "Comma";
     case Token_Type::Ident: return "Ident";
     case Token_Type::Where: return "Where";
