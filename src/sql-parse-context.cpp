@@ -200,6 +200,8 @@ Parse_Function terminals[] = {
   try_parse_where,
   try_parse_asterisk,
   try_parse_equals,
+  try_parse_greater_than,
+  try_parse_lower_than,
   try_parse_comma,
   // non-terminals
   try_parse_ident,
@@ -332,6 +334,34 @@ void try_parse_equals(SQL_Parse_Context* parser, Token *token, bool *success)
 
   parser->eat_char();
   token->type = Token_Type::Equals;
+  *success = true;
+}
+
+void try_parse_greater_than(SQL_Parse_Context* parser, Token *token, bool *success)
+{
+  if (parser->peek_char() != '>')
+  {
+    token->type = Token_Type::None;;
+    *success = false;
+    return;
+  }
+
+  parser->eat_char();
+  token->type = Token_Type::Greater_Than;
+  *success = true;
+}
+
+void try_parse_lower_than(SQL_Parse_Context* parser, Token *token, bool *success)
+{
+  if (parser->peek_char() != '<')
+  {
+    token->type = Token_Type::None;;
+    *success = false;
+    return;
+  }
+
+  parser->eat_char();
+  token->type = Token_Type::Lower_Than;
   *success = true;
 }
 

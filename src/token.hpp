@@ -12,6 +12,8 @@ enum class Token_Type {
   Equals,
   Comma,
   Where,
+  Greater_Than,
+  Lower_Than,
   // non-terminal
   Ident
 };
