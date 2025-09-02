@@ -15,6 +15,7 @@ enum class Token_Type {
   Greater_Than,
   Lower_Than,
   // non-terminal
+  String,
   Ident
 };
 
@@ -26,6 +27,13 @@ struct Ident_Token
   std::string ident;
   bool quoted;
   bool dotted;
+  
+  std::string to_string();
+};
+
+struct String_Token
+{
+  std::string value;
   
   std::string to_string();
 };

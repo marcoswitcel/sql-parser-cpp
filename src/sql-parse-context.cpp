@@ -14,6 +14,11 @@ std::string Ident_Token::to_string()
   return "Ident_Token { .ident = '" + this->ident + "' }";
 }
 
+std::string String_Token::to_string()
+{
+  return "String_Token { .value = \"" + this->value + "\" }";
+}
+
 std::string Token::to_string()
 {
   std::string desc = "Token { .type = " + get_description(this->type) + ", .data = ";
@@ -21,6 +26,10 @@ std::string Token::to_string()
   if (this->data && this->type == Token_Type::Ident)
   {
     desc += static_cast<Ident_Token*>(this->data)->to_string();
+  }
+  else if (this->data && this->type == Token_Type::String)
+  {
+    desc += static_cast<String_Token*>(this->data)->to_string();
   }
   else
   {
@@ -204,6 +213,7 @@ Parse_Function terminals[] = {
   try_parse_lower_than,
   try_parse_comma,
   // non-terminals
+  try_parse_string,
   try_parse_ident,
 };
 
@@ -376,6 +386,49 @@ void try_parse_comma(SQL_Parse_Context* parser, Token *token, bool *success)
 
   parser->eat_char();
   token->type = Token_Type::Comma;
+  *success = true;
+}
+
+void try_parse_string(SQL_Parse_Context* parser, Token *token, bool *success)
+{
+  const char quote = '\'';
+  size_t i = 0;
+  int32_t c = parser->peek_n_char(i);
+
+  if (c != quote)
+  {
+    token->type = Token_Type::None;
+    *success = false;
+    return;
+  }
+
+  // contabiliza aspa de abertuta e busca próximo char
+  c = parser->peek_n_char(++i);
+
+  while (c != END_OF_SOURCE && c != quote)
+  {
+    i++;
+    c = parser->peek_n_char(i);
+  }
+
+  // contabiliza a aspa de fehcamento
+  i++;
+
+  // pula aspa de abertura e desconta as duas aspas do tamanho da string
+  std::string value = parser->source.substr(parser->index + 1, i - 2);
+  // consome todos caracteres
+  for (size_t j = 0; j < i; j++)
+  {
+    parser->eat_char();
+  }
+
+  token->type = Token_Type::String;
+
+  String_Token *ident = new String_Token();
+  token->data = ident;
+
+  ident->value = value;
+  
   *success = true;
 }
 

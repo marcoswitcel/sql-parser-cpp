@@ -1,6 +1,6 @@
 #pragma once
 
-#include "assert.h"
+#include <assert.h>
 
 #include "./token.hpp"
 
@@ -16,6 +16,7 @@ std::string get_description(Token_Type &token_type)
     case Token_Type::Greater_Than: return "Greater_Than";
     case Token_Type::Lower_Than: return "Lower_Than";
     case Token_Type::Comma: return "Comma";
+    case Token_Type::String: return "String";
     case Token_Type::Ident: return "Ident";
     case Token_Type::Where: return "Where";
   }
