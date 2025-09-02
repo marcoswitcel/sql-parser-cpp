@@ -17,6 +17,7 @@ enum class Ast_Node_Type
   Select_Ast_Node,
   From_Ast_Node,
   Where_Ast_Node,
+  Binary_Expression_Node,
 };
 
 struct Ast_Node
@@ -52,6 +53,8 @@ struct Expression_Ast_Node: Ast_Node
   virtual std::string to_string() = 0;
 };
 
+// @todo João, considerar renomear para Ident_Expression_Ast_Node e
+// ajustar o enum para ser usado como flags para os subgrupos?
 struct Ident_Ast_Node: Expression_Ast_Node
 {
   std::string ident_name;
@@ -109,7 +112,19 @@ struct Binary_Expression_Ast_Node: Expression_Ast_Node
 
   Binary_Expression_Ast_Node()
   {
-    Trace("Rodei %ld", this->serial_counter);
+    this->type = Ast_Node_Type::Binary_Expression_Node;
+  }
+
+  std::string to_string() override
+  {
+    std::string desc = "Binary_Expression_Ast_Node { serial: ";
+    desc += std::to_string(this->serial_number);
+    desc += ", op: '" + this->op + "'";
+    desc += ", left: " + ((this->left.get()) ? this->left->to_string() : "NULL");
+    desc += ", right: " + ((this->right.get()) ? this->right->to_string() : "NULL");
+    desc += " }";
+
+    return desc;
   }
 };
 

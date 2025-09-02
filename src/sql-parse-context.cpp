@@ -200,6 +200,17 @@ Ast_Node* SQL_Parse_Context::eat_node()
 Binary_Expression_Ast_Node* SQL_Parse_Context::eat_binary_expression_ast_node()
 {
   // @todo João, terminar de implementar
+  this->skip_whitespace();
+
+  Token token = this->eat_token();
+  Binary_Expression_Ast_Node* node = new Binary_Expression_Ast_Node();
+  std::cout << node->to_string();
+
+  if (token.type == Token_Type::Ident)
+  {
+
+  }
+
   return NULL;
 }
 
