@@ -13,7 +13,7 @@
 enum class Ast_Node_Type
 {
   None,
-  Ident_Ast_Node,
+  Ident_Expression_Ast_Node,
   Select_Ast_Node,
   From_Ast_Node,
   Where_Ast_Node,
@@ -55,19 +55,19 @@ struct Expression_Ast_Node: Ast_Node
 
 // @todo João, considerar renomear para Ident_Expression_Ast_Node e
 // ajustar o enum para ser usado como flags para os subgrupos?
-struct Ident_Ast_Node: Expression_Ast_Node
+struct Ident_Expression_Ast_Node: Expression_Ast_Node
 {
   std::string ident_name;
   
-  Ident_Ast_Node()
+  Ident_Expression_Ast_Node()
   {
-    this->type = Ast_Node_Type::Ident_Ast_Node;
+    this->type = Ast_Node_Type::Ident_Expression_Ast_Node;
     // std::cout << "construído ident" << this->serial_number << std::endl;
   }
 
   std::string to_string() override
   {
-    std::string desc = "Ident_Ast_Node { serial: ";
+    std::string desc = "Ident_Expression_Ast_Node { serial: ";
     desc += std::to_string(this->serial_number);
     desc += ", ident_name: \"" + this->ident_name +  "\" }";
 
@@ -162,7 +162,7 @@ struct Where_Ast_Node: Ast_Node
 
 struct Select_Ast_Node: Ast_Node
 {
-  std::vector<std::shared_ptr<Ident_Ast_Node>> fields;
+  std::vector<std::shared_ptr<Ident_Expression_Ast_Node>> fields;
   std::shared_ptr<From_Ast_Node> from;
   // @todo joão, implementar where
   std::unique_ptr<Where_Ast_Node> where;

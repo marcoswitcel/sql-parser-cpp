@@ -15,7 +15,7 @@ bool run_select_on_table(Select_Ast_Node &select, std::vector<std::string> &tabl
 
   for (size_t i = 0; i < select.fields.size(); i++)
   {
-    Ident_Ast_Node *ident = select.fields.at(i).get();
+    Ident_Expression_Ast_Node *ident = select.fields.at(i).get();
     int64_t index = index_of(table_def, ident->ident_name);
 
     if (index < 0)

@@ -128,7 +128,7 @@ Ast_Node* SQL_Parse_Context::eat_node()
 
       if (token.type == Token_Type::Ident)
       {
-        auto ident = std::make_shared<Ident_Ast_Node>();
+        auto ident = std::make_shared<Ident_Expression_Ast_Node>();
         ident.get()->ident_name = static_cast<Ident_Token*>(token.data)->ident;
         select->fields.push_back(ident);
 
