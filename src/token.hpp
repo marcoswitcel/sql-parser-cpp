@@ -39,6 +39,11 @@ struct String_Token
 };
 
 
+/**
+ * @brief 
+ * @note João, analisar converter token para um classe abstrata e instanciar os subtypes,
+ * só que por hora a maioria dos subtypes não teria nenhum field...
+ */
 struct Token
 {
   Token_Type type;

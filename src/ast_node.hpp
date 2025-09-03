@@ -14,6 +14,7 @@ enum class Ast_Node_Type
 {
   None,
   Ident_Expression_Ast_Node,
+  String_Literal_Expression_Ast_Node,
   Select_Ast_Node,
   From_Ast_Node,
   Where_Ast_Node,
@@ -97,9 +98,25 @@ struct From_Ast_Node: Ast_Node
 
 struct Literal_Expression_Ast_Node: Expression_Ast_Node
 {
-  Literal_Expression_Ast_Node()
+  virtual std::string to_string() = 0;
+};
+
+struct String_Literal_Expression_Ast_Node: Expression_Ast_Node
+{
+  std::string value;
+  
+  String_Literal_Expression_Ast_Node()
   {
-    Trace("Rodei %ld", this->serial_counter);
+    this->type = Ast_Node_Type::String_Literal_Expression_Ast_Node;
+  }
+
+  std::string to_string() override
+  {
+    std::string desc = "String_Literal_Expression_Ast_Node { serial: ";
+    desc += std::to_string(this->serial_number);
+    desc += ", value: \"" + this->value +  "\" }";
+
+    return desc;
   }
 };
 

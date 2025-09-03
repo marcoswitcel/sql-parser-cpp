@@ -199,19 +199,68 @@ Ast_Node* SQL_Parse_Context::eat_node()
 
 Binary_Expression_Ast_Node* SQL_Parse_Context::eat_binary_expression_ast_node()
 {
-  // @todo João, terminar de implementar
-  this->skip_whitespace();
-
-  Token token = this->eat_token();
-  // Binary_Expression_Ast_Node* node = new Binary_Expression_Ast_Node();
-  // std::cout << node->to_string();
-
-  if (token.type == Token_Type::Ident)
+  Binary_Expression_Ast_Node* node = new Binary_Expression_Ast_Node();
+  
+  while (!node->left || !node->right || node->op.size() == 0)
   {
+    this->skip_whitespace();
+    Token token = this->eat_token();
 
+    if (token.type == Token_Type::Ident)
+    {
+      auto ident = new Ident_Expression_Ast_Node();
+      ident->ident_name = static_cast<Ident_Token*>(token.data)->ident;
+  
+      if (node->left == NULL)
+      {
+        node->left = std::unique_ptr<Ident_Expression_Ast_Node>(ident);
+      }
+      else if (node->right == NULL)
+      {
+        node->right = std::unique_ptr<Ident_Expression_Ast_Node>(ident);
+      }
+      else
+      {
+        delete ident;
+        this->error = true;
+        return NULL;
+      }
+    }
+    else if (token.type == Token_Type::Equals)
+    {
+      // @todo João, falta vários operadores...
+      node->op = "=";
+    }
+    else if (token.type == Token_Type::String)
+    {
+      auto string_value = new String_Literal_Expression_Ast_Node();
+      string_value->value = static_cast<String_Token*>(token.data)->value;
+  
+  
+      if (node->left == NULL)
+      {
+        node->left = std::unique_ptr<String_Literal_Expression_Ast_Node>(string_value);
+      }
+      else if (node->right == NULL)
+      {
+        node->right = std::unique_ptr<String_Literal_Expression_Ast_Node>(string_value);
+      }
+      else
+      {
+        this->error = true;
+        return NULL;
+      }
+    }
+    else
+    {
+      // @todo João, leak on return, serve para os returns acima também...
+      this->error = true;
+      return NULL;
+    }
   }
-
-  return NULL;
+  
+  Trace("node: %s", node->to_string().c_str());
+  return node;
 }
 
 Parse_Function terminals[] = {
