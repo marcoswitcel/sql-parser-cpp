@@ -147,6 +147,7 @@ struct Binary_Expression_Ast_Node: Expression_Ast_Node
 
 struct Where_Ast_Node: Ast_Node
 {
+  // @todo João, avaliar se não deveria ser um ponteiro apenas ao invés de uma lista de expressões
   std::vector<std::unique_ptr<Binary_Expression_Ast_Node>> conditions;
   
   Where_Ast_Node()

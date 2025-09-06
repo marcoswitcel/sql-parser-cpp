@@ -38,7 +38,29 @@ bool run_select_on_table(Select_Ast_Node &select, std::vector<std::string> &tabl
   // @todo João, printar header...
   for (std::vector<std::string> &data_row: table)
   {
-    // @todo João, falta impĺementar where
+    // @todo João, implementando um esqueleto de como seria pra interpretar o comando `Name = 'nome-usado'`.
+    // Porém, aqui não é o lugar mais apropriado por alguns motivos:
+    // * É necessário validar se o 'comando' faz sentido de acordo com a estrutura da tabela
+    // * É necessário suportar mais opções de filtros e dessa forma o código ficará enorme...
+    if (select.where && select.where->conditions.size())
+    {
+      const auto &exp = select.where->conditions.at(0);
+      if (exp->left->type == Ast_Node_Type::Ident_Expression_Ast_Node &&
+        exp->op == "=" &&
+        exp->right->type == Ast_Node_Type::String_Literal_Expression_Ast_Node)
+      {
+        auto ident = static_cast<Ident_Expression_Ast_Node*>(exp->left.get());
+        auto string = static_cast<String_Literal_Expression_Ast_Node*>(exp->right.get());
+        int64_t index = index_of(table_def, ident->ident_name);
+        if (index > -1)
+        {
+          if (data_row.at(index).compare(string->value) != 0)
+          {
+            continue;
+          }
+        }
+      }
+    }
 
     std::cout << "|";
     for (size_t i : index_to_and_order)
