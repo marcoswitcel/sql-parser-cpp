@@ -96,7 +96,7 @@ int main(int argc, const char* argv[])
   if (node && node->type == Ast_Node_Type::Select_Ast_Node)
   {
     auto select = dynamic_cast<Select_Ast_Node*>(node);
-    std::cout << select->to_string() << std::endl;
+    // std::cout << select->to_string() << std::endl;
 
     std::vector<std::string> table_def = {"Phone1", "Phone2", "Name"};
     std::vector<std::vector<std::string>> table_data;

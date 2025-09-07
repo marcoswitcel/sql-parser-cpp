@@ -268,7 +268,6 @@ Binary_Expression_Ast_Node* SQL_Parse_Context::eat_binary_expression_ast_node()
     }
   }
   
-  Trace("node: %s", node->to_string().c_str());
   return node;
 }
 
