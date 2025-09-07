@@ -16,6 +16,7 @@ enum class Token_Type {
   Lower_Than,
   // non-terminal
   String,
+  Number,
   Ident
 };
 
@@ -34,6 +35,13 @@ struct Ident_Token
 struct String_Token
 {
   std::string value;
+  
+  std::string to_string();
+};
+
+struct Number_Token
+{
+  int64_t value;
   
   std::string to_string();
 };

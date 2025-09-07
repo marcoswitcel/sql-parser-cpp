@@ -19,6 +19,11 @@ std::string String_Token::to_string()
   return "String_Token { .value = \"" + this->value + "\" }";
 }
 
+std::string Number_Token::to_string()
+{
+  return "Number_Token { .value = " + std::to_string(this->value) + " }";
+}
+
 std::string Token::to_string()
 {
   std::string desc = "Token { .type = " + get_description(this->type) + ", .data = ";
@@ -30,6 +35,10 @@ std::string Token::to_string()
   else if (this->data && this->type == Token_Type::String)
   {
     desc += static_cast<String_Token*>(this->data)->to_string();
+  }
+  else if (this->data && this->type == Token_Type::Number)
+  {
+    desc += static_cast<Number_Token*>(this->data)->to_string();
   }
   else
   {
@@ -274,6 +283,7 @@ Parse_Function terminals[] = {
   try_parse_comma,
   // non-terminals
   try_parse_string,
+  try_parse_number,
   try_parse_ident,
 };
 
@@ -488,6 +498,64 @@ void try_parse_string(SQL_Parse_Context* parser, Token *token, bool *success)
   token->data = ident;
 
   ident->value = value;
+  
+  *success = true;
+}
+
+inline bool is_digit(char c)
+{
+  return '0' <= c && c <= '9';
+}
+
+void try_parse_number(SQL_Parse_Context* parser, Token *token, bool *success)
+{
+  size_t i = 0;
+  int32_t c = parser->peek_n_char(i);
+
+  // @todo João, ainda falta bloquear números com zero a esquerda, exceto o zero...
+  if (c == END_OF_SOURCE || parser->is_whitespace(c))
+  {
+    token->type = Token_Type::None;
+    *success = false;
+    return;
+  }
+  
+  while (c != END_OF_SOURCE && !parser->is_whitespace(c) && c != ',')
+  {
+    if (!is_digit(c))
+    {
+      token->type = Token_Type::None;
+      *success = false;
+      return;
+    }
+    
+    i++;
+    c = parser->peek_n_char(i);
+  }
+  
+  std::string value = parser->source.substr(parser->index, i);
+  // consome todos caracteres
+  for (size_t j = 0; j < i; j++)
+  {
+    parser->eat_char();
+  }
+
+  token->type = Token_Type::Number;
+
+  Number_Token *ident = new Number_Token();
+  token->data = ident;
+  
+  try 
+  {
+    ident->value = std::stod(value);
+  } catch (std::invalid_argument& ex)
+  {
+    // @note João, avaliar melhor esses dois catchs
+    assert(false);
+  } catch (std::out_of_range& ex)
+  {
+    assert(false);
+  }
   
   *success = true;
 }

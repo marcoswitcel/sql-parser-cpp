@@ -17,6 +17,7 @@ std::string get_description(Token_Type &token_type)
     case Token_Type::Lower_Than: return "Lower_Than";
     case Token_Type::Comma: return "Comma";
     case Token_Type::String: return "String";
+    case Token_Type::Number: return "Number";
     case Token_Type::Ident: return "Ident";
     case Token_Type::Where: return "Where";
   }
