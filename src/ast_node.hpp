@@ -37,7 +37,7 @@ struct Ast_Node
     // std::cout << "construído" << this->serial_number << std::endl;
   }
 
-  ~Ast_Node()
+  virtual ~Ast_Node()
   {
     assert(this->type != Ast_Node_Type::None);
     // @note apenas para depuração
