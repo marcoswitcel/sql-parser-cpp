@@ -9,6 +9,56 @@
 
 using std::vector;
 
+bool evaluate_relational_binary_ast_node(const Binary_Expression_Ast_Node* node, std::vector<std::string>* table_def, std::vector<std::string>* data_row)
+{
+  // @todo João, única operação suportada
+  assert(node->op == "=");
+
+  assert(node->left->type == Ast_Node_Type::Ident_Expression_Ast_Node ||
+    node->left->type == Ast_Node_Type::String_Literal_Expression_Ast_Node);
+  assert(node->right->type == Ast_Node_Type::Ident_Expression_Ast_Node ||
+    node->right->type == Ast_Node_Type::String_Literal_Expression_Ast_Node);
+
+  std::string lhs = "";
+  if (node->left->type == Ast_Node_Type::Ident_Expression_Ast_Node)
+  {
+    lhs = static_cast<Ident_Expression_Ast_Node*>(node->left.get())->ident_name;
+    int64_t index = index_of(*table_def, lhs);
+    if (index > -1)
+    {
+      lhs = data_row->at(index);
+    }
+    else
+    {
+      return false;
+    }
+  }
+  else if (node->left->type == Ast_Node_Type::String_Literal_Expression_Ast_Node)
+  {
+    lhs = static_cast<String_Literal_Expression_Ast_Node*>(node->left.get())->value;
+  }
+  std::string rhs = "";
+  if (node->right->type == Ast_Node_Type::Ident_Expression_Ast_Node)
+  {
+    rhs = static_cast<Ident_Expression_Ast_Node*>(node->right.get())->ident_name;
+    int64_t index = index_of(*table_def, rhs);
+    if (index > -1)
+    {
+      rhs = data_row->at(index);
+    }
+    else
+    {
+      return false;
+    }
+  }
+  else if (node->right->type == Ast_Node_Type::String_Literal_Expression_Ast_Node)
+  {
+    rhs = static_cast<String_Literal_Expression_Ast_Node*>(node->right.get())->value;
+  }
+
+  return lhs.compare(rhs) != 0;
+}
+
 bool run_select_on_table(Select_Ast_Node &select, std::vector<std::string> &table_def, std::vector<std::vector<std::string>> &table)
 {
   vector<size_t> index_to_and_order;
@@ -44,21 +94,9 @@ bool run_select_on_table(Select_Ast_Node &select, std::vector<std::string> &tabl
     // * É necessário suportar mais opções de filtros e dessa forma o código ficará enorme...
     if (select.where && select.where->conditions.size())
     {
-      const auto &exp = select.where->conditions.at(0);
-      if (exp->left->type == Ast_Node_Type::Ident_Expression_Ast_Node &&
-        exp->op == "=" &&
-        exp->right->type == Ast_Node_Type::String_Literal_Expression_Ast_Node)
+      if (evaluate_relational_binary_ast_node(select.where->conditions.at(0).get(), &table_def, &data_row))
       {
-        auto ident = static_cast<Ident_Expression_Ast_Node*>(exp->left.get());
-        auto string = static_cast<String_Literal_Expression_Ast_Node*>(exp->right.get());
-        int64_t index = index_of(table_def, ident->ident_name);
-        if (index > -1)
-        {
-          if (data_row.at(index).compare(string->value) != 0)
-          {
-            continue;
-          }
-        }
+        continue;
       }
     }
 
