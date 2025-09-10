@@ -19,6 +19,7 @@ int main(int argc, const char* argv[])
   }
 
   bool is_verbose = is_string_present_in_argv("--verbose", argc, argv);
+  bool is_print_tokens = is_string_present_in_argv("--print-tokens", argc, argv);
   // auto filter = get_value_for_in_argv("--sql-command", argc, argv);
 
   std::string sql_command = std::string(argv[1]);
@@ -44,23 +45,26 @@ int main(int argc, const char* argv[])
     run_select_on_table(*select, table_def, table_data);
   }
 
-  parser = SQL_Parse_Context(sql_command);
-
-  parser.skip_whitespace();
-
-  while (!parser.is_finished())
+  if (is_print_tokens)
   {
-    Token token = parser.eat_token();
-
-    if (parser.error)
-    {
-      std::cout << "Error: tokenização não terminou" << std::endl;
-      break;
-    }
+    parser = SQL_Parse_Context(sql_command);
   
     parser.skip_whitespace();
+  
+    while (!parser.is_finished())
+    {
+      Token token = parser.eat_token();
+  
+      if (parser.error)
+      {
+        std::cout << "Error: tokenização não terminou" << std::endl;
+        break;
+      }
     
-    std::cout << token.to_string() << std::endl;
+      parser.skip_whitespace();
+      
+      std::cout << token.to_string() << std::endl;
+    }
   }
 
   return EXIT_SUCCESS;
