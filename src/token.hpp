@@ -14,6 +14,8 @@ enum class Token_Type {
   Where,
   Greater_Than,
   Lower_Than,
+  And,
+  Or,
   // non-terminal
   String,
   Number,

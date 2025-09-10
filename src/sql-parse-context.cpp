@@ -240,6 +240,14 @@ Binary_Expression_Ast_Node* SQL_Parse_Context::eat_binary_expression_ast_node()
       // @todo João, falta vários operadores...
       node->op = "=";
     }
+    else if (token.type == Token_Type::And)
+    {
+      node->op = "and";
+    }
+    else if (token.type == Token_Type::Or)
+    {
+      node->op = "or";
+    }
     else if (token.type == Token_Type::String)
     {
       auto string_value = new String_Literal_Expression_Ast_Node();
@@ -280,6 +288,8 @@ Parse_Function terminals[] = {
   try_parse_greater_than,
   try_parse_lower_than,
   try_parse_comma,
+  try_parse_or,
+  try_parse_and,
   // non-terminals
   try_parse_string,
   try_parse_number,
@@ -350,6 +360,36 @@ void try_parse_select(SQL_Parse_Context* parser, Token *token, bool *success)
   if (is_consumed)
   {
     token->type = Token_Type::Select;
+    *success = true;
+    return;
+  }
+  
+  token->type = Token_Type::None;
+  *success = false;
+}
+
+void try_parse_and(SQL_Parse_Context* parser, Token *token, bool *success)
+{
+  bool is_consumed = try_consume_keyword(parser, "and");
+  
+  if (is_consumed)
+  {
+    token->type = Token_Type::And;
+    *success = true;
+    return;
+  }
+  
+  token->type = Token_Type::None;
+  *success = false;
+}
+
+void try_parse_or(SQL_Parse_Context* parser, Token *token, bool *success)
+{
+  bool is_consumed = try_consume_keyword(parser, "or");
+  
+  if (is_consumed)
+  {
+    token->type = Token_Type::Or;
     *success = true;
     return;
   }

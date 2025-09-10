@@ -42,6 +42,8 @@ void try_parse_equals(SQL_Parse_Context* parser, Token *token, bool *success);
 void try_parse_greater_than(SQL_Parse_Context* parser, Token *token, bool *success);
 void try_parse_lower_than(SQL_Parse_Context* parser, Token *token, bool *success);
 void try_parse_comma(SQL_Parse_Context* parser, Token *token, bool *success);
+void try_parse_or(SQL_Parse_Context* parser, Token *token, bool *success);
+void try_parse_and(SQL_Parse_Context* parser, Token *token, bool *success);
 void try_parse_string(SQL_Parse_Context* parser, Token *token, bool *success);
 void try_parse_number(SQL_Parse_Context* parser, Token *token, bool *success);
 void try_parse_ident(SQL_Parse_Context* parser, Token *token, bool *success);
