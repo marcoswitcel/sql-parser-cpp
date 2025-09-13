@@ -19,8 +19,18 @@ enum class Ast_Node_Type
   Expression_Node = 1 << 3, // categoria
   String_Literal_Expression_Ast_Node = Expression_Node | (1 << 4),
   Ident_Expression_Ast_Node = Expression_Node | (1 << 5),
-  Binary_Expression_Node = 1 << 6, // sub-categoria
+  Binary_Expression_Node = Expression_Node | (1 << 6), // sub-categoria
 };
+
+Ast_Node_Type operator&(Ast_Node_Type a, Ast_Node_Type b)
+{
+  return static_cast<Ast_Node_Type>(static_cast<uint64_t>(a) & static_cast<uint64_t>(b));
+}
+
+Ast_Node_Type operator|(Ast_Node_Type a, Ast_Node_Type b)
+{
+  return static_cast<Ast_Node_Type>(static_cast<uint64_t>(a) | static_cast<uint64_t>(b));
+}
 
 struct Ast_Node
 {

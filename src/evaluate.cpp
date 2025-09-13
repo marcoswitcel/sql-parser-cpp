@@ -14,6 +14,8 @@ bool evaluate_relational_binary_ast_node(const Binary_Expression_Ast_Node* node,
 {
   // @todo João, única operação suportada
   assert(node->op == "=");
+  assert(((node->type & Ast_Node_Type::Expression_Node) == Ast_Node_Type::Expression_Node) &&
+    ((node->type & Ast_Node_Type::Binary_Expression_Node) == Ast_Node_Type::Binary_Expression_Node));
 
   assert(node->left->type == Ast_Node_Type::Ident_Expression_Ast_Node ||
     node->left->type == Ast_Node_Type::String_Literal_Expression_Ast_Node);
