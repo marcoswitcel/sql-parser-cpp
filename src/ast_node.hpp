@@ -32,6 +32,11 @@ Ast_Node_Type operator|(Ast_Node_Type a, Ast_Node_Type b)
   return static_cast<Ast_Node_Type>(static_cast<uint64_t>(a) | static_cast<uint64_t>(b));
 }
 
+constexpr bool ast_sub_type_of(Ast_Node_Type maybe_sub_type, Ast_Node_Type type) noexcept
+{
+  return (maybe_sub_type & type) == type;
+}
+
 struct Ast_Node
 {
   static uint64_t serial_counter;

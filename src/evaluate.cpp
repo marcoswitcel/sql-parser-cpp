@@ -88,7 +88,12 @@ bool run_select_on_table(Select_Ast_Node &select, std::vector<std::string> &tabl
   }
 
   std::cout << "| Printando table |" << std::endl;
-  // @todo João, printar header...
+  std::cout << "|";
+  for (std::string &column_name: table_def)
+  {
+    std::cout << column_name << "|";
+  }
+  std::cout << std::endl;
   for (std::vector<std::string> &data_row: table)
   {
     // @todo João, implementando um esqueleto de como seria pra interpretar o comando `Name = 'nome-usado'`.
