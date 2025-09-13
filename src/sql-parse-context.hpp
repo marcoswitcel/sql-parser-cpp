@@ -47,4 +47,3 @@ void try_parse_and(SQL_Parse_Context* parser, Token *token, bool *success);
 void try_parse_string(SQL_Parse_Context* parser, Token *token, bool *success);
 void try_parse_number(SQL_Parse_Context* parser, Token *token, bool *success);
 void try_parse_ident(SQL_Parse_Context* parser, Token *token, bool *success);
-// @todo João, falta: number_literal, string_literal, equals (e afins) para poder parsear mais expressões além de identificadores

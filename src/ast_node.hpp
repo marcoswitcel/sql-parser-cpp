@@ -12,13 +12,14 @@
 
 enum class Ast_Node_Type
 {
-  None,
-  Ident_Expression_Ast_Node,
-  String_Literal_Expression_Ast_Node,
-  Select_Ast_Node,
-  From_Ast_Node,
-  Where_Ast_Node,
-  Binary_Expression_Node,
+  None = 0,
+  Select_Ast_Node = 1 << 0,
+  From_Ast_Node = 1 << 1,
+  Where_Ast_Node = 1 << 2,
+  Expression_Node = 1 << 3, // categoria
+  String_Literal_Expression_Ast_Node = Expression_Node | (1 << 4),
+  Ident_Expression_Ast_Node = Expression_Node | (1 << 5),
+  Binary_Expression_Node = 1 << 6, // sub-categoria
 };
 
 struct Ast_Node
@@ -54,8 +55,6 @@ struct Expression_Ast_Node: Ast_Node
   virtual std::string to_string() = 0;
 };
 
-// @todo João, considerar renomear para Ident_Expression_Ast_Node e
-// ajustar o enum para ser usado como flags para os subgrupos?
 struct Ident_Expression_Ast_Node: Expression_Ast_Node
 {
   std::string ident_name;
@@ -182,7 +181,6 @@ struct Select_Ast_Node: Ast_Node
 {
   std::vector<std::shared_ptr<Ident_Expression_Ast_Node>> fields;
   std::shared_ptr<From_Ast_Node> from;
-  // @todo joão, implementar where
   std::unique_ptr<Where_Ast_Node> where;
 
   Select_Ast_Node()

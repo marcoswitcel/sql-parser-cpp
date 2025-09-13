@@ -11,7 +11,6 @@
 
 int main(int argc, const char* argv[])
 {
-  // @todo João, implementar um sistema mais robusto organizado para lidar com os parâmetros
   if (argc < 2)
   {
     std::cout << "O SQL não foi provido!" << std::endl;
