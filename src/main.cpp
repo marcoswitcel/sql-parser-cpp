@@ -38,6 +38,7 @@ int main(int argc, const char* argv[])
 
     table_data.push_back({"55 9xxxx-9999", "(55) 9xxxx-9999", "Marcelson"});
     table_data.push_back({"55 9xxxx-8888", "(55) 9xxxx-8888", "Jucelson"});
+    table_data.push_back({"55 9xxxx-7777", "(55) 9xxxx-7777", "Brunelson"});
 
     //  checa campos do select
     run_select_on_table(*select, table_def, table_data);

@@ -55,8 +55,10 @@ bool evaluate_equals_binary_ast_node(const Binary_Expression_Ast_Node* node, std
     rhs = static_cast<String_Literal_Expression_Ast_Node*>(node->right.get())->value;
   }
 
-  return lhs.compare(rhs) != 0;
+  return lhs.compare(rhs) == 0;
 }
+
+// @todo João, evaluate_not_equals_binary_ast_node poderia ser uma negação com invocação da função evaluate_equals_binary_ast_node
 
 bool evaluate_relational_binary_ast_node(const Binary_Expression_Ast_Node* node, std::vector<std::string>* table_def, std::vector<std::string>* data_row)
 {
@@ -69,6 +71,7 @@ bool evaluate_relational_binary_ast_node(const Binary_Expression_Ast_Node* node,
     return evaluate_relational_binary_ast_node(static_cast<const Binary_Expression_Ast_Node *>(node->left.get()), table_def, data_row) ||
       evaluate_relational_binary_ast_node(static_cast<const Binary_Expression_Ast_Node *>(node->right.get()), table_def, data_row);
   }
+  // @todo João, adicionar o "and"
 
   // @todo João, por hora o makefile faz cair em uma das de cima
   assert(false);
@@ -115,7 +118,7 @@ bool run_select_on_table(Select_Ast_Node &select, std::vector<std::string> &tabl
     // * É necessário suportar mais opções de filtros e dessa forma o código ficará enorme...
     if (select.where && select.where->conditions.get())
     {
-      if (evaluate_relational_binary_ast_node(select.where->conditions.get(), &table_def, &data_row))
+      if (!evaluate_relational_binary_ast_node(select.where->conditions.get(), &table_def, &data_row))
       {
         continue;
       }
