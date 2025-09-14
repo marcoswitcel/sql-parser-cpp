@@ -100,9 +100,9 @@ bool run_select_on_table(Select_Ast_Node &select, std::vector<std::string> &tabl
     // Porém, aqui não é o lugar mais apropriado por alguns motivos:
     // * É necessário validar se o 'comando' faz sentido de acordo com a estrutura da tabela
     // * É necessário suportar mais opções de filtros e dessa forma o código ficará enorme...
-    if (select.where && select.where->conditions.size())
+    if (select.where && select.where->conditions.get())
     {
-      if (evaluate_relational_binary_ast_node(select.where->conditions.at(0).get(), &table_def, &data_row))
+      if (evaluate_relational_binary_ast_node(select.where->conditions.get(), &table_def, &data_row))
       {
         continue;
       }

@@ -162,7 +162,7 @@ Ast_Node* SQL_Parse_Context::eat_node()
               // @todo João, em caso de nullo deveria retornar nullo pra sinalizar o erro, por hora, pelo menos...
               if (bin_exp)
               {
-                select->where->conditions.push_back(std::unique_ptr<Binary_Expression_Ast_Node>(bin_exp));
+                select->where->conditions = std::unique_ptr<Binary_Expression_Ast_Node>(bin_exp);
               }
 
               return select;

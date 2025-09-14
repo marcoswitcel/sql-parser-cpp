@@ -161,8 +161,7 @@ struct Binary_Expression_Ast_Node: Expression_Ast_Node
 
 struct Where_Ast_Node: Ast_Node
 {
-  // @todo João, avaliar se não deveria ser um ponteiro apenas ao invés de uma lista de expressões
-  std::vector<std::unique_ptr<Binary_Expression_Ast_Node>> conditions;
+  std::unique_ptr<Binary_Expression_Ast_Node> conditions;
   
   Where_Ast_Node()
   {
@@ -175,18 +174,14 @@ struct Where_Ast_Node: Ast_Node
     std::string desc = "Where_Ast_Node { serial: ";
     desc += std::to_string(this->serial_number);
 
-    desc += ", conditions: [ ";
-    for (size_t i = 0; i < this->conditions.size(); i++)
+    desc += ", conditions: ";
     {
-      if (i > 0)
+      if (this->conditions.get())
       {
-        desc += " , ";
+        desc += this->conditions->to_string();
       }
-      auto &condition = this->conditions.at(i);
-      desc += condition.get()->to_string();
     }
-    desc += " ] ";
-    desc += "}";
+    desc += " }";
 
     return desc;
   }
