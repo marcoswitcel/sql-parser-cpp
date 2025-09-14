@@ -274,6 +274,20 @@ Binary_Expression_Ast_Node* SQL_Parse_Context::eat_binary_expression_ast_node()
       return NULL;
     }
   }
+
+  this->skip_whitespace();
+  Token token = this->eat_token();
+
+  if (token.type == Token_Type::Or)
+  {
+    Binary_Expression_Ast_Node* new_root_node = new Binary_Expression_Ast_Node();
+    new_root_node->op = "or";
+    new_root_node->left = std::unique_ptr<Binary_Expression_Ast_Node>(node);
+
+    new_root_node->right = std::unique_ptr<Binary_Expression_Ast_Node>(this->eat_binary_expression_ast_node());
+
+    node = new_root_node;
+  }
   
   return node;
 }

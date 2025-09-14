@@ -9,13 +9,9 @@
 
 using std::vector;
 
-
-bool evaluate_relational_binary_ast_node(const Binary_Expression_Ast_Node* node, std::vector<std::string>* table_def, std::vector<std::string>* data_row)
+bool evaluate_equals_binary_ast_node(const Binary_Expression_Ast_Node* node, std::vector<std::string>* table_def, std::vector<std::string>* data_row)
 {
-  // @todo João, única operação suportada
   assert(node->op == "=");
-  assert(((node->type & Ast_Node_Type::Expression_Node) == Ast_Node_Type::Expression_Node) &&
-    ((node->type & Ast_Node_Type::Binary_Expression_Node) == Ast_Node_Type::Binary_Expression_Node));
 
   assert(node->left->type == Ast_Node_Type::Ident_Expression_Ast_Node ||
     node->left->type == Ast_Node_Type::String_Literal_Expression_Ast_Node);
@@ -62,10 +58,27 @@ bool evaluate_relational_binary_ast_node(const Binary_Expression_Ast_Node* node,
   return lhs.compare(rhs) != 0;
 }
 
+bool evaluate_relational_binary_ast_node(const Binary_Expression_Ast_Node* node, std::vector<std::string>* table_def, std::vector<std::string>* data_row)
+{
+  if (node->op == "=")
+  {
+    return evaluate_equals_binary_ast_node(node, table_def, data_row);
+  }
+  else if (node->op == "or")
+  {
+    return evaluate_relational_binary_ast_node(static_cast<const Binary_Expression_Ast_Node *>(node->left.get()), table_def, data_row) ||
+      evaluate_relational_binary_ast_node(static_cast<const Binary_Expression_Ast_Node *>(node->right.get()), table_def, data_row);
+  }
+
+  // @todo João, por hora o makefile faz cair em uma das de cima
+  assert(false);
+  return false;
+}
+
 bool run_select_on_table(Select_Ast_Node &select, std::vector<std::string> &table_def, std::vector<std::vector<std::string>> &table)
 {
   vector<size_t> index_to_and_order;
-
+  
   for (size_t i = 0; i < select.fields.size(); i++)
   {
     Ident_Expression_Ast_Node *ident = select.fields.at(i).get();
