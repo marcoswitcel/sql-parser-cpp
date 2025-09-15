@@ -239,6 +239,10 @@ Binary_Expression_Ast_Node* SQL_Parse_Context::eat_binary_expression_ast_node()
       // @todo João, falta vários operadores...
       node->op = "=";
     }
+    else if (token.type == Token_Type::Not_Equals)
+    {
+      node->op = "<>";
+    }
     else if (token.type == Token_Type::And)
     {
       node->op = "and";
@@ -288,6 +292,16 @@ Binary_Expression_Ast_Node* SQL_Parse_Context::eat_binary_expression_ast_node()
 
     node = new_root_node;
   }
+  else if (token.type == Token_Type::And)
+  {
+    Binary_Expression_Ast_Node* new_root_node = new Binary_Expression_Ast_Node();
+    new_root_node->op = "and";
+    new_root_node->left = std::unique_ptr<Binary_Expression_Ast_Node>(node);
+
+    new_root_node->right = std::unique_ptr<Binary_Expression_Ast_Node>(this->eat_binary_expression_ast_node());
+
+    node = new_root_node;
+  }
   
   return node;
 }
@@ -298,6 +312,7 @@ Parse_Function terminals[] = {
   try_parse_where,
   try_parse_asterisk,
   try_parse_equals,
+  try_parse_not_equals,
   try_parse_greater_than,
   try_parse_lower_than,
   try_parse_comma,
@@ -467,6 +482,22 @@ void try_parse_equals(SQL_Parse_Context* parser, Token *token, bool *success)
   parser->eat_char();
   token->type = Token_Type::Equals;
   *success = true;
+}
+
+void try_parse_not_equals(SQL_Parse_Context* parser, Token *token, bool *success)
+{
+  // @note João, não era bem pra isso que fiz essa função `try_consume_keyword`, mas enfim... o 'diferente' é multicaracter
+  bool is_consumed = try_consume_keyword(parser, "<>"); 
+  
+  if (is_consumed)
+  {
+    token->type = Token_Type::Not_Equals;
+    *success = true;
+    return;
+  }
+  
+  token->type = Token_Type::None;
+  *success = false;
 }
 
 void try_parse_greater_than(SQL_Parse_Context* parser, Token *token, bool *success)

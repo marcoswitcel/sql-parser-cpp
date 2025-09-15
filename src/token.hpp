@@ -10,6 +10,7 @@ enum class Token_Type {
   From,
   Asterisk,
   Equals,
+  Not_Equals,
   Comma,
   Where,
   Greater_Than,

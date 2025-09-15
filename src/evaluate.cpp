@@ -11,7 +11,7 @@ using std::vector;
 
 bool evaluate_equals_binary_ast_node(const Binary_Expression_Ast_Node* node, std::vector<std::string>* table_def, std::vector<std::string>* data_row)
 {
-  assert(node->op == "=");
+  assert(node->op == "=" || node->op == "<>");
 
   assert(node->left->type == Ast_Node_Type::Ident_Expression_Ast_Node ||
     node->left->type == Ast_Node_Type::String_Literal_Expression_Ast_Node);
@@ -58,7 +58,10 @@ bool evaluate_equals_binary_ast_node(const Binary_Expression_Ast_Node* node, std
   return lhs.compare(rhs) == 0;
 }
 
-// @todo João, evaluate_not_equals_binary_ast_node poderia ser uma negação com invocação da função evaluate_equals_binary_ast_node
+bool evaluate_not_equals_binary_ast_node(const Binary_Expression_Ast_Node* node, std::vector<std::string>* table_def, std::vector<std::string>* data_row)
+{
+  return !evaluate_equals_binary_ast_node(node, table_def, data_row);
+}
 
 bool evaluate_relational_binary_ast_node(const Binary_Expression_Ast_Node* node, std::vector<std::string>* table_def, std::vector<std::string>* data_row)
 {
@@ -66,12 +69,20 @@ bool evaluate_relational_binary_ast_node(const Binary_Expression_Ast_Node* node,
   {
     return evaluate_equals_binary_ast_node(node, table_def, data_row);
   }
+  if (node->op == "<>")
+  {
+    return evaluate_not_equals_binary_ast_node(node, table_def, data_row);
+  }
   else if (node->op == "or")
   {
     return evaluate_relational_binary_ast_node(static_cast<const Binary_Expression_Ast_Node *>(node->left.get()), table_def, data_row) ||
       evaluate_relational_binary_ast_node(static_cast<const Binary_Expression_Ast_Node *>(node->right.get()), table_def, data_row);
   }
-  // @todo João, adicionar o "and"
+  else if (node->op == "and")
+  {
+    return evaluate_relational_binary_ast_node(static_cast<const Binary_Expression_Ast_Node *>(node->left.get()), table_def, data_row) &&
+      evaluate_relational_binary_ast_node(static_cast<const Binary_Expression_Ast_Node *>(node->right.get()), table_def, data_row);
+  }
 
   // @todo João, por hora o makefile faz cair em uma das de cima
   assert(false);
