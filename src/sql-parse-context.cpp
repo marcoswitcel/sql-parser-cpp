@@ -602,7 +602,17 @@ void try_parse_number(SQL_Parse_Context* parser, Token *token, bool *success)
     *success = false;
     return;
   }
-  
+
+  if (c == '0' && is_digit(parser->peek_n_char(i+1)))
+  {
+    // @todo João, falta a habilitade de sinalizar um erro impeditivo de tokenização.
+    // Acredito que faria sentido usar o atributo de 'error' para finalizar a tokenização.
+    // Seria necessário ajustar apenas no loop do método `eat_token`.
+    token->type = Token_Type::None;
+    *success = false;
+    return;
+  }
+
   while (c != END_OF_SOURCE && !parser->is_whitespace(c) && c != ',')
   {
     if (!is_digit(c))
