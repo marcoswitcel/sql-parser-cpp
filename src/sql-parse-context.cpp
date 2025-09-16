@@ -342,8 +342,11 @@ Token SQL_Parse_Context::eat_token()
   
     if (success)
     {
+      assert(success && !this->error);
       this->error = false;
       return token;
+    } else if (this->error) {
+      break;
     }
   }
 
@@ -608,8 +611,10 @@ void try_parse_number(SQL_Parse_Context* parser, Token *token, bool *success)
     // @todo João, falta a habilitade de sinalizar um erro impeditivo de tokenização.
     // Acredito que faria sentido usar o atributo de 'error' para finalizar a tokenização.
     // Seria necessário ajustar apenas no loop do método `eat_token`.
+    // @note Implementado, falta validar se vai atender, senão reverter.
     token->type = Token_Type::None;
     *success = false;
+    parser->error = true;
     return;
   }
 
