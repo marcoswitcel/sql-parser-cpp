@@ -11,7 +11,9 @@ TESTS_FOLDER_NAME=tests
 BUILD_FOLDER_NAME=target
 
 #RUN_ARGS= "SELECT * FROM DUAL" --verbose
-RUN_ARGS= "Select Name, Phone1 , Phone2 From customers " --verbose
+#RUN_ARGS= "Select Name, Phone1 , Phone2 From customers Where Name = 'Marcelson' or Name = 'Jucelson' or 'Brunelson' = Name " --verbose #--print-tokens
+RUN_ARGS= "Select Name, Phone1 , Phone2 From customers Where Name <> 'Marcelsons' and Name <> 'Jucelsons' " --verbose #--print-tokens
+#RUN_ARGS= "Select Name, Phone1 , Phone2 From customers Where Name = 02" --verbose --print-tokens
 #RUN_ARGS= "Select * From customers " --verbose
 
 build-folder-setup:
