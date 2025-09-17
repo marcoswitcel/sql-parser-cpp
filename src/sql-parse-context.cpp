@@ -9,48 +9,6 @@
 #include "./token.cpp"
 
 
-std::string Ident_Token::to_string()
-{
-  return "Ident_Token { .ident = '" + this->ident + "' }";
-}
-
-std::string String_Token::to_string()
-{
-  return "String_Token { .value = \"" + this->value + "\" }";
-}
-
-std::string Number_Token::to_string()
-{
-  return "Number_Token { .value = " + std::to_string(this->value) + " }";
-}
-
-std::string Token::to_string()
-{
-  std::string desc = "Token { .type = " + get_description(this->type) + ", .data = ";
-
-  if (this->data && this->type == Token_Type::Ident)
-  {
-    desc += static_cast<Ident_Token*>(this->data)->to_string();
-  }
-  else if (this->data && this->type == Token_Type::String)
-  {
-    desc += static_cast<String_Token*>(this->data)->to_string();
-  }
-  else if (this->data && this->type == Token_Type::Number)
-  {
-    desc += static_cast<Number_Token*>(this->data)->to_string();
-  }
-  else
-  {
-    desc += "NULL";  
-  }
-
-  desc += " }";
-  return desc;
-
-}
-
-
 SQL_Parse_Context::SQL_Parse_Context(std::string source)
 {
   this->source = source;
