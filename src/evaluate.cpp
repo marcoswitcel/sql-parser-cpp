@@ -93,23 +93,11 @@ bool evaluate_relational_binary_ast_node(const Binary_Expression_Ast_Node* node,
 
 bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
 {
-  vector<std::string> filter_out;
+  vector<std::string> columns;
   
-  // mostra apenas campos presentes no campo fields do select
-  for (auto &header : csv.header)
+  for (auto ident : select.fields)
   {
-    bool found = false;
-
-    for (auto ident : select.fields)
-    {
-      if (header == ident->ident_name)
-      {
-        found = true;
-        break;
-      }
-    }
-
-    if (!found) filter_out.push_back(header);
+    columns.push_back(ident->ident_name);
   }
 
   // @todo João, aqui seria bom validar se o número de colunas 'visíveis' seria o mesmo número de `select.fields` por hora...
@@ -136,7 +124,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
   csv.dataset = new_dataset;
 
   // @todo João, falta considerar a ordem dos campos
-  print_as_table(csv, filter_out);
+  print_as_table(csv, Columns_Print_Mode::Included_And_Ordered_Columns, &columns, 30);
 
   return true;
 }

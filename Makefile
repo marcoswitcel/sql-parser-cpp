@@ -13,7 +13,8 @@ BUILD_FOLDER_NAME=target
 #RUN_ARGS= "SELECT * FROM DUAL" --verbose
 #RUN_ARGS= "Select Name, Phone1 , Phone2 From customers Where Name = 'Marcelson' or Name = 'Jucelson' or 'Brunelson' = Name " --verbose #--print-tokens
 #RUN_ARGS= "Select Name, Phone1 , Phone2 From customers Where Name = 'Marcelson' OR Name = 'Jucelson' " --verbose  --csv-filename imdb_top_1000.csv #--print-tokens
-RUN_ARGS= "Select Runtime, Series_Title, Released_Year From customers " --verbose  --csv-filename imdb_top_1000.csv #--print-tokens
+#RUN_ARGS= "Select Runtime, Series_Title, Released_Year, Runtime From customers Where Runtime = '146 min' " --verbose  --csv-filename imdb_top_1000.csv #--print-tokens
+RUN_ARGS= "Select Runtime, Series_Title, Released_Year, Runtime From customers Where Released_Year = '2013' " --verbose  --csv-filename imdb_top_1000.csv #--print-tokens
 #RUN_ARGS= "Select Name, Phone1 , Phone2 From customers Where Name = 02" --verbose --print-tokens
 #RUN_ARGS= "Select * From customers " --verbose
 
