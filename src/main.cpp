@@ -14,16 +14,23 @@
 
 int main(int argc, const char* argv[])
 {
-  if (argc < 2)
+  bool is_help = is_string_present_in_argv("--help", argc, argv);
+  if (is_help)
   {
-    std::cout << "O SQL não foi provido!" << std::endl;
+    std::cout << "<program> <comando sql> --argumentos-opcionais" << std::endl;
     return EXIT_FAILURE;
   }
 
+  if (argc < 2)
+  {
+    std::cout << "O comando SQL não foi provido!" << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  // @todo João, revisar parâmetros e forma de aplicação, acho que faz sentido sql sem --csv-filename em função do print-tokens
   bool is_verbose = is_string_present_in_argv("--verbose", argc, argv);
   bool is_print_tokens = is_string_present_in_argv("--print-tokens", argc, argv);
   Found_Value csv_found = get_value_for_in_argv("--csv-filename", argc, argv);
-  // auto filter = get_value_for_in_argv("--sql-command", argc, argv);
 
   std::string sql_command = std::string(argv[1]);
 
@@ -36,9 +43,10 @@ int main(int argc, const char* argv[])
   
   if (node && node->type == Ast_Node_Type::Select_Ast_Node)
   {
+    const char* filename = csv_found.value;
     auto select = dynamic_cast<Select_Ast_Node*>(node);
 
-    auto result = parse_csv_from_file(csv_found.value);
+    auto result = parse_csv_from_file(filename);
 
     if (result.first) {
       auto csv = result.second;
@@ -48,7 +56,7 @@ int main(int argc, const char* argv[])
     }
     else
     {
-      // @todo João, colocar aviso aqui...
+      if (is_verbose) std::cout << "arquivo não encontrado: " << filename << std::endl;
     }
   }
 
