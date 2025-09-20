@@ -52,7 +52,7 @@ int main(int argc, const char* argv[])
       auto csv = result.second;
 
       //  checa campos do select
-      run_select_on_table(*select, csv.header, csv.dataset);
+      run_select_on_csv(*select, csv);
     }
     else
     {

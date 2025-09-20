@@ -6,6 +6,8 @@
 #include "./utils.cpp"
 #include "./ast_node.hpp"
 
+#include "../lib/csv/src/csv.hpp"
+
 
 using std::vector;
 
@@ -89,39 +91,22 @@ bool evaluate_relational_binary_ast_node(const Binary_Expression_Ast_Node* node,
   return false;
 }
 
-bool run_select_on_table(Select_Ast_Node &select, std::vector<std::string> &table_def, std::vector<std::vector<std::string>> &table)
+bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
 {
-  vector<size_t> index_to_and_order;
+  vector<std::string> filters;
   
   for (size_t i = 0; i < select.fields.size(); i++)
   {
+    // @todo João, tá invertido, deveria definir os que serão visíveis
     Ident_Expression_Ast_Node *ident = select.fields.at(i).get();
-    int64_t index = index_of(table_def, ident->ident_name);
-
-    if (index < 0)
-    {
-      return false;
-    }
-
-    index_to_and_order.push_back(static_cast<size_t>(index));
+    filters.push_back(ident->ident_name);
   }
 
-  if (table.size() == 0) return false;;
-  
-  for (std::vector<std::string> &data_row: table)
-  {
-    // @note João, inserir alertas?
-    if (table_def.size() != data_row.size()) return false;;
-  }
+  if (csv.dataset.size() == 0) return false;
 
-  std::cout << "| Printando table |" << std::endl;
-  std::cout << "|";
-  for (std::string &column_name: table_def)
-  {
-    std::cout << column_name << "|";
-  }
-  std::cout << std::endl;
-  for (std::vector<std::string> &data_row: table)
+  vector<CSV_Data_Row> new_dataset;
+
+  for (CSV_Data_Row &data_row: csv.dataset)
   {
     // @todo João, implementando um esqueleto de como seria pra interpretar o comando `Name = 'nome-usado'`.
     // Porém, aqui não é o lugar mais apropriado por alguns motivos:
@@ -129,19 +114,18 @@ bool run_select_on_table(Select_Ast_Node &select, std::vector<std::string> &tabl
     // * É necessário suportar mais opções de filtros e dessa forma o código ficará enorme...
     if (select.where && select.where->conditions.get())
     {
-      if (!evaluate_relational_binary_ast_node(select.where->conditions.get(), &table_def, &data_row))
+      if (!evaluate_relational_binary_ast_node(select.where->conditions.get(), &csv.header, &data_row))
       {
         continue;
       }
     }
 
-    std::cout << "|";
-    for (size_t i : index_to_and_order)
-    {
-      std::cout << data_row.at(i) << "|";
-    }
-    std::cout << std::endl;
+    new_dataset.push_back(data_row);
   }
+
+  csv.dataset = new_dataset;
+
+  print_as_table(csv, filters, 100);
 
   return true;
 }
