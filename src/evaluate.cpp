@@ -93,14 +93,26 @@ bool evaluate_relational_binary_ast_node(const Binary_Expression_Ast_Node* node,
 
 bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
 {
-  vector<std::string> filters;
+  vector<std::string> filter_out;
   
-  for (size_t i = 0; i < select.fields.size(); i++)
+  // mostra apenas campos presentes no campo fields do select
+  for (auto &header : csv.header)
   {
-    // @todo João, tá invertido, deveria definir os que serão visíveis
-    Ident_Expression_Ast_Node *ident = select.fields.at(i).get();
-    filters.push_back(ident->ident_name);
+    bool found = false;
+
+    for (auto ident : select.fields)
+    {
+      if (header == ident->ident_name)
+      {
+        found = true;
+        break;
+      }
+    }
+
+    if (!found) filter_out.push_back(header);
   }
+
+  // @todo João, aqui seria bom validar se o número de colunas 'visíveis' seria o mesmo número de `select.fields` por hora...
 
   if (csv.dataset.size() == 0) return false;
 
@@ -108,10 +120,8 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
 
   for (CSV_Data_Row &data_row: csv.dataset)
   {
-    // @todo João, implementando um esqueleto de como seria pra interpretar o comando `Name = 'nome-usado'`.
-    // Porém, aqui não é o lugar mais apropriado por alguns motivos:
-    // * É necessário validar se o 'comando' faz sentido de acordo com a estrutura da tabela
-    // * É necessário suportar mais opções de filtros e dessa forma o código ficará enorme...
+    // @todo João, é necessário validar se o 'comando' faz sentido de acordo com a estrutura da tabela
+    // @todo João, é necessário suportar mais opções de filtros e dessa forma o código ficará enorme...
     if (select.where && select.where->conditions.get())
     {
       if (!evaluate_relational_binary_ast_node(select.where->conditions.get(), &csv.header, &data_row))
@@ -125,7 +135,8 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
 
   csv.dataset = new_dataset;
 
-  print_as_table(csv, filters, 100);
+  // @todo João, falta considerar a ordem dos campos
+  print_as_table(csv, filter_out);
 
   return true;
 }

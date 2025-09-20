@@ -51,13 +51,25 @@ int main(int argc, const char* argv[])
     if (result.first) {
       auto csv = result.second;
 
-      //  checa campos do select
-      run_select_on_csv(*select, csv);
+      if (csv.parsing_errors.size())
+      {
+        if (is_verbose) std::cout << "Encontrou erros ao parsear o CSV: " << filename << std::endl;  
+      }
+      else
+      {
+        //  checa campos do select
+        run_select_on_csv(*select, csv);
+      }
+
     }
     else
     {
       if (is_verbose) std::cout << "arquivo não encontrado: " << filename << std::endl;
     }
+  }
+  else
+  {
+    if (is_verbose) std::cout << "Não conseguiu parsear o comando: " << sql_command << std::endl;
   }
 
   if (is_print_tokens)
