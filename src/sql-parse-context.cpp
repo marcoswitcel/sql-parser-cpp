@@ -622,9 +622,17 @@ void try_parse_ident(SQL_Parse_Context* parser, Token *token, bool *success)
   size_t i = 0;
   int32_t c = parser->peek_n_char(i);
   // @todo João, melhorar para não ter dependência com o símbolo ','
+  // @todo João, testar '_' no início
+  if (c == '_')
+  {
+    token->type = Token_Type::None;
+    *success = false;
+    return;
+  }
+
   while (c != END_OF_SOURCE && !parser->is_whitespace(c) && c != ',')
   {
-    if (!isalnum(c))
+    if (!isalnum(c) && c != '_')
     {
       token->type = Token_Type::None;
       *success = false;
