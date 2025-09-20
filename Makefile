@@ -19,8 +19,10 @@ RUN_ARGS= "Select Name, Phone1 , Phone2 From customers Where Name = 'Marcelson' 
 build-folder-setup:
 	@ mkdir -p $(BUILD_FOLDER_NAME)
 
-build-libs:
+lib/libcsv.a:
 	$(MAKE) -C lib
+
+build-libs: lib/libcsv.a
 
 main: build-folder-setup build-libs ./$(SOURCE_FOLDER_NAME)/main.cpp  
 	$(CC) ./$(SOURCE_FOLDER_NAME)/main.cpp -o $(BUILD_FOLDER_NAME)/main $(CFLAGS) $(LFLAGS) $(DEF)
