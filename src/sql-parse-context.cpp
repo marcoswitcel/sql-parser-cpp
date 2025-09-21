@@ -271,9 +271,12 @@ Parse_Function terminals[] = {
   try_parse_asterisk,
   try_parse_equals,
   try_parse_not_equals,
+  try_parse_like,
   try_parse_greater_than,
   try_parse_lower_than,
   try_parse_comma,
+  try_parse_open_parenthesis,
+  try_parse_close_parenthesis,
   try_parse_or,
   try_parse_and,
   // non-terminals
@@ -461,6 +464,21 @@ void try_parse_not_equals(SQL_Parse_Context* parser, Token *token, bool *success
   *success = false;
 }
 
+void try_parse_like(SQL_Parse_Context* parser, Token *token, bool *success)
+{
+  bool is_consumed = try_consume_keyword(parser, "like"); 
+  
+  if (is_consumed)
+  {
+    token->type = Token_Type::Like;
+    *success = true;
+    return;
+  }
+  
+  token->type = Token_Type::None;
+  *success = false;
+}
+
 void try_parse_greater_than(SQL_Parse_Context* parser, Token *token, bool *success)
 {
   if (parser->peek_char() != '>')
@@ -502,6 +520,35 @@ void try_parse_comma(SQL_Parse_Context* parser, Token *token, bool *success)
   token->type = Token_Type::Comma;
   *success = true;
 }
+
+void try_parse_open_parenthesis(SQL_Parse_Context* parser, Token *token, bool *success)
+{
+  if (parser->peek_char() != '(')
+  {
+    token->type = Token_Type::None;
+    *success = false;
+    return;
+  }
+
+  parser->eat_char();
+  token->type = Token_Type::Open_Parenthesis;
+  *success = true;
+}
+
+void try_parse_close_parenthesis(SQL_Parse_Context* parser, Token *token, bool *success)
+{
+  if (parser->peek_char() != ')')
+  {
+    token->type = Token_Type::None;
+    *success = false;
+    return;
+  }
+
+  parser->eat_char();
+  token->type = Token_Type::Close_Parenthesis;
+  *success = true;
+}
+
 
 void try_parse_string(SQL_Parse_Context* parser, Token *token, bool *success)
 {
