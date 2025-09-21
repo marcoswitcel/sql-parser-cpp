@@ -551,6 +551,11 @@ inline bool is_digit(char c)
   return '0' <= c && c <= '9';
 }
 
+inline bool is_valid_ident_char(char c)
+{
+  return isalnum(c) || c == '_';
+}
+
 void try_parse_number(SQL_Parse_Context* parser, Token *token, bool *success)
 {
   size_t i = 0;
@@ -621,18 +626,19 @@ void try_parse_ident(SQL_Parse_Context* parser, Token *token, bool *success)
 {
   size_t i = 0;
   int32_t c = parser->peek_n_char(i);
-  // @todo João, melhorar para não ter dependência com o símbolo ','
-  // @todo João, testar '_' no início
-  if (c == '_')
+  
+  // não pode começar com esse caracteres
+  if (c == '_' || is_digit(c))
   {
     token->type = Token_Type::None;
     *success = false;
     return;
   }
-
+  
+  // @todo João, melhorar para não ter dependência com o símbolo ','
   while (c != END_OF_SOURCE && !parser->is_whitespace(c) && c != ',')
   {
-    if (!isalnum(c) && c != '_')
+    if (!is_valid_ident_char(c))
     {
       token->type = Token_Type::None;
       *success = false;
