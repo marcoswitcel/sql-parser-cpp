@@ -71,7 +71,7 @@ bool evaluate_relational_binary_ast_node(const Binary_Expression_Ast_Node* node,
   {
     return evaluate_equals_binary_ast_node(node, table_def, data_row);
   }
-  if (node->op == "<>")
+  else if (node->op == "<>")
   {
     return evaluate_not_equals_binary_ast_node(node, table_def, data_row);
   }
