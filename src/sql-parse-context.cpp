@@ -201,6 +201,10 @@ Binary_Expression_Ast_Node* SQL_Parse_Context::eat_binary_expression_ast_node()
     {
       node->op = "<>";
     }
+    else if (token.type == Token_Type::Like)
+    {
+      node->op = "like";
+    }
     else if (token.type == Token_Type::And)
     {
       node->op = "and";

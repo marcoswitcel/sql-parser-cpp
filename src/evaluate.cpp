@@ -65,6 +65,13 @@ bool evaluate_not_equals_binary_ast_node(const Binary_Expression_Ast_Node* node,
   return !evaluate_equals_binary_ast_node(node, table_def, data_row);
 }
 
+bool evaluate_like_binary_ast_node(const Binary_Expression_Ast_Node* node, std::vector<std::string>* table_def, std::vector<std::string>* data_row)
+{
+  // @todo João, terminar de implementar o like
+  // Uma das ideias é converter para uma regex, tipo '%joao%' viraria '/.*joao.*/', algo assim
+  return false;
+}
+
 bool evaluate_relational_binary_ast_node(const Binary_Expression_Ast_Node* node, std::vector<std::string>* table_def, std::vector<std::string>* data_row)
 {
   if (node->op == "=")
@@ -74,6 +81,10 @@ bool evaluate_relational_binary_ast_node(const Binary_Expression_Ast_Node* node,
   else if (node->op == "<>")
   {
     return evaluate_not_equals_binary_ast_node(node, table_def, data_row);
+  }
+  else if (node->op == "like")
+  {
+    return evaluate_like_binary_ast_node(node, table_def, data_row);
   }
   else if (node->op == "or")
   {
