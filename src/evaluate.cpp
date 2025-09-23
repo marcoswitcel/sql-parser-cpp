@@ -11,6 +11,36 @@
 
 using std::vector;
 
+bool run_like_pattern_on(std::string text_input, std::string like_pattern)
+{
+  size_t input_index = 0;
+  size_t pattern_index = 0;
+
+  while (input_index < text_input.size())
+  {
+    auto pattern_char = like_pattern.at(pattern_index);
+    auto text_char = text_input.at(input_index);
+    if (pattern_char == '%')
+    {
+      // @todo João, continuar aqui, return false pra não dar loop
+      return false;
+    }
+    else if (pattern_char == '_')
+    {
+      // @todo João testar isso aqui...
+      input_index++;
+      pattern_index++;
+    }
+    else
+    {
+      if (pattern_char != text_char) return false;
+      input_index++;
+      pattern_index++;
+    }
+  }
+  return input_index >= text_input.size() && pattern_index >= like_pattern.size();
+}
+
 bool extract_lhs_and_rhs_expressions(
   const Binary_Expression_Ast_Node* node, std::vector<std::string>* table_def,
   std::vector<std::string>* data_row, std::string &lhs, std::string &rhs)
@@ -90,7 +120,7 @@ bool evaluate_like_binary_ast_node(const Binary_Expression_Ast_Node* node, std::
   }
   // @todo João, terminar de implementar o like
   // Uma das ideias é converter para uma regex, tipo '%joao%' viraria '/.*joao.*/', algo assim
-  return false;
+  return run_like_pattern_on(lhs, rhs);
 }
 
 bool evaluate_relational_binary_ast_node(const Binary_Expression_Ast_Node* node, std::vector<std::string>* table_def, std::vector<std::string>* data_row)
