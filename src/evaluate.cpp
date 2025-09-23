@@ -11,16 +11,15 @@
 
 using std::vector;
 
-bool evaluate_equals_binary_ast_node(const Binary_Expression_Ast_Node* node, std::vector<std::string>* table_def, std::vector<std::string>* data_row)
+bool extract_lhs_and_rhs_expressions(
+  const Binary_Expression_Ast_Node* node, std::vector<std::string>* table_def,
+  std::vector<std::string>* data_row, std::string &lhs, std::string &rhs)
 {
-  assert(node->op == "=" || node->op == "<>");
-
   assert(node->left->type == Ast_Node_Type::Ident_Expression_Ast_Node ||
     node->left->type == Ast_Node_Type::String_Literal_Expression_Ast_Node);
   assert(node->right->type == Ast_Node_Type::Ident_Expression_Ast_Node ||
     node->right->type == Ast_Node_Type::String_Literal_Expression_Ast_Node);
 
-  std::string lhs = "";
   if (node->left->type == Ast_Node_Type::Ident_Expression_Ast_Node)
   {
     lhs = static_cast<Ident_Expression_Ast_Node*>(node->left.get())->ident_name;
@@ -38,7 +37,7 @@ bool evaluate_equals_binary_ast_node(const Binary_Expression_Ast_Node* node, std
   {
     lhs = static_cast<String_Literal_Expression_Ast_Node*>(node->left.get())->value;
   }
-  std::string rhs = "";
+
   if (node->right->type == Ast_Node_Type::Ident_Expression_Ast_Node)
   {
     rhs = static_cast<Ident_Expression_Ast_Node*>(node->right.get())->ident_name;
@@ -57,6 +56,20 @@ bool evaluate_equals_binary_ast_node(const Binary_Expression_Ast_Node* node, std
     rhs = static_cast<String_Literal_Expression_Ast_Node*>(node->right.get())->value;
   }
 
+  return true;
+}
+
+bool evaluate_equals_binary_ast_node(const Binary_Expression_Ast_Node* node, std::vector<std::string>* table_def, std::vector<std::string>* data_row)
+{
+  assert(node->op == "=" || node->op == "<>");
+
+  std::string lhs = "";
+  std::string rhs = "";
+  if (!extract_lhs_and_rhs_expressions(node, table_def, data_row, lhs, rhs))
+  {
+    return false;
+  }
+
   return lhs.compare(rhs) == 0;
 }
 
@@ -67,6 +80,14 @@ bool evaluate_not_equals_binary_ast_node(const Binary_Expression_Ast_Node* node,
 
 bool evaluate_like_binary_ast_node(const Binary_Expression_Ast_Node* node, std::vector<std::string>* table_def, std::vector<std::string>* data_row)
 {
+  assert(node->op == "like");
+
+  std::string lhs = "";
+  std::string rhs = "";
+  if (!extract_lhs_and_rhs_expressions(node, table_def, data_row, lhs, rhs))
+  {
+    return false;
+  }
   // @todo João, terminar de implementar o like
   // Uma das ideias é converter para uma regex, tipo '%joao%' viraria '/.*joao.*/', algo assim
   return false;
