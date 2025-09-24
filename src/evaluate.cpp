@@ -18,6 +18,8 @@ bool run_like_pattern_on(std::string text_input, std::string like_pattern)
 
   while (input_index < text_input.size())
   {
+    if (pattern_index >= like_pattern.size()) return false;
+
     auto pattern_char = like_pattern.at(pattern_index);
     auto text_char = text_input.at(input_index);
     if (pattern_char == '%')
@@ -38,6 +40,7 @@ bool run_like_pattern_on(std::string text_input, std::string like_pattern)
       pattern_index++;
     }
   }
+
   return input_index >= text_input.size() && pattern_index >= like_pattern.size();
 }
 

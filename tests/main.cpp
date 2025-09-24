@@ -4,6 +4,23 @@
 #include <assert.h>
 
 #include "../src/ast_node.hpp"
+#include "../src/evaluate.cpp"
+
+void test_run_like_pattern_on()
+{
+  assert(run_like_pattern_on("word", "word"));
+  assert(run_like_pattern_on("test", "test"));
+  assert(!run_like_pattern_on("test", "test2"));
+
+  assert(run_like_pattern_on("word", "w_rd"));
+  assert(run_like_pattern_on("ward", "w_rd"));
+  assert(run_like_pattern_on("word", "w___"));
+  assert(run_like_pattern_on("word", "____"));
+  assert(!run_like_pattern_on("word", "_____"));
+  assert(!run_like_pattern_on("words", "____"));
+
+
+}
 
 void test_ast_node_type()
 {
@@ -18,6 +35,8 @@ int main()
 
   test_ast_node_type();
   std::cout << "test_ast_node_type......................................OK" << std::endl;
+  test_run_like_pattern_on();
+  std::cout << "test_run_like_pattern_on................................OK" << std::endl;
 
   std::cout << std::endl << "Fim testes" << std::endl;
 
