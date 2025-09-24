@@ -24,12 +24,15 @@ bool run_like_pattern_on(std::string text_input, std::string like_pattern)
     auto text_char = text_input.at(input_index);
     if (pattern_char == '%')
     {
-      // @todo João, continuar aqui, return false pra não dar loop
+      if (pattern_index + 1 == like_pattern.size())
+      {
+        return true;
+      }
+      // @todo João, incompleto
       return false;
     }
     else if (pattern_char == '_')
     {
-      // @todo João testar isso aqui...
       input_index++;
       pattern_index++;
     }

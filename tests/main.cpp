@@ -19,7 +19,11 @@ void test_run_like_pattern_on()
   assert(!run_like_pattern_on("word", "_____"));
   assert(!run_like_pattern_on("words", "____"));
 
-
+  assert(run_like_pattern_on("words", "w%"));
+  // @todo João, ainda não suporta esses recursos...
+  // assert(run_like_pattern_on("words", "%rds"));
+  // assert(run_like_pattern_on("words", "%s"));
+  // assert(run_like_pattern_on("words", "%r%"));
 }
 
 void test_ast_node_type()
