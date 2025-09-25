@@ -29,7 +29,8 @@ bool run_like_pattern_on_done_manually(std::string text_input, std::string like_
       {
         return true;
       }
-      // @todo João, incompleto
+      // @todo João, incompleto: acredito que fazer o match considerando a parte concreta e fazer um sub-match na string
+      // restante e fazer backtrack caso não encontre pode funcionar, só precisa achar um match completo para retornar true
       return false;
     }
     else if (pattern_char == '_')
@@ -56,6 +57,7 @@ bool run_like_pattern_on(std::string text_input, std::string raw_like_pattern)
 
   std::string pattern = raw_like_pattern;
 
+  // @todo João, mais caracteres para sanitizar aqui....
   pattern = std::regex_replace(pattern, period, "\\.");
   pattern = std::regex_replace(pattern, underscore, ".");
   pattern = std::regex_replace(pattern, percentage, ".*");
