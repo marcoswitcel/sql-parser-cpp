@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <regex>
 
 #include "./utils.cpp"
 #include "./ast_node.hpp"
@@ -11,7 +12,7 @@
 
 using std::vector;
 
-bool run_like_pattern_on(std::string text_input, std::string like_pattern)
+bool run_like_pattern_on_done_manually(std::string text_input, std::string like_pattern)
 {
   size_t input_index = 0;
   size_t pattern_index = 0;
@@ -45,6 +46,23 @@ bool run_like_pattern_on(std::string text_input, std::string like_pattern)
   }
 
   return input_index >= text_input.size() && pattern_index >= like_pattern.size();
+}
+
+bool run_like_pattern_on(std::string text_input, std::string raw_like_pattern)
+{
+  static std::regex percentage("%");
+  static std::regex underscore("_");
+  static std::regex period("\\.");
+
+  std::string pattern = raw_like_pattern;
+
+  pattern = std::regex_replace(pattern, period, "\\.");
+  pattern = std::regex_replace(pattern, underscore, ".");
+  pattern = std::regex_replace(pattern, percentage, ".*");
+
+  pattern = "^" + pattern + "$";
+  std::regex like_pattern_regex(pattern);
+  return std::regex_match(text_input, like_pattern_regex);
 }
 
 bool extract_lhs_and_rhs_expressions(
