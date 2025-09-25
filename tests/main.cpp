@@ -26,6 +26,8 @@ void test_run_like_pattern_on()
   assert(run_like_pattern_on("words", "%r%"));
   assert(run_like_pattern_on("words", "%_r_%"));
   assert(run_like_pattern_on("words", "%w%s%"));
+  assert(run_like_pattern_on("words", "%w%ds%"));
+  assert(!run_like_pattern_on("word", "%w%d_%"));
 }
 
 void test_ast_node_type()
