@@ -63,7 +63,10 @@ bool run_like_pattern_on(std::string text_input, std::string raw_like_pattern)
   pattern = std::regex_replace(pattern, percentage, ".*");
 
   pattern = "^" + pattern + "$";
-  std::regex like_pattern_regex(pattern);
+  // @note João, por hora fiz o teste case insensitive, mas... poderia ser case insentitive e usar uma função 'TO_LOWER'
+  // para obter o comportamento desejado, isso quando tiver funções implementadas... Acho que seria melhor, mas por hora
+  // fica 'case insensitive' mesmo.
+  std::regex like_pattern_regex(pattern, std::regex::icase);
   return std::regex_match(text_input, like_pattern_regex);
 }
 
