@@ -20,6 +20,7 @@ std::string get_description(Token_Type &token_type)
     case Token_Type::Greater_Than: return "Greater_Than";
     case Token_Type::Lower_Than: return "Lower_Than";
     case Token_Type::Comma: return "Comma";
+    case Token_Type::Semicolon: return "Semicolon";
     case Token_Type::Open_Parenthesis: return "Open_Parenthesis";
     case Token_Type::Close_Parenthesis: return "Close_Parenthesis";
     case Token_Type::And: return "And";

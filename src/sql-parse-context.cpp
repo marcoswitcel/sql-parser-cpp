@@ -288,6 +288,7 @@ Parse_Function terminals[] = {
   try_parse_greater_than,
   try_parse_lower_than,
   try_parse_comma,
+  try_parse_semicolon,
   try_parse_open_parenthesis,
   try_parse_close_parenthesis,
   try_parse_or,
@@ -546,6 +547,20 @@ void try_parse_comma(SQL_Parse_Context* parser, Token *token, bool *success)
 
   parser->eat_char();
   token->type = Token_Type::Comma;
+  *success = true;
+}
+
+void try_parse_semicolon(SQL_Parse_Context* parser, Token *token, bool *success)
+{
+  if (parser->peek_char() != ';')
+  {
+    token->type = Token_Type::None;
+    *success = false;
+    return;
+  }
+
+  parser->eat_char();
+  token->type = Token_Type::Semicolon;
   *success = true;
 }
 
