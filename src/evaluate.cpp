@@ -188,7 +188,18 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
   
   for (auto ident : select.fields)
   {
-    columns.push_back(ident->ident_name);
+    if (ident->ident_name == "*")
+    {
+      for (auto column : csv.header)
+      {
+        columns.push_back(column);    
+      }
+    }
+    else
+    {
+      columns.push_back(ident->ident_name);
+    }
+    
   }
 
   for (auto column : columns)

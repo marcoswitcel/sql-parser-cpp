@@ -93,10 +93,18 @@ Ast_Node* SQL_Parse_Context::eat_node()
         return NULL;
       }
 
-      if (token.type == Token_Type::Ident)
+      if (token.type == Token_Type::Ident || token.type == Token_Type::Asterisk)
       {
         auto ident = std::make_shared<Ident_Expression_Ast_Node>();
-        ident.get()->ident_name = static_cast<Ident_Token*>(token.data)->ident;
+        if (token.type == Token_Type::Ident)
+        {
+          ident.get()->ident_name = static_cast<Ident_Token*>(token.data)->ident;
+        }
+        else
+        {
+          assert(token.type == Token_Type::Asterisk);
+          ident.get()->ident_name = "*";
+        }
         select->fields.push_back(ident);
 
         token = this->eat_token();
