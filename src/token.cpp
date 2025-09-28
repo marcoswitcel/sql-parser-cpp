@@ -10,6 +10,7 @@ std::string get_description(Token_Type &token_type)
   switch (token_type)
   {
     case Token_Type::None: return "None";
+    case Token_Type::Describe: return "Describe";
     case Token_Type::Select: return "Select";
     case Token_Type::From: return "From";
     case Token_Type::Asterisk: return "Asterisk";

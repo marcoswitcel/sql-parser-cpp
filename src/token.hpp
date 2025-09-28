@@ -7,6 +7,7 @@
 
 enum class Token_Type {
   None, // não inicializado
+  Describe,
   Select,
   From,
   Asterisk,

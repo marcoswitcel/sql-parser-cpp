@@ -277,6 +277,7 @@ Binary_Expression_Ast_Node* SQL_Parse_Context::eat_binary_expression_ast_node()
 }
 
 Parse_Function terminals[] = {
+  try_parse_describe,
   try_parse_select,
   try_parse_from,
   try_parse_where,
@@ -355,6 +356,21 @@ static inline bool try_consume_keyword(SQL_Parse_Context *parser, std::string to
   }
 
   return false;
+}
+
+void try_parse_describe(SQL_Parse_Context* parser, Token *token, bool *success)
+{
+  bool is_consumed = try_consume_keyword(parser, "describe");
+  
+  if (is_consumed)
+  {
+    token->type = Token_Type::Describe;
+    *success = true;
+    return;
+  }
+  
+  token->type = Token_Type::None;
+  *success = false;
 }
 
 void try_parse_select(SQL_Parse_Context* parser, Token *token, bool *success)
