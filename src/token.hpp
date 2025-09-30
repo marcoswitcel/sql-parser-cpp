@@ -14,6 +14,7 @@ enum class Token_Type {
   Equals,
   Not_Equals,
   Like,
+  Not,
   Comma,
   Semicolon,
   Open_Parenthesis,

@@ -31,7 +31,8 @@ int main(int argc, const char* argv[])
   bool is_verbose = is_string_present_in_argv("--verbose", argc, argv);
   bool is_print_tokens = is_string_present_in_argv("--print-tokens", argc, argv);
   Found_Value csv_found = get_value_for_in_argv("--csv-filename", argc, argv);
-  Found_Value bind_defs_found = get_value_for_in_argv("--bind", argc, argv); // @todo João, terminar de implementar o bind de símbolos (table names) para arquivos csv
+  // @wip @todo João, terminar de implementar o bind de símbolos (table names) para arquivos csv
+  // Found_Value bind_defs_found = get_value_for_in_argv("--bind", argc, argv);
 
   std::string sql_command = std::string(argv[1]);
 
