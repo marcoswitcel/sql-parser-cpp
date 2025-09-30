@@ -167,6 +167,7 @@ Ast_Node* SQL_Parse_Context::eat_node()
 
     return select;
   }
+  // @todo João, por hora posso adicionar o comando describe aqui... seria só token describe seguido de um ident...
   
   return NULL;
 }
