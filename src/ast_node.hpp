@@ -190,6 +190,8 @@ struct Where_Ast_Node: Ast_Node
 
 struct Select_Ast_Node: Ast_Node
 {
+  // @todo João, testar trocar aqui de 'Ident_Expression_Ast_Node' para 'Expression_Ast_Node' e
+  // ajustar na função `run_select_on_csv' para validar, por hora, que apenas 'Ident_Expression_Ast_Node' são encontradas na lista
   std::vector<std::shared_ptr<Ident_Expression_Ast_Node>> fields;
   std::shared_ptr<From_Ast_Node> from;
   std::unique_ptr<Where_Ast_Node> where;
