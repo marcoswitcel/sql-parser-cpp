@@ -167,7 +167,26 @@ Ast_Node* SQL_Parse_Context::eat_node()
 
     return select;
   }
-  // @todo João, por hora posso adicionar o comando describe aqui... seria só token describe seguido de um ident...
+  else if (token.type == Token_Type::Describe)
+  {
+    auto describe = new Describe_Ast_Node();
+
+    Token token = this->eat_token();
+
+    if (this->error)
+    {
+      return NULL;
+    }
+
+    if (token.type == Token_Type::Ident)
+    {
+      describe->ident_name = static_cast<Ident_Token*>(token.data)->ident;
+      
+      return describe;
+    }
+
+    return NULL;
+  }
   
   return NULL;
 }

@@ -16,10 +16,11 @@ enum class Ast_Node_Type
   Select_Ast_Node = 1 << 0,
   From_Ast_Node = 1 << 1,
   Where_Ast_Node = 1 << 2,
-  Expression_Node = 1 << 3, // categoria
-  String_Literal_Expression_Ast_Node = Expression_Node | (1 << 4),
-  Ident_Expression_Ast_Node = Expression_Node | (1 << 5),
-  Binary_Expression_Node = Expression_Node | (1 << 6), // sub-categoria
+  Describe_Ast_Node = 1 << 3,
+  Expression_Node = 1 << 4, // categoria
+  String_Literal_Expression_Ast_Node = Expression_Node | (1 << 5),
+  Ident_Expression_Ast_Node = Expression_Node | (1 << 6),
+  Binary_Expression_Node = Expression_Node | (1 << 7), // sub-categoria
 };
 
 Ast_Node_Type operator&(Ast_Node_Type a, Ast_Node_Type b)
@@ -218,6 +219,25 @@ struct Select_Ast_Node: Ast_Node
     desc += ", where: ";
     desc += (this->where.get()) ? this->where->to_string() : "{}";
     desc += " }";
+
+    return desc;
+  }
+};
+
+struct Describe_Ast_Node: Ast_Node
+{
+  std::string ident_name;
+  
+  Describe_Ast_Node()
+  {
+    this->type = Ast_Node_Type::Describe_Ast_Node;
+  }
+
+  std::string to_string() override
+  {
+    std::string desc = "Describe_Ast_Node { serial: ";
+    desc += std::to_string(this->serial_number);
+    desc += ", ident_name: \"" + this->ident_name +  "\" }";
 
     return desc;
   }

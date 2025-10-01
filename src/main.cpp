@@ -69,6 +69,11 @@ int main(int argc, const char* argv[])
       if (is_verbose) std::cout << "arquivo não encontrado: " << filename << std::endl;
     }
   }
+  else if (node && node->type == Ast_Node_Type::Describe_Ast_Node)
+  {
+    // @todo João, implementar o 'evaluate' do 'describe
+    if (is_verbose) std::cout << "O comando 'Describe' não foi implementado ainda..." << std::endl;
+  }
   else
   {
     if (is_verbose) std::cout << "Não conseguiu parsear o comando: " << sql_command << std::endl;
