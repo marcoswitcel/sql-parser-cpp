@@ -747,7 +747,7 @@ void try_parse_number(SQL_Parse_Context* parser, Token *token, bool *success)
   *success = true;
 }
 
-
+// @todo João, incluir ` ou àspas para permitir parsear identificadores com caracteres especiais
 void try_parse_ident(SQL_Parse_Context* parser, Token *token, bool *success)
 {
   size_t i = 0;
