@@ -18,6 +18,7 @@ std::string get_description(Token_Type &token_type)
     case Token_Type::Not_Equals: return "Not_Equals";
     case Token_Type::Like: return "Like";
     case Token_Type::Not: return "Not";
+    case Token_Type::As: return "As";
     case Token_Type::Greater_Than: return "Greater_Than";
     case Token_Type::Lower_Than: return "Lower_Than";
     case Token_Type::Comma: return "Comma";

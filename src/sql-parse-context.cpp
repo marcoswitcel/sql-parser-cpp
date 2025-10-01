@@ -306,6 +306,7 @@ Parse_Function terminals[] = {
   try_parse_not_equals,
   try_parse_like,
   try_parse_not,
+  try_parse_as,
   try_parse_greater_than,
   try_parse_lower_than,
   try_parse_comma,
@@ -543,6 +544,22 @@ void try_parse_not(SQL_Parse_Context* parser, Token *token, bool *success)
   token->type = Token_Type::None;
   *success = false;
 }
+
+void try_parse_as(SQL_Parse_Context* parser, Token *token, bool *success)
+{
+  bool is_consumed = try_consume_keyword(parser, "as"); 
+  
+  if (is_consumed)
+  {
+    token->type = Token_Type::As;
+    *success = true;
+    return;
+  }
+  
+  token->type = Token_Type::None;
+  *success = false;
+}
+
 
 void try_parse_greater_than(SQL_Parse_Context* parser, Token *token, bool *success)
 {
