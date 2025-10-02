@@ -195,10 +195,17 @@ Binary_Expression_Ast_Node* SQL_Parse_Context::eat_binary_expression_ast_node()
 {
   Binary_Expression_Ast_Node* node = new Binary_Expression_Ast_Node();
   
+  bool found_and_not_consumed_not_keyword = false;
   while (!node->left || !node->right || node->op.size() == 0)
   {
     this->skip_whitespace();
     Token token = this->eat_token();
+
+    if (found_and_not_consumed_not_keyword && token.type != Token_Type::Like)
+    {
+      this->error = true;
+      return NULL;
+    }
 
     if (token.type == Token_Type::Ident)
     {
@@ -229,9 +236,20 @@ Binary_Expression_Ast_Node* SQL_Parse_Context::eat_binary_expression_ast_node()
     {
       node->op = "<>";
     }
+    else if (token.type == Token_Type::Not)
+    {
+      if (found_and_not_consumed_not_keyword)
+      {
+        // @note João, não sei se realmente é um erro usar "NOT NOT", acho que não, mas está bloqueado por hora...
+        this->error = true;
+        return NULL;
+      }
+      found_and_not_consumed_not_keyword = true;
+    }
     else if (token.type == Token_Type::Like)
     {
-      node->op = "like";
+      node->op = (found_and_not_consumed_not_keyword) ? "not like" : "like";
+      found_and_not_consumed_not_keyword = false;
     }
     else if (token.type == Token_Type::And)
     {

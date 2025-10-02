@@ -139,7 +139,7 @@ bool evaluate_not_equals_binary_ast_node(const Binary_Expression_Ast_Node* node,
 
 bool evaluate_like_binary_ast_node(const Binary_Expression_Ast_Node* node, std::vector<std::string>* table_def, std::vector<std::string>* data_row)
 {
-  assert(node->op == "like");
+  assert(node->op == "like" || node->op == "not like");
 
   std::string lhs = "";
   std::string rhs = "";
@@ -165,6 +165,10 @@ bool evaluate_relational_binary_ast_node(const Binary_Expression_Ast_Node* node,
   else if (node->op == "like")
   {
     return evaluate_like_binary_ast_node(node, table_def, data_row);
+  }
+  else if (node->op == "not like")
+  {
+    return !evaluate_like_binary_ast_node(node, table_def, data_row);
   }
   else if (node->op == "or")
   {
