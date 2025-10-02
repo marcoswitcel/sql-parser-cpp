@@ -186,8 +186,12 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
 {
   vector<std::string> columns;
   
-  for (auto ident : select.fields)
+  for (auto field : select.fields)
   {
+    // @todo João, pora hora parsei apenas "ident's", mas logo suportarei outros tipos de nós
+    assert(field->type == Ast_Node_Type::Ident_Expression_Ast_Node);
+    auto ident = static_cast<Ident_Expression_Ast_Node*>(field.get());
+
     if (ident->ident_name == "*")
     {
       for (auto column : csv.header)
