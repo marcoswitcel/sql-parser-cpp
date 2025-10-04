@@ -93,6 +93,8 @@ Ast_Node* SQL_Parse_Context::eat_node()
         return NULL;
       }
 
+      // @todo joão, pra parsear uma "Expression_Ast_Node" aqui vou precisar implementar um comando peek_token e
+      // refatorar o método `eat_binary_expression_ast_node` para usar o peek_token ao invés de tentar consumir os tokens
       if (token.type == Token_Type::Ident || token.type == Token_Type::Asterisk)
       {
         auto ident = std::make_shared<Ident_Expression_Ast_Node>();
@@ -105,9 +107,26 @@ Ast_Node* SQL_Parse_Context::eat_node()
           assert(token.type == Token_Type::Asterisk);
           ident.get()->ident_name = "*";
         }
-        select->fields.push_back(ident);
 
         token = this->eat_token();
+
+        if (token.type == Token_Type::As)
+        {
+
+          token = this->eat_token();
+
+          if (token.type == Token_Type::Ident)
+          {
+            ident->as = static_cast<Ident_Token*>(token.data)->ident;
+            token = this->eat_token();
+          }
+          else
+          {
+            return NULL;
+          }
+        }
+        
+        select->fields.push_back(ident);
 
         if (token.type == Token_Type::From)
         {

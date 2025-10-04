@@ -69,6 +69,10 @@ uint64_t Ast_Node::serial_counter = 0;
 struct Expression_Ast_Node: Ast_Node
 {
   virtual std::string to_string() = 0;
+
+  // @note João, incluído aqui um atributo para conter informações sobre um possível
+  // `as` keyword. Acredito que deixaria mais compacto e de fácil acesso. Avaliar.
+  std::string as;
 };
 
 struct Ident_Expression_Ast_Node: Expression_Ast_Node
