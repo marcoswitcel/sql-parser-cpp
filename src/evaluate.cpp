@@ -147,8 +147,7 @@ bool evaluate_like_binary_ast_node(const Binary_Expression_Ast_Node* node, std::
   {
     return false;
   }
-  // @todo João, terminar de implementar o like
-  // Uma das ideias é converter para uma regex, tipo '%joao%' viraria '/.*joao.*/', algo assim
+  
   return run_like_pattern_on(lhs, rhs);
 }
 
