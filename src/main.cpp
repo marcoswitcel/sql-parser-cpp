@@ -71,8 +71,29 @@ int main(int argc, const char* argv[])
   }
   else if (node && node->type == Ast_Node_Type::Describe_Ast_Node)
   {
-    // @todo João, implementar o 'evaluate' do 'describe
-    if (is_verbose) std::cout << "O comando 'Describe' não foi implementado ainda..." << std::endl;
+    const char* filename = csv_found.value;
+    auto describe = dynamic_cast<Describe_Ast_Node*>(node);
+
+    auto result = parse_csv_from_file(filename);
+
+    if (result.first) {
+      auto csv = result.second;
+
+      if (csv.parsing_errors.size())
+      {
+        if (is_verbose) std::cout << "Encontrou erros ao parsear o CSV: " << filename << std::endl;  
+      }
+      else
+      {
+        //  checa campos do describe
+        run_describe_on_csv(*describe, csv);
+      }
+
+    }
+    else
+    {
+      if (is_verbose) std::cout << "arquivo não encontrado: " << filename << std::endl;
+    }
   }
   else
   {

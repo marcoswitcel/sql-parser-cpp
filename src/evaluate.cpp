@@ -243,3 +243,28 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
 
   return true;
 }
+
+bool run_describe_on_csv(Describe_Ast_Node &describe, CSVData &csv)
+{
+  csv.infer_types();
+
+  CSV_Data_Row header = { "Column Name", "Type", "Nullable" };
+  std::vector<CSV_Data_Row> dataset;
+
+  for (size_t i = 0; i < csv.header.size(); i++)
+  {
+    auto &col_info = csv.infered_types_for_columns.at(i);
+    CSV_Data_Row new_row;
+    
+    new_row.push_back(csv.header.at(i));
+    new_row.push_back(to_string(col_info.type));
+    new_row.push_back(col_info.nullable ? "yes" : "No");
+
+    dataset.push_back(new_row);
+  }
+
+  std::cout << "Describe of table: " << describe.ident_name << std::endl;
+  print_as_table(header, dataset, Columns_Print_Mode::All_Columns, NULL, 30);
+  
+  return false;
+}
