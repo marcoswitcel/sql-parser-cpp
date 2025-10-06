@@ -191,7 +191,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
   
   for (auto field : select.fields)
   {
-    // @todo João, pora hora parsei apenas "ident's", mas logo suportarei outros tipos de nós
+    // @todo João, por hora parseia apenas "ident's", mas logo suportarei outros tipos de nós
     assert(field->type == Ast_Node_Type::Ident_Expression_Ast_Node);
     auto ident = static_cast<Ident_Expression_Ast_Node*>(field.get());
 
@@ -225,7 +225,6 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
   for (CSV_Data_Row &data_row: csv.dataset)
   {
     // @todo João, é necessário validar se o 'comando' faz sentido de acordo com a estrutura da tabela
-    // @todo João, é necessário suportar mais opções de filtros e dessa forma o código ficará enorme...
     if (select.where && select.where->conditions.get())
     {
       if (!evaluate_relational_binary_ast_node(select.where->conditions.get(), &csv.header, &data_row))
