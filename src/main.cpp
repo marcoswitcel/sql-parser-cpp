@@ -27,7 +27,6 @@ int main(int argc, const char* argv[])
     return EXIT_FAILURE;
   }
 
-  // @todo João, revisar parâmetros e forma de aplicação, acho que faz sentido sql sem --csv-filename em função do print-tokens
   bool is_verbose = is_string_present_in_argv("--verbose", argc, argv);
   bool is_print_tokens = is_string_present_in_argv("--print-tokens", argc, argv);
   Found_Value csv_found = get_value_for_in_argv("--csv-filename", argc, argv);
