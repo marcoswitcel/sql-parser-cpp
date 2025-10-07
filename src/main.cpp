@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 #include "./command-line-utils.cpp"
 #include "./utils.cpp"
@@ -30,10 +31,10 @@ int main(int argc, const char* argv[])
   bool is_verbose = is_string_present_in_argv("--verbose", argc, argv);
   bool is_print_tokens = is_string_present_in_argv("--print-tokens", argc, argv);
   Found_Value csv_found = get_value_for_in_argv("--csv-filename", argc, argv);
-  // @wip @todo João, terminar de implementar o bind de símbolos (table names) para arquivos csv
-  // Found_Value bind_defs_found = get_value_for_in_argv("--bind", argc, argv);
+  Found_Value bind_defs_found = get_value_for_in_argv("--bind", argc, argv);
 
   std::string sql_command = std::string(argv[1]);
+  std::unordered_map<std::string, std::string> table_binds;
 
   if (is_verbose) std::cout << "SQL: " << sql_command << std::endl;
   if (!csv_found.found) std::cout << "Parâmetro --csv-filename é obrigatório." << std::endl;
@@ -42,30 +43,54 @@ int main(int argc, const char* argv[])
 
   Ast_Node* node = parser.eat_node();
   
+  if (bind_defs_found.found)
+  {
+    for (auto bind : split_by(bind_defs_found.value, ','))
+    {
+      std::vector<std::string> bind_splited = split_by(bind, '=');
+      if (bind_splited.size() != 2)
+      {
+        std::cout << "Argumento inválido: " << bind << std::endl;
+      }
+      else
+      {
+        table_binds[bind_splited[0], bind_splited[1]];
+      }
+    }
+  }
+
   if (node && node->type == Ast_Node_Type::Select_Ast_Node)
   {
     const char* filename = csv_found.value;
     auto select = dynamic_cast<Select_Ast_Node*>(node);
 
-    auto result = parse_csv_from_file(filename);
-
-    if (result.first) {
-      auto csv = result.second;
-
-      if (csv.parsing_errors.size())
-      {
-        if (is_verbose) std::cout << "Encontrou erros ao parsear o CSV: " << filename << std::endl;  
+    // @todo João, ainda não funcionando corretamente... @wip
+    if (table_binds.count(select->from->ident_name) > 0)
+    {
+      auto result = parse_csv_from_file(filename);
+  
+      if (result.first) {
+        auto csv = result.second;
+  
+        if (csv.parsing_errors.size())
+        {
+          if (is_verbose) std::cout << "Encontrou erros ao parsear o CSV: " << filename << std::endl;  
+        }
+        else
+        {
+          //  checa campos do select
+          run_select_on_csv(*select, csv);
+        }
+  
       }
       else
       {
-        //  checa campos do select
-        run_select_on_csv(*select, csv);
+        if (is_verbose) std::cout << "arquivo não encontrado: " << filename << std::endl;
       }
-
     }
     else
     {
-      if (is_verbose) std::cout << "arquivo não encontrado: " << filename << std::endl;
+      if (is_verbose) std::cout << "Bind para tabela '" << select->from->ident_name << "' não encontrado. " << std::endl;
     }
   }
   else if (node && node->type == Ast_Node_Type::Describe_Ast_Node)
