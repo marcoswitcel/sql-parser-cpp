@@ -54,20 +54,21 @@ int main(int argc, const char* argv[])
       }
       else
       {
-        table_binds[bind_splited[0], bind_splited[1]];
+        // insere e ou atualiza...
+        table_binds[bind_splited[0]] = bind_splited[1];
       }
     }
   }
 
   if (node && node->type == Ast_Node_Type::Select_Ast_Node)
   {
-    const char* filename = csv_found.value;
     auto select = dynamic_cast<Select_Ast_Node*>(node);
-
-    // @todo João, ainda não funcionando corretamente... @wip
-    if (table_binds.count(select->from->ident_name) > 0)
+    auto table_name = select->from->ident_name;
+    
+    if (table_binds.count(table_name) > 0)
     {
-      auto result = parse_csv_from_file(filename);
+      auto filename = table_binds.at(table_name);
+      auto result = parse_csv_from_file(filename.c_str());
   
       if (result.first) {
         auto csv = result.second;
@@ -81,7 +82,6 @@ int main(int argc, const char* argv[])
           //  checa campos do select
           run_select_on_csv(*select, csv);
         }
-  
       }
       else
       {
@@ -90,7 +90,7 @@ int main(int argc, const char* argv[])
     }
     else
     {
-      if (is_verbose) std::cout << "Bind para tabela '" << select->from->ident_name << "' não encontrado. " << std::endl;
+      if (is_verbose) std::cout << "Bind para tabela '" << table_name << "' não encontrado. " << std::endl;
     }
   }
   else if (node && node->type == Ast_Node_Type::Describe_Ast_Node)
