@@ -32,6 +32,7 @@ int main(int argc, const char* argv[])
   bool is_print_tokens = is_string_present_in_argv("--print-tokens", argc, argv);
   Found_Value csv_found = get_value_for_in_argv("--csv-filename", argc, argv);
   Found_Value bind_defs_found = get_value_for_in_argv("--bind", argc, argv);
+  // @note João, uma melhoria futura, a CLI não detecta argumentos inválidos providos... talvez fosse interessante fazer isso...
 
   std::string sql_command = std::string(argv[1]);
   std::unordered_map<std::string, std::string> table_binds;
