@@ -95,28 +95,37 @@ int main(int argc, const char* argv[])
   }
   else if (node && node->type == Ast_Node_Type::Describe_Ast_Node)
   {
-    const char* filename = csv_found.value;
     auto describe = dynamic_cast<Describe_Ast_Node*>(node);
+    auto table_name = describe->ident_name;
 
-    auto result = parse_csv_from_file(filename);
-
-    if (result.first) {
-      auto csv = result.second;
-
-      if (csv.parsing_errors.size())
-      {
-        if (is_verbose) std::cout << "Encontrou erros ao parsear o CSV: " << filename << std::endl;  
+    if (table_binds.count(table_name) > 0)
+    {
+      auto filename = table_binds.at(table_name);
+  
+      auto result = parse_csv_from_file(filename.c_str());
+  
+      if (result.first) {
+        auto csv = result.second;
+  
+        if (csv.parsing_errors.size())
+        {
+          if (is_verbose) std::cout << "Encontrou erros ao parsear o CSV: " << filename << std::endl;  
+        }
+        else
+        {
+          //  checa campos do describe
+          run_describe_on_csv(*describe, csv);
+        }
+  
       }
       else
       {
-        //  checa campos do describe
-        run_describe_on_csv(*describe, csv);
+        if (is_verbose) std::cout << "arquivo não encontrado: " << filename << std::endl;
       }
-
     }
     else
     {
-      if (is_verbose) std::cout << "arquivo não encontrado: " << filename << std::endl;
+      if (is_verbose) std::cout << "Bind para tabela '" << table_name << "' não encontrado. " << std::endl;
     }
   }
   else
