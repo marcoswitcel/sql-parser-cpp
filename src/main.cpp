@@ -37,7 +37,6 @@ int main(int argc, const char* argv[])
   std::unordered_map<std::string, std::string> table_binds;
 
   if (is_verbose) std::cout << "SQL: " << sql_command << std::endl;
-  if (!csv_found.found) std::cout << "Parâmetro --csv-filename é obrigatório." << std::endl;
 
   SQL_Parse_Context parser(sql_command);
 
@@ -54,10 +53,16 @@ int main(int argc, const char* argv[])
       }
       else
       {
-        // insere e ou atualiza...
+        // insere e ou atualiza em caso de valores duplicados
         table_binds[bind_splited[0]] = bind_splited[1];
       }
     }
+  }
+
+  if (csv_found.found)
+  {
+    // insere e ou atualiza...
+    table_binds["csv_file"] = std::string(csv_found.value);
   }
 
   if (node && node->type == Ast_Node_Type::Select_Ast_Node)
