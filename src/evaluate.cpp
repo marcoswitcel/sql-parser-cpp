@@ -204,18 +204,14 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
     }
     else
     {
+      if (!contains(csv.header, ident->ident_name))
+      {
+        std::cout << "Coluna inexistente no dataset: " << ident->ident_name << std::endl;
+        return false;
+      }
       columns.push_back(ident->ident_name);
     }
     
-  }
-
-  for (auto column : columns)
-  {
-    if (!contains(csv.header, column))
-    {
-      std::cout << "Coluna inexistente no dataset: " << column << std::endl;
-      return false;
-    }
   }
 
   if (csv.dataset.size() == 0) return false;
