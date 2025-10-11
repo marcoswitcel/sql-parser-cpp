@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <regex>
+#include <algorithm>
 
 #include "./utils.cpp"
 #include "./ast_node.hpp"
@@ -185,9 +186,43 @@ bool evaluate_relational_binary_ast_node(const Binary_Expression_Ast_Node* node,
   return false;
 }
 
+struct Field_Resolver
+{
+  virtual ~Field_Resolver() = default;
+
+  virtual std::string resolve(std::vector<std::string> &data_row) = 0;
+};
+
+struct Field_By_Name_Resolver : Field_Resolver
+{
+  int64_t index_of_field = -1;
+
+  Field_By_Name_Resolver(CSVData &csv, std::string field_name)
+  {
+    auto it = std::find(csv.header.begin(), csv.header.end(), field_name);
+    
+    if (it == csv.header.end())
+    {
+      assert(false);
+      std::cout << "Error: field_name: " << field_name << " não existe no csv." << std::endl;
+    }
+    
+    this->index_of_field = std::distance(csv.header.begin(), it);
+  }
+
+  std::string resolve(std::vector<std::string> &data_row)
+  {
+    assert(this->index_of_field > -1);
+    // @note João, não trata a exception in runtime? talvez, talvez fosse melhor retornar string vazia
+    return data_row[this->index_of_field];
+  }
+};
+
 bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
 {
-  vector<std::string> columns;
+  vector<std::string> new_header;
+  // @todo João, leak aqui...
+  vector<Field_Resolver*> field_resolver;
   
   for (auto field : select.fields)
   {
@@ -199,7 +234,8 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
     {
       for (auto column : csv.header)
       {
-        columns.push_back(column);    
+        new_header.push_back(column);
+        field_resolver.push_back(new Field_By_Name_Resolver(csv, column));
       }
     }
     else
@@ -209,10 +245,20 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
         std::cout << "Coluna inexistente no dataset: " << ident->ident_name << std::endl;
         return false;
       }
-      columns.push_back(ident->ident_name);
+
+      if (ident->as.empty())
+      {
+        new_header.push_back(ident->ident_name);
+      }
+      else
+      {
+        new_header.push_back(ident->as);
+      }
+      field_resolver.push_back(new Field_By_Name_Resolver(csv, ident->ident_name));
     }
-    
   }
+
+  assert(new_header.size() == field_resolver.size());
 
   if (csv.dataset.size() == 0) return false;
 
@@ -229,12 +275,20 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
       }
     }
 
-    new_dataset.push_back(data_row);
+    std::vector<std::string> new_data_row;
+    
+    for (auto field_resolver : field_resolver)
+    {
+      new_data_row.push_back(field_resolver->resolve(data_row));
+    }
+
+    new_dataset.push_back(new_data_row);
   }
 
+  csv.header = new_header;
   csv.dataset = new_dataset;
 
-  print_as_table(csv, Columns_Print_Mode::Included_And_Ordered_Columns, &columns, 30);
+  print_as_table(csv, Columns_Print_Mode::All_Columns, NULL, 30);
 
   return true;
 }
