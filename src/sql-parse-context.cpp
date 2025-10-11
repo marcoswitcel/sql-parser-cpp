@@ -95,6 +95,7 @@ Ast_Node* SQL_Parse_Context::eat_node()
 
       // @todo joão, pra parsear uma "Expression_Ast_Node" aqui vou precisar implementar um comando peek_token e
       // refatorar o método `eat_binary_expression_ast_node` para usar o peek_token ao invés de tentar consumir os tokens
+      // @note atualizado: avaliar usar o método peek_token implemetando e talvez não precise refatorar o método `eat_binary_expression_ast_node` ainda
       if (token.type == Token_Type::Ident || token.type == Token_Type::Asterisk)
       {
         auto ident = std::make_shared<Ident_Expression_Ast_Node>();
@@ -385,6 +386,20 @@ Token SQL_Parse_Context::eat_token()
   }
 
   this->error = true;
+  return token;
+}
+
+Token SQL_Parse_Context::peek_token()
+{
+  auto index = this->index;
+
+  // @todo João, na verdade, vou precisar bufferizar o peek_token,
+  // mas por hora vou só dar um eat e reverter os estados
+  Token token = this->eat_token();
+
+  // @note o error é reportado, mas o index é revertido
+  this->index = index;
+
   return token;
 }
 

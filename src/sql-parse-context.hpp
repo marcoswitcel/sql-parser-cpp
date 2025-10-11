@@ -23,6 +23,7 @@ struct SQL_Parse_Context
   int32_t eat_char();
 
   Token eat_token();
+  Token peek_token();
 
   Ast_Node* eat_node();
   Binary_Expression_Ast_Node* eat_binary_expression_ast_node();
