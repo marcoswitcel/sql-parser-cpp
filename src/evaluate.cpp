@@ -221,7 +221,6 @@ struct Field_By_Name_Resolver : Field_Resolver
 bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
 {
   vector<std::string> new_header;
-  // @todo João, leak aqui...
   vector<Field_Resolver*> field_resolver;
   
   for (auto field : select.fields)
@@ -260,7 +259,12 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
 
   assert(new_header.size() == field_resolver.size());
 
-  if (csv.dataset.size() == 0) return false;
+  if (csv.dataset.size() == 0)
+  {
+    for (Field_Resolver* it : field_resolver) delete it;
+    
+    return false;
+  }
 
   vector<CSV_Data_Row> new_dataset;
 
@@ -277,9 +281,9 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
 
     std::vector<std::string> new_data_row;
     
-    for (auto field_resolver : field_resolver)
+    for (auto resolver : field_resolver)
     {
-      new_data_row.push_back(field_resolver->resolve(data_row));
+      new_data_row.push_back(resolver->resolve(data_row));
     }
 
     new_dataset.push_back(new_data_row);
@@ -289,6 +293,8 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
   csv.dataset = new_dataset;
 
   print_as_table(csv, Columns_Print_Mode::All_Columns, NULL, 30);
+
+  for (Field_Resolver* it : field_resolver) delete it;
 
   return true;
 }
