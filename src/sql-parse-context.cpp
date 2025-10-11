@@ -801,7 +801,8 @@ void try_parse_number(SQL_Parse_Context* parser, Token *token, bool *success)
   *success = true;
 }
 
-// @todo João, incluir àspas dupals para permitir parsear identificadores com caracteres especiais (aparentemente ANSI é a áspa dupla)
+// @todo João, incluir àspas duplas para permitir parsear identificadores com caracteres especiais (aparentemente ANSI é a áspa dupla)
+// @note João, acho que copiar a `try_parse_string` e trocar o tipo de àspas já resolveria...
 void try_parse_ident(SQL_Parse_Context* parser, Token *token, bool *success)
 {
   size_t i = 0;
