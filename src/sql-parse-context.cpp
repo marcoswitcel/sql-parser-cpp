@@ -731,9 +731,9 @@ inline bool is_digit(char c)
   return '0' <= c && c <= '9';
 }
 
-inline bool is_valid_ident_char(char c)
+inline bool is_valid_ident_char(char c, bool quoted)
 {
-  return isalnum(c) || c == '_';
+  return isalnum(c) || c == '_' || (quoted && c == ' ');
 }
 
 void try_parse_number(SQL_Parse_Context* parser, Token *token, bool *success)
@@ -805,11 +805,21 @@ void try_parse_number(SQL_Parse_Context* parser, Token *token, bool *success)
 // @note João, acho que copiar a `try_parse_string` e trocar o tipo de àspas já resolveria...
 void try_parse_ident(SQL_Parse_Context* parser, Token *token, bool *success)
 {
+  const char double_quote = '"';
+  bool is_quoted = false;
+  bool saw_close_quote = false;
   size_t i = 0;
   int32_t c = parser->peek_n_char(i);
+
+  if (c == double_quote)
+  {
+    is_quoted = true;
+    i++;
+    c = parser->peek_n_char(i);
+  }
   
   // não pode começar com esse caracteres
-  if (c == '_' || is_digit(c))
+  if (!is_quoted && (c == '_' || is_digit(c)))
   {
     token->type = Token_Type::None;
     *success = false;
@@ -817,9 +827,24 @@ void try_parse_ident(SQL_Parse_Context* parser, Token *token, bool *success)
   }
   
   // @todo João, melhorar para não ter dependência com o símbolo ','
-  while (c != END_OF_SOURCE && !parser->is_whitespace(c) && c != ',')
+  while (c != END_OF_SOURCE && c != ',')
   {
-    if (!is_valid_ident_char(c))
+    if (!is_quoted && parser->is_whitespace(c))
+    {
+      break;
+    }
+
+    // @todo João @wip ainda não lida com áspas duplas no meio de um ident com "quote"
+    // @note João, vai bugar com ',' no meio de sequência 'quotadas'
+    if (is_quoted && c == double_quote)
+    {
+      i++;
+      c = parser->peek_n_char(i);
+      saw_close_quote = true;
+      break;
+    }
+
+    if (!is_valid_ident_char(c, is_quoted))
     {
       token->type = Token_Type::None;
       *success = false;
@@ -830,7 +855,17 @@ void try_parse_ident(SQL_Parse_Context* parser, Token *token, bool *success)
     c = parser->peek_n_char(i);
   }
 
-  std::string ident_name = parser->source.substr(parser->index, i);
+  if (is_quoted && !saw_close_quote)
+  {
+    token->type = Token_Type::None;
+    *success = false;
+    return;
+  }
+
+  std::string ident_name = (is_quoted) ? 
+    parser->source.substr(parser->index + 1, i - 2) :
+    parser->source.substr(parser->index, i);
+  
   for (size_t j = 0; j < i; j++)
   {
     parser->eat_char();
