@@ -86,48 +86,26 @@ Ast_Node* SQL_Parse_Context::eat_node()
 
     while (!this->is_finished())
     {
-      Token token = this->eat_token();
+      // Token token = this->eat_token();
 
       if (this->error)
       {
         return NULL;
       }
 
+      Expression_Ast_Node* expression_node = this->eat_expression_ast_node();
+
       // @todo joão, pra parsear uma "Expression_Ast_Node" aqui vou precisar implementar um comando peek_token e
       // refatorar o método `eat_binary_expression_ast_node` para usar o peek_token ao invés de tentar consumir os tokens
       // @note atualizado: avaliar usar o método peek_token implemetando e talvez não precise refatorar o método `eat_binary_expression_ast_node` ainda
-      if (token.type == Token_Type::Ident || token.type == Token_Type::Asterisk)
+      // @note atualizado: talvez fosse melhor só fazer o eat_token e reverter se der erro? um mecanismo de revert automático seria melhor que um método peek_n_token?
+      // Pergunto isso porque um peek_n_token apresenta várias complexidades, como, parsear token a token e armazenar num buffer? e se der erro? armazenar em alguma
+      // estrutura? 
+      if (expression_node && expression_node->type == Ast_Node_Type::Ident_Expression_Ast_Node)
       {
-        auto ident = std::make_shared<Ident_Expression_Ast_Node>();
-        if (token.type == Token_Type::Ident)
-        {
-          ident.get()->ident_name = static_cast<Ident_Token*>(token.data)->ident;
-        }
-        else
-        {
-          assert(token.type == Token_Type::Asterisk);
-          ident.get()->ident_name = "*";
-        }
+        select->fields.push_back(std::shared_ptr<Expression_Ast_Node>(expression_node));
 
         token = this->eat_token();
-
-        if (token.type == Token_Type::As)
-        {
-
-          token = this->eat_token();
-
-          if (token.type == Token_Type::Ident)
-          {
-            ident->as = static_cast<Ident_Token*>(token.data)->ident;
-            token = this->eat_token();
-          }
-          else
-          {
-            return NULL;
-          }
-        }
-        
-        select->fields.push_back(ident);
 
         if (token.type == Token_Type::From)
         {
@@ -209,6 +187,47 @@ Ast_Node* SQL_Parse_Context::eat_node()
   }
   
   return NULL;
+}
+
+Expression_Ast_Node* SQL_Parse_Context::eat_expression_ast_node()
+{
+  Token token = this->eat_token();
+
+  if (token.type != Token_Type::Ident && token.type != Token_Type::Asterisk) return NULL;
+
+  auto ident = new Ident_Expression_Ast_Node();
+  if (token.type == Token_Type::Ident)
+  {
+    ident->ident_name = static_cast<Ident_Token*>(token.data)->ident;
+  }
+  else
+  {
+    assert(token.type == Token_Type::Asterisk);
+    ident->ident_name = "*";
+  }
+
+  token = this->peek_token();
+
+  if (token.type == Token_Type::As)
+  {
+    // consome "As" token
+    this->eat_token(); 
+
+    token = this->peek_token();
+
+    if (token.type == Token_Type::Ident)
+    {
+      // consome "Ident" token
+      this->eat_token(); 
+      ident->as = static_cast<Ident_Token*>(token.data)->ident;
+    }
+    else
+    {
+      return NULL;
+    }
+  }
+
+  return ident;
 }
 
 Binary_Expression_Ast_Node* SQL_Parse_Context::eat_binary_expression_ast_node()
@@ -389,6 +408,11 @@ Token SQL_Parse_Context::eat_token()
   return token;
 }
 
+/**
+ * @brief peek token
+ * 
+ * @return Token 
+ */
 Token SQL_Parse_Context::peek_token()
 {
   auto index = this->index;
