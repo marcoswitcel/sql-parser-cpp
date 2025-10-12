@@ -227,7 +227,7 @@ struct String_Literal_Resolver : Field_Resolver
     this->value = string_value;
   }
 
-  std::string resolve(std::vector<std::string> &data_row)
+  std::string resolve([[maybe_unused]] std::vector<std::string> &data_row)
   {
     return this->value;
   }
