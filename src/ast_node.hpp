@@ -89,7 +89,9 @@ struct Ident_Expression_Ast_Node: Expression_Ast_Node
   {
     std::string desc = "Ident_Expression_Ast_Node { serial: ";
     desc += std::to_string(this->serial_number);
-    desc += ", ident_name: \"" + this->ident_name +  "\" }";
+    desc += ", ident_name: \"" + this->ident_name + "\"";
+    if (!this->as.empty()) desc += ", as: \"" + this->as +  "\"";
+    desc += " }";
 
     return desc;
   }

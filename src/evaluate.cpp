@@ -218,6 +218,21 @@ struct Field_By_Name_Resolver : Field_Resolver
   }
 };
 
+struct String_Literal_Resolver : Field_Resolver
+{
+  std::string value;
+
+  String_Literal_Resolver(std::string string_value)
+  {
+    this->value = string_value;
+  }
+
+  std::string resolve(std::vector<std::string> &data_row)
+  {
+    return this->value;
+  }
+};
+
 bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
 {
   vector<std::string> new_header;
@@ -225,35 +240,54 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
   
   for (auto field : select.fields)
   {
-    // @todo João, por hora parseia apenas "ident's", mas logo suportarei outros tipos de nós
-    assert(field->type == Ast_Node_Type::Ident_Expression_Ast_Node);
-    auto ident = static_cast<Ident_Expression_Ast_Node*>(field.get());
-
-    if (ident->ident_name == "*")
+    // @todo João, por hora parseia apenas "ident's" e "string's"
+    if (field->type == Ast_Node_Type::Ident_Expression_Ast_Node)
     {
-      for (auto column : csv.header)
+      auto ident = static_cast<Ident_Expression_Ast_Node*>(field.get());
+  
+      if (ident->ident_name == "*")
       {
-        new_header.push_back(column);
-        field_resolver.push_back(new Field_By_Name_Resolver(csv, column));
-      }
-    }
-    else
-    {
-      if (!contains(csv.header, ident->ident_name))
-      {
-        std::cout << "Coluna inexistente no dataset: " << ident->ident_name << std::endl;
-        return false;
-      }
-
-      if (ident->as.empty())
-      {
-        new_header.push_back(ident->ident_name);
+        for (auto column : csv.header)
+        {
+          new_header.push_back(column);
+          field_resolver.push_back(new Field_By_Name_Resolver(csv, column));
+        }
       }
       else
       {
-        new_header.push_back(ident->as);
+        if (!contains(csv.header, ident->ident_name))
+        {
+          std::cout << "Coluna inexistente no dataset: " << ident->ident_name << std::endl;
+          return false;
+        }
+  
+        if (ident->as.empty())
+        {
+          new_header.push_back(ident->ident_name);
+        }
+        else
+        {
+          new_header.push_back(ident->as);
+        }
+        field_resolver.push_back(new Field_By_Name_Resolver(csv, ident->ident_name));
       }
-      field_resolver.push_back(new Field_By_Name_Resolver(csv, ident->ident_name));
+    }
+    else if (field->type == Ast_Node_Type::String_Literal_Expression_Ast_Node)
+    {
+      auto string = static_cast<String_Literal_Expression_Ast_Node*>(field.get());
+      if (string->as.empty())
+      {
+        new_header.push_back(string->value);
+      }
+      else
+      {
+        new_header.push_back(string->as);
+      }
+      field_resolver.push_back(new String_Literal_Resolver(string->value));
+    }
+    else
+    {
+      assert(false);
     }
   }
 

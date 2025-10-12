@@ -101,10 +101,10 @@ Ast_Node* SQL_Parse_Context::eat_node()
       // @note atualizado: talvez fosse melhor só fazer o eat_token e reverter se der erro? um mecanismo de revert automático seria melhor que um método peek_n_token?
       // Pergunto isso porque um peek_n_token apresenta várias complexidades, como, parsear token a token e armazenar num buffer? e se der erro? armazenar em alguma
       // estrutura? 
-      if (expression_node && expression_node->type == Ast_Node_Type::Ident_Expression_Ast_Node)
+      if (expression_node && (expression_node->type == Ast_Node_Type::Ident_Expression_Ast_Node || expression_node->type == Ast_Node_Type::String_Literal_Expression_Ast_Node))
       {
         select->fields.push_back(std::shared_ptr<Expression_Ast_Node>(expression_node));
-
+        
         token = this->eat_token();
 
         if (token.type == Token_Type::From)
@@ -193,18 +193,31 @@ Expression_Ast_Node* SQL_Parse_Context::eat_expression_ast_node()
 {
   Token token = this->eat_token();
 
-  if (token.type != Token_Type::Ident && token.type != Token_Type::Asterisk) return NULL;
+  if (token.type != Token_Type::Ident && token.type != Token_Type::Asterisk && token.type != Token_Type::String) return NULL;
 
-  auto ident = new Ident_Expression_Ast_Node();
+  Expression_Ast_Node* expression = NULL;
+
   if (token.type == Token_Type::Ident)
   {
+    auto ident = new Ident_Expression_Ast_Node();
     ident->ident_name = static_cast<Ident_Token*>(token.data)->ident;
+    expression = ident;
+  }
+  else if (token.type == Token_Type::String)
+  {
+    auto string = new String_Literal_Expression_Ast_Node();
+    string->value = static_cast<String_Token*>(token.data)->value;
+    expression = string;
   }
   else
   {
     assert(token.type == Token_Type::Asterisk);
+    auto ident = new Ident_Expression_Ast_Node();
     ident->ident_name = "*";
+    expression = ident;
   }
+
+  assert(expression);
 
   token = this->peek_token();
 
@@ -219,7 +232,7 @@ Expression_Ast_Node* SQL_Parse_Context::eat_expression_ast_node()
     {
       // consome "Ident" token
       this->eat_token(); 
-      ident->as = static_cast<Ident_Token*>(token.data)->ident;
+      expression->as = static_cast<Ident_Token*>(token.data)->ident;
     }
     else
     {
@@ -227,7 +240,7 @@ Expression_Ast_Node* SQL_Parse_Context::eat_expression_ast_node()
     }
   }
 
-  return ident;
+  return expression;
 }
 
 Binary_Expression_Ast_Node* SQL_Parse_Context::eat_binary_expression_ast_node()
