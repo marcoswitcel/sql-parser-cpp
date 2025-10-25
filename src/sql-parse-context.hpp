@@ -54,6 +54,7 @@ void try_parse_open_parenthesis(SQL_Parse_Context* parser, Token *token, bool *s
 void try_parse_close_parenthesis(SQL_Parse_Context* parser, Token *token, bool *success);
 void try_parse_or(SQL_Parse_Context* parser, Token *token, bool *success);
 void try_parse_and(SQL_Parse_Context* parser, Token *token, bool *success);
+void try_parse_concat(SQL_Parse_Context* parser, Token *token, bool *success);
 void try_parse_string(SQL_Parse_Context* parser, Token *token, bool *success);
 void try_parse_number(SQL_Parse_Context* parser, Token *token, bool *success);
 void try_parse_ident(SQL_Parse_Context* parser, Token *token, bool *success);

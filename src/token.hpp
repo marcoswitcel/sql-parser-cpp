@@ -25,6 +25,7 @@ enum class Token_Type {
   Lower_Than,
   And,
   Or,
+  Concat,
   // non-terminal
   String,
   Number,

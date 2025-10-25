@@ -385,6 +385,7 @@ Parse_Function terminals[] = {
   try_parse_close_parenthesis,
   try_parse_or,
   try_parse_and,
+  try_parse_concat,
   // non-terminals
   try_parse_string,
   try_parse_number,
@@ -512,6 +513,22 @@ void try_parse_and(SQL_Parse_Context* parser, Token *token, bool *success)
   }
   
   token->type = Token_Type::None;
+  *success = false;
+}
+
+void try_parse_concat(SQL_Parse_Context* parser, Token *token, bool *success)
+{
+  // @note João, não era bem pra isso que fiz essa função `try_consume_keyword`, mas enfim... o 'diferente' é multicaracter
+  bool is_consumed = try_consume_keyword(parser, "||"); 
+  
+  if (is_consumed)
+  {
+    token->type = Token_Type::Not_Equals;
+    *success = true;
+    return;
+  }
+  
+  token->type = Token_Type::Concat;
   *success = false;
 }
 
