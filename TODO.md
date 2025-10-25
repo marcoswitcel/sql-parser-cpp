@@ -3,7 +3,7 @@
 ## Parseando Where
 
 * Parsear um expressão binário como: Nome = "Nome da pessoa"
-  * falta implementar as funções para parsear números literais, strins literais e símbolos como: =,<>,>,<
+  * falta implementar as funções para parsear números literais, strins literais e símbolos como: =,<>,>,< -- ok
   * falta implementar o try_parse_where_node e try_parse_binary_expression
   * se as funçõe: try_parse_*_node funcionarem bem, refatorar o resto do código da Select_Ast_Node
 * Integrar com o parser de CSV
@@ -11,5 +11,5 @@
   * Testar se integra bem -- OK, teste de uma forma temporária e funcionou
   * Buildar uma 'DLL' -- ok, biblioteca estática
 * Falta parsear e integrar
-  * falta parsear a palvra chave 'as' para renomear colunas
-  * Falta passar o rename para o print_as_table
+  * falta parsear a palvra chave 'as' para renomear colunas -- ok
+  * Falta passar o rename para o print_as_table -- ok
