@@ -62,6 +62,11 @@ struct Ast_Node
   }
 
   virtual std::string to_string() = 0;
+
+  virtual std::string to_expression()
+  {
+    return "[expression]";
+  }
 };
 
 uint64_t Ast_Node::serial_counter = 0;
@@ -94,6 +99,12 @@ struct Ident_Expression_Ast_Node: Expression_Ast_Node
     desc += " }";
 
     return desc;
+  }
+
+  std::string to_expression() override
+  {
+    // @todo João, ajustar para colocar áspas quando aplicável.
+    return this->ident_name;
   }
 };
 
@@ -138,6 +149,12 @@ struct String_Literal_Expression_Ast_Node: Expression_Ast_Node
     desc += ", value: \"" + this->value +  "\" }";
 
     return desc;
+  }
+
+  std::string to_expression() override
+  {
+    // @todo João, ajustar para escapar áspas da forma correta aqui.
+    return "\"" + this->value + "\"";
   }
 };
 

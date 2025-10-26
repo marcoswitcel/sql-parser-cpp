@@ -233,6 +233,39 @@ struct String_Literal_Resolver : Field_Resolver
   }
 };
 
+std::string resolve_expression(std::vector<std::string> &data_row, Expression_Ast_Node* expr)
+{
+  if (expr->type == Ast_Node_Type::String_Literal_Expression_Ast_Node)
+  {
+    auto string_expr = static_cast<String_Literal_Expression_Ast_Node*>(expr);
+    auto resolver = String_Literal_Resolver(string_expr->value);
+    return resolver.resolve(data_row);
+  }
+  else if (expr->type == Ast_Node_Type::Ident_Expression_Ast_Node)
+  {
+    // @todo joão, terminar de implementar
+    assert(false);
+  }
+
+  // @todo joão, terminar de implementar
+  return "";
+}
+
+struct Binary_Expression_Resolver : Field_Resolver
+{
+  Binary_Expression_Ast_Node* bin_expr;
+
+  Binary_Expression_Resolver(Binary_Expression_Ast_Node* bin_expr)
+  {
+    this->bin_expr = bin_expr;
+  }
+
+  std::string resolve([[maybe_unused]] std::vector<std::string> &data_row)
+  {
+    return resolve_expression(data_row, this->bin_expr->left.get()) + resolve_expression(data_row, this->bin_expr->right.get());
+  }
+};
+
 bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
 {
   vector<std::string> new_header;
@@ -284,6 +317,19 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
         new_header.push_back(string->as);
       }
       field_resolver.push_back(new String_Literal_Resolver(string->value));
+    }
+    else if (field->type == Ast_Node_Type::Binary_Expression_Node && static_cast<Binary_Expression_Ast_Node*>(field.get())->op == "concat")
+    {
+      auto bin_expr = static_cast<Binary_Expression_Ast_Node*>(field.get());
+      if (bin_expr->as.empty())
+      {
+        new_header.push_back(bin_expr->left->to_expression() + " || " + bin_expr->right->to_expression());
+      }
+      else
+      {
+        new_header.push_back(bin_expr->as);
+      }
+      field_resolver.push_back(new Binary_Expression_Resolver(bin_expr));
     }
     else
     {

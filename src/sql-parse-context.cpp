@@ -101,7 +101,7 @@ Ast_Node* SQL_Parse_Context::eat_node()
       // @note atualizado: talvez fosse melhor só fazer o eat_token e reverter se der erro? um mecanismo de revert automático seria melhor que um método peek_n_token?
       // Pergunto isso porque um peek_n_token apresenta várias complexidades, como, parsear token a token e armazenar num buffer? e se der erro? armazenar em alguma
       // estrutura? 
-      if (expression_node && (expression_node->type == Ast_Node_Type::Ident_Expression_Ast_Node || expression_node->type == Ast_Node_Type::String_Literal_Expression_Ast_Node))
+      if (expression_node && (expression_node->type == Ast_Node_Type::Ident_Expression_Ast_Node || expression_node->type == Ast_Node_Type::String_Literal_Expression_Ast_Node || expression_node->type == Ast_Node_Type::Binary_Expression_Node))
       {
         select->fields.push_back(std::shared_ptr<Expression_Ast_Node>(expression_node));
         
@@ -238,6 +238,28 @@ Expression_Ast_Node* SQL_Parse_Context::eat_expression_ast_node()
     {
       return NULL;
     }
+  }
+  else if (token.type == Token_Type::Concat)
+  {
+    // consome "Concat" token
+    this->eat_token(); 
+
+    auto bin_exp = new Binary_Expression_Ast_Node();
+    bin_exp->left = std::unique_ptr<Expression_Ast_Node>(expression);
+    bin_exp->op = "concat";
+    auto bin_exp_right = this->eat_expression_ast_node();
+
+    if (bin_exp_right == NULL) return NULL;
+
+    if (!bin_exp_right->as.empty())
+    {
+      bin_exp->as = bin_exp_right->as;
+      bin_exp_right->as = "";
+    }
+
+    bin_exp->right = std::unique_ptr<Expression_Ast_Node>(bin_exp_right);
+
+    expression = bin_exp;
   }
 
   return expression;
@@ -523,12 +545,12 @@ void try_parse_concat(SQL_Parse_Context* parser, Token *token, bool *success)
   
   if (is_consumed)
   {
-    token->type = Token_Type::Not_Equals;
+    token->type = Token_Type::Concat;
     *success = true;
     return;
   }
   
-  token->type = Token_Type::Concat;
+  token->type = Token_Type::None;
   *success = false;
 }
 
