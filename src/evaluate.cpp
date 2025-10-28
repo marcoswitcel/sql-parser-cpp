@@ -233,36 +233,48 @@ struct String_Literal_Resolver : Field_Resolver
   }
 };
 
-std::string resolve_expression(std::vector<std::string> &data_row, Expression_Ast_Node* expr)
-{
-  if (expr->type == Ast_Node_Type::String_Literal_Expression_Ast_Node)
-  {
-    auto string_expr = static_cast<String_Literal_Expression_Ast_Node*>(expr);
-    auto resolver = String_Literal_Resolver(string_expr->value);
-    return resolver.resolve(data_row);
-  }
-  else if (expr->type == Ast_Node_Type::Ident_Expression_Ast_Node)
-  {
-    // @todo joão, terminar de implementar
-    assert(false);
-  }
-
-  // @todo joão, terminar de implementar
-  return "";
-}
-
 struct Binary_Expression_Resolver : Field_Resolver
 {
   Binary_Expression_Ast_Node* bin_expr;
+  CSVData *csv;
 
-  Binary_Expression_Resolver(Binary_Expression_Ast_Node* bin_expr)
+  Binary_Expression_Resolver(CSVData *csv, Binary_Expression_Ast_Node* bin_expr)
   {
     this->bin_expr = bin_expr;
+    this->csv = csv;
   }
 
   std::string resolve([[maybe_unused]] std::vector<std::string> &data_row)
   {
     return resolve_expression(data_row, this->bin_expr->left.get()) + resolve_expression(data_row, this->bin_expr->right.get());
+  }
+
+  private:
+  std::string resolve_expression(std::vector<std::string> &data_row, Expression_Ast_Node* expr)
+  {
+    if (expr->type == Ast_Node_Type::String_Literal_Expression_Ast_Node)
+    {
+      auto string_expr = static_cast<String_Literal_Expression_Ast_Node*>(expr);
+      auto resolver = String_Literal_Resolver(string_expr->value);
+      return resolver.resolve(data_row);
+    }
+    else if (expr->type == Ast_Node_Type::Ident_Expression_Ast_Node)
+    {
+      auto ident_expr = static_cast<Ident_Expression_Ast_Node*>(expr);
+      auto resolver = Field_By_Name_Resolver(*this->csv, ident_expr->ident_name);
+      return resolver.resolve(data_row);
+    }
+    else if (expr->type == Ast_Node_Type::Binary_Expression_Node)
+    {
+      auto bin_expr = static_cast<Binary_Expression_Ast_Node*>(expr);
+      return resolve_expression(data_row, bin_expr->left.get()) + resolve_expression(data_row, bin_expr->right.get());
+    }
+    else
+    {
+      // @note João, por hora não suporto outras expressões
+      assert(false);
+      return "";
+    }
   }
 };
 
@@ -329,7 +341,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
       {
         new_header.push_back(bin_expr->as);
       }
-      field_resolver.push_back(new Binary_Expression_Resolver(bin_expr));
+      field_resolver.push_back(new Binary_Expression_Resolver(&csv, bin_expr));
     }
     else
     {
