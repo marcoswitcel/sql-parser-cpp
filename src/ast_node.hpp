@@ -181,6 +181,11 @@ struct Binary_Expression_Ast_Node: Expression_Ast_Node
 
     return desc;
   }
+
+  std::string to_expression() override
+  {
+    return this->left->to_expression() + " || " + this->right->to_expression();
+  }
 };
 
 struct Where_Ast_Node: Ast_Node

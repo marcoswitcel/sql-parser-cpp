@@ -335,9 +335,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
       auto bin_expr = static_cast<Binary_Expression_Ast_Node*>(field.get());
       if (bin_expr->as.empty())
       {
-        // @todo João, falta implementar a recursão aqui... para buscar no nó da direita caso seja um expressão binária,
-        // outro ponto, falta implementar o 'to_expression' da 'string literal'
-        new_header.push_back(bin_expr->left->to_expression() + " || " + bin_expr->right->to_expression());
+        new_header.push_back(bin_expr->to_expression());
       }
       else
       {
