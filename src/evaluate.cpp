@@ -130,6 +130,7 @@ bool evaluate_equals_binary_ast_node(const Binary_Expression_Ast_Node* node, std
     return false;
   }
 
+  // @todo João, não lida com números, possivelmente se aplica em outras sessões também
   return lhs.compare(rhs) == 0;
 }
 
