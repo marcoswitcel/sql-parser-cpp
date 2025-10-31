@@ -233,6 +233,21 @@ struct String_Literal_Resolver : Field_Resolver
   }
 };
 
+struct Number_Literal_Resolver : Field_Resolver
+{
+  int64_t value;
+
+  Number_Literal_Resolver(int64_t value)
+  {
+    this->value = value;
+  }
+
+  std::string resolve([[maybe_unused]] std::vector<std::string> &data_row)
+  {
+    return std::to_string(this->value);
+  }
+};
+
 struct Binary_Expression_Resolver : Field_Resolver
 {
   Binary_Expression_Ast_Node* bin_expr;
@@ -329,6 +344,19 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
         new_header.push_back(string->as);
       }
       field_resolver.push_back(new String_Literal_Resolver(string->value));
+    }
+    else if (field->type == Ast_Node_Type::Number_Literal_Expression_Ast_Node)
+    {
+      auto number = static_cast<Number_Literal_Expression_Ast_Node*>(field.get());
+      if (number->as.empty())
+      {
+        new_header.push_back(std::to_string(number->value));
+      }
+      else
+      {
+        new_header.push_back(number->as);
+      }
+      field_resolver.push_back(new Number_Literal_Resolver(number->value));
     }
     else if (field->type == Ast_Node_Type::Binary_Expression_Node && static_cast<Binary_Expression_Ast_Node*>(field.get())->op == "concat")
     {

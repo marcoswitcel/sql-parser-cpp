@@ -19,8 +19,9 @@ enum class Ast_Node_Type
   Describe_Ast_Node = 1 << 3,
   Expression_Node = 1 << 4, // categoria
   String_Literal_Expression_Ast_Node = Expression_Node | (1 << 5),
-  Ident_Expression_Ast_Node = Expression_Node | (1 << 6),
-  Binary_Expression_Node = Expression_Node | (1 << 7), // sub-categoria
+  Number_Literal_Expression_Ast_Node = Expression_Node | (1 << 6),
+  Ident_Expression_Ast_Node = Expression_Node | (1 << 7),
+  Binary_Expression_Node = Expression_Node | (1 << 8), // sub-categoria
 };
 
 Ast_Node_Type operator&(Ast_Node_Type a, Ast_Node_Type b)
@@ -155,6 +156,30 @@ struct String_Literal_Expression_Ast_Node: Expression_Ast_Node
   {
     // @todo João, ajustar para escapar áspas da forma correta aqui.
     return "\"" + this->value + "\"";
+  }
+};
+
+struct Number_Literal_Expression_Ast_Node: Expression_Ast_Node
+{
+  int64_t value;
+  
+  Number_Literal_Expression_Ast_Node()
+  {
+    this->type = Ast_Node_Type::Number_Literal_Expression_Ast_Node;
+  }
+
+  std::string to_string() override
+  {
+    std::string desc = "Number_Literal_Expression_Ast_Node { serial: ";
+    desc += std::to_string(this->serial_number);
+    desc += ", value: " + std::to_string(this->value) +  " }";
+
+    return desc;
+  }
+
+  std::string to_expression() override
+  {
+    return std::to_string(this->value);
   }
 };
 

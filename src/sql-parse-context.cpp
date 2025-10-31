@@ -101,7 +101,7 @@ Ast_Node* SQL_Parse_Context::eat_node()
       // @note atualizado: talvez fosse melhor só fazer o eat_token e reverter se der erro? um mecanismo de revert automático seria melhor que um método peek_n_token?
       // Pergunto isso porque um peek_n_token apresenta várias complexidades, como, parsear token a token e armazenar num buffer? e se der erro? armazenar em alguma
       // estrutura? 
-      if (expression_node && (expression_node->type == Ast_Node_Type::Ident_Expression_Ast_Node || expression_node->type == Ast_Node_Type::String_Literal_Expression_Ast_Node || expression_node->type == Ast_Node_Type::Binary_Expression_Node))
+      if (expression_node && (expression_node->type == Ast_Node_Type::Ident_Expression_Ast_Node || expression_node->type == Ast_Node_Type::String_Literal_Expression_Ast_Node || expression_node->type == Ast_Node_Type::Number_Literal_Expression_Ast_Node || expression_node->type == Ast_Node_Type::Binary_Expression_Node))
       {
         select->fields.push_back(std::shared_ptr<Expression_Ast_Node>(expression_node));
         
@@ -193,7 +193,7 @@ Expression_Ast_Node* SQL_Parse_Context::eat_expression_ast_node()
 {
   Token token = this->eat_token();
 
-  if (token.type != Token_Type::Ident && token.type != Token_Type::Asterisk && token.type != Token_Type::String) return NULL;
+  if (token.type != Token_Type::Ident && token.type != Token_Type::Asterisk && token.type != Token_Type::String && token.type != Token_Type::Number) return NULL;
 
   Expression_Ast_Node* expression = NULL;
 
@@ -208,6 +208,12 @@ Expression_Ast_Node* SQL_Parse_Context::eat_expression_ast_node()
     auto string = new String_Literal_Expression_Ast_Node();
     string->value = static_cast<String_Token*>(token.data)->value;
     expression = string;
+  }
+  else if (token.type == Token_Type::Number)
+  {
+    auto number = new Number_Literal_Expression_Ast_Node();
+    number->value = static_cast<Number_Token*>(token.data)->value;
+    expression = number;
   }
   else
   {
@@ -409,8 +415,8 @@ Parse_Function terminals[] = {
   try_parse_and,
   try_parse_concat,
   // non-terminals
-  try_parse_string,
   try_parse_number,
+  try_parse_string,
   try_parse_ident,
 };
 
