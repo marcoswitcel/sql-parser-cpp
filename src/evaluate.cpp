@@ -273,6 +273,12 @@ struct Binary_Expression_Resolver : Field_Resolver
       auto resolver = String_Literal_Resolver(string_expr->value);
       return resolver.resolve(data_row);
     }
+    else if (expr->type == Ast_Node_Type::Number_Literal_Expression_Ast_Node)
+    {
+      auto number_expr = static_cast<Number_Literal_Expression_Ast_Node*>(expr);
+      auto resolver = Number_Literal_Resolver(number_expr->value);
+      return resolver.resolve(data_row);
+    }
     else if (expr->type == Ast_Node_Type::Ident_Expression_Ast_Node)
     {
       auto ident_expr = static_cast<Ident_Expression_Ast_Node*>(expr);
