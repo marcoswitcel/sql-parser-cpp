@@ -339,6 +339,11 @@ struct Binary_Expression_Resolver : Field_Resolver
   }
 };
 
+bool known_function_name_and_argument_list(Function_Call_Expression_Ast_Node* call_expr)
+{
+  return call_expr->name == "CURRENT_DATE";
+}
+
 bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
 {
   vector<std::string> new_header;
@@ -417,7 +422,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
       }
       field_resolver.push_back(new Binary_Expression_Resolver(&csv, bin_expr));
     }
-    else if (field->type == Ast_Node_Type::Function_Call_Expression_Ast_Node && static_cast<Function_Call_Expression_Ast_Node*>(field.get())->name == "CURRENT_DATE")
+    else if (field->type == Ast_Node_Type::Function_Call_Expression_Ast_Node && known_function_name_and_argument_list(static_cast<Function_Call_Expression_Ast_Node*>(field.get())))
     {
       auto call_expr = static_cast<Function_Call_Expression_Ast_Node*>(field.get());
       if (call_expr->as.empty())
