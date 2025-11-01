@@ -254,6 +254,34 @@ struct Number_Literal_Resolver : Field_Resolver
   }
 };
 
+struct Function_Call_Expression_Resolver : Field_Resolver
+{
+  Function_Call_Expression_Ast_Node* call_expr;
+  CSVData *csv;
+
+  Function_Call_Expression_Resolver(CSVData *csv, Function_Call_Expression_Ast_Node* call_expr)
+  {
+    this->call_expr = call_expr;
+    this->csv = csv;
+  }
+
+  std::string resolve([[maybe_unused]] std::vector<std::string> &data_row)
+  {
+    if (this->call_expr->name == "CURRENT_DATE")
+    {
+      std::time_t current_date = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+      auto local_time = std::localtime(&current_date);
+      std::stringstream ss;
+      ss << std::put_time(local_time, "%Y-%m-%d");
+
+      return ss.str();
+    }
+
+    // @todo João, terminar de implementar
+    return "[FUNCTION CALL RETURN]";
+  }
+};
+
 struct Binary_Expression_Resolver : Field_Resolver
 {
   Binary_Expression_Ast_Node* bin_expr;
@@ -296,40 +324,18 @@ struct Binary_Expression_Resolver : Field_Resolver
       auto bin_expr = static_cast<Binary_Expression_Ast_Node*>(expr);
       return resolve_expression(data_row, bin_expr->left.get()) + resolve_expression(data_row, bin_expr->right.get());
     }
+    else if (expr->type == Ast_Node_Type::Function_Call_Expression_Ast_Node)
+    {
+      auto call_expr = static_cast<Function_Call_Expression_Ast_Node*>(expr);
+      auto resolver = Function_Call_Expression_Resolver(this->csv, call_expr);
+      return resolver.resolve(data_row);
+    }
     else
     {
       // @note João, por hora não suporto outras expressões
       assert(false);
       return "";
     }
-  }
-};
-
-struct Function_Call_Expression_Resolver : Field_Resolver
-{
-  Function_Call_Expression_Ast_Node* call_expr;
-  CSVData *csv;
-
-  Function_Call_Expression_Resolver(CSVData *csv, Function_Call_Expression_Ast_Node* call_expr)
-  {
-    this->call_expr = call_expr;
-    this->csv = csv;
-  }
-
-  std::string resolve([[maybe_unused]] std::vector<std::string> &data_row)
-  {
-    if (this->call_expr->name == "CURRENT_DATE")
-    {
-      std::time_t current_date = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-      auto local_time = std::localtime(&current_date);
-      std::stringstream ss;
-      ss << std::put_time(local_time, "%Y-%m-%d");
-
-      return ss.str();
-    }
-
-    // @todo João, terminar de implementar
-    return "[FUNCTION CALL RETURN]";
   }
 };
 
