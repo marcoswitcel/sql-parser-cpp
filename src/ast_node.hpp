@@ -141,8 +141,8 @@ struct Function_Call_Expression_Ast_Node: Expression_Ast_Node
 
   std::string to_expression() override
   {
-    // @todo João, implementar
-    return "Function()";
+    // @todo João, ajustar para considerar lista de argumentos
+    return this->name + "()";
   }
 };
 

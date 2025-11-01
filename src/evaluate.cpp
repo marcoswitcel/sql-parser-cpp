@@ -1,7 +1,12 @@
 #pragma once
 
 #include <string>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <ctime>
 #include <vector>
+#include <chrono>
 #include <regex>
 #include <algorithm>
 
@@ -300,6 +305,34 @@ struct Binary_Expression_Resolver : Field_Resolver
   }
 };
 
+struct Function_Call_Expression_Resolver : Field_Resolver
+{
+  Function_Call_Expression_Ast_Node* call_expr;
+  CSVData *csv;
+
+  Function_Call_Expression_Resolver(CSVData *csv, Function_Call_Expression_Ast_Node* call_expr)
+  {
+    this->call_expr = call_expr;
+    this->csv = csv;
+  }
+
+  std::string resolve([[maybe_unused]] std::vector<std::string> &data_row)
+  {
+    if (this->call_expr->name == "CURRENT_DATE")
+    {
+      std::time_t current_date = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+      auto local_time = std::localtime(&current_date);
+      std::stringstream ss;
+      ss << std::put_time(local_time, "%Y-%m-%d");
+
+      return ss.str();
+    }
+
+    // @todo João, terminar de implementar
+    return "[FUNCTION CALL RETURN]";
+  }
+};
+
 bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
 {
   vector<std::string> new_header;
@@ -377,6 +410,19 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
         new_header.push_back(bin_expr->as);
       }
       field_resolver.push_back(new Binary_Expression_Resolver(&csv, bin_expr));
+    }
+    else if (field->type == Ast_Node_Type::Function_Call_Expression_Ast_Node && static_cast<Function_Call_Expression_Ast_Node*>(field.get())->name == "CURRENT_DATE")
+    {
+      auto call_expr = static_cast<Function_Call_Expression_Ast_Node*>(field.get());
+      if (call_expr->as.empty())
+      {
+        new_header.push_back(call_expr->to_expression());
+      }
+      else
+      {
+        new_header.push_back(call_expr->as);
+      }
+      field_resolver.push_back(new Function_Call_Expression_Resolver(&csv, call_expr));
     }
     else
     {
