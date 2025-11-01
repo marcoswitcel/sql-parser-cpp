@@ -5,8 +5,10 @@
 #include <vector>
 #include <cstdint>
 #include <assert.h>
+#include <regex>
 #include <memory>
 
+#include "./utils.cpp"
 #include "./trace.hpp"
 
 
@@ -104,7 +106,12 @@ struct Ident_Expression_Ast_Node: Expression_Ast_Node
 
   std::string to_expression() override
   {
-    // @todo João, ajustar para colocar áspas quando aplicável.
+    // @todo João, complementar essa validação para incluir qualquer caractere especial
+    if (contains(this->ident_name, ' '))
+    {
+      return "\"" + this->ident_name + "\"";
+    }
+
     return this->ident_name;
   }
 };
@@ -154,8 +161,9 @@ struct String_Literal_Expression_Ast_Node: Expression_Ast_Node
 
   std::string to_expression() override
   {
-    // @todo João, ajustar para escapar áspas da forma correta aqui.
-    return "\"" + this->value + "\"";
+    static std::regex quote("'");
+    // @todo João, testar
+    return "'" + std::regex_replace(this->value, quote, "\\'") + "'";
   }
 };
 
