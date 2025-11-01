@@ -22,8 +22,9 @@ enum class Ast_Node_Type
   Expression_Node = 1 << 4, // categoria
   String_Literal_Expression_Ast_Node = Expression_Node | (1 << 5),
   Number_Literal_Expression_Ast_Node = Expression_Node | (1 << 6),
-  Ident_Expression_Ast_Node = Expression_Node | (1 << 7),
-  Binary_Expression_Node = Expression_Node | (1 << 8), // sub-categoria
+  Ident_Expression_Ast_Node          = Expression_Node | (1 << 7),
+  Function_Call_Expression_Ast_Node  = Expression_Node | (1 << 8),
+  Binary_Expression_Node = Expression_Node | (1 << 9), // sub-categoria
 };
 
 Ast_Node_Type operator&(Ast_Node_Type a, Ast_Node_Type b)
@@ -113,6 +114,35 @@ struct Ident_Expression_Ast_Node: Expression_Ast_Node
     }
 
     return this->ident_name;
+  }
+};
+
+struct Function_Call_Expression_Ast_Node: Expression_Ast_Node
+{
+  std::string name;
+  std::vector<Expression_Ast_Node*> argument_list;
+  
+  Function_Call_Expression_Ast_Node()
+  {
+    this->type = Ast_Node_Type::Function_Call_Expression_Ast_Node;
+  }
+
+  std::string to_string() override
+  {
+    // @todo João, falta por a lista de argumentos aqui
+    std::string desc = "Function_Call_Expression_Ast_Node { serial: ";
+    desc += std::to_string(this->serial_number);
+    desc += ", name: \"" + this->name + "\"";
+    if (!this->as.empty()) desc += ", as: \"" + this->as +  "\"";
+    desc += " }";
+
+    return desc;
+  }
+
+  std::string to_expression() override
+  {
+    // @todo João, implementar
+    return "Function()";
   }
 };
 
