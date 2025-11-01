@@ -163,7 +163,7 @@ struct String_Literal_Expression_Ast_Node: Expression_Ast_Node
   {
     static std::regex quote("'");
     // @todo João, testar
-    return "'" + std::regex_replace(this->value, quote, "\\'") + "'";
+    return "'" + std::regex_replace(this->value, quote, "''") + "'";
   }
 };
 

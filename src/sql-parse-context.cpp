@@ -796,6 +796,7 @@ void try_parse_string(SQL_Parse_Context* parser, Token *token, bool *success)
   // contabiliza aspa de abertuta e busca próximo char
   c = parser->peek_n_char(++i);
 
+  // @todo João, não processa duas áspas simple em sequência que representam um àspa simples dentro da string
   while (c != END_OF_SOURCE && c != quote)
   {
     i++;
