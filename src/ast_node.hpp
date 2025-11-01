@@ -11,6 +11,12 @@
 #include "./utils.cpp"
 #include "./trace.hpp"
 
+enum class Inferred_Type
+{
+  Not_Inferred,
+  String,
+  Number,
+};
 
 enum class Ast_Node_Type
 {
@@ -82,6 +88,7 @@ struct Expression_Ast_Node: Ast_Node
   // @note João, incluído aqui um atributo para conter informações sobre um possível
   // `as` keyword. Acredito que deixaria mais compacto e de fácil acesso. Avaliar.
   std::string as;
+  Inferred_Type inferred_type = Inferred_Type::Not_Inferred;
 };
 
 struct Ident_Expression_Ast_Node: Expression_Ast_Node

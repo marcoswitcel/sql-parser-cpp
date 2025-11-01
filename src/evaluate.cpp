@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <cctype>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
@@ -276,6 +277,14 @@ struct Function_Call_Expression_Resolver : Field_Resolver
 
       return ss.str();
     }
+    else if (this->call_expr->name == "LOWER")
+    {
+      // @todo João, falta implementar uma etapa para inferrir o tipo e nessa etapa aqui fazer o evaluate da expressão
+      // e para de usar a string fixa "TESTE"
+      std::string fixed = "TESTE";
+      std::transform(fixed.begin(), fixed.end(), fixed.begin(), [](unsigned char c) { return std::tolower(c); });
+      return fixed;
+    }
 
     // @todo João, terminar de implementar
     return "[FUNCTION CALL RETURN]";
@@ -341,7 +350,16 @@ struct Binary_Expression_Resolver : Field_Resolver
 
 bool known_function_name_and_argument_list(Function_Call_Expression_Ast_Node* call_expr)
 {
-  return call_expr->name == "CURRENT_DATE";
+  if (call_expr->name == "CURRENT_DATE")
+  {
+    return call_expr->argument_list.size() == 0;
+  }
+  else if (call_expr->name == "LOWER")
+  {
+    return call_expr->argument_list.size() == 1 && call_expr->argument_list.at(0)->inferred_type == Inferred_Type::String;
+  }
+
+  return false;
 }
 
 bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
