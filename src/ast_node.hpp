@@ -155,7 +155,7 @@ struct Function_Call_Expression_Ast_Node: Expression_Ast_Node
   {
     // @todo João, ajustar para considerar lista de argumentos
     std::string expr = this->name + "(";
-    for (auto i = 0; i < this->argument_list.size(); i++)
+    for (size_t i = 0; i < this->argument_list.size(); i++)
     {
       if (i != 0) expr += ", ";
       expr += this->argument_list.at(i)->to_expression();
