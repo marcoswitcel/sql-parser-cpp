@@ -369,6 +369,8 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
   
   for (auto field : select.fields)
   {
+    field->infer_type();
+    
     // @todo João, por hora parseia apenas "ident's" e "string's"
     if (field->type == Ast_Node_Type::Ident_Expression_Ast_Node)
     {

@@ -89,6 +89,11 @@ struct Expression_Ast_Node: Ast_Node
   // `as` keyword. Acredito que deixaria mais compacto e de fácil acesso. Avaliar.
   std::string as;
   Inferred_Type inferred_type = Inferred_Type::Not_Inferred;
+
+  virtual Inferred_Type infer_type()
+  {
+    return this->inferred_type;
+  }
 };
 
 struct Ident_Expression_Ast_Node: Expression_Ast_Node
@@ -185,6 +190,7 @@ struct String_Literal_Expression_Ast_Node: Expression_Ast_Node
   String_Literal_Expression_Ast_Node()
   {
     this->type = Ast_Node_Type::String_Literal_Expression_Ast_Node;
+    this->inferred_type = Inferred_Type::String;
   }
 
   std::string to_string() override
