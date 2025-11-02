@@ -281,9 +281,12 @@ struct Function_Call_Expression_Resolver : Field_Resolver
     {
       // @todo João, falta implementar uma etapa para inferrir o tipo e nessa etapa aqui fazer o evaluate da expressão
       // e para de usar a string fixa "TESTE"
-      std::string fixed = "TESTE";
-      std::transform(fixed.begin(), fixed.end(), fixed.begin(), [](unsigned char c) { return std::tolower(c); });
-      return fixed;
+      auto expr = this->call_expr->argument_list.at(0);
+      assert(expr->type == Ast_Node_Type::String_Literal_Expression_Ast_Node);
+      auto string_expr = static_cast<String_Literal_Expression_Ast_Node*>(expr);
+      std::string value = string_expr->value;
+      std::transform(value.begin(), value.end(), value.begin(), [](unsigned char c) { return std::tolower(c); });
+      return value;
     }
 
     // @todo João, terminar de implementar

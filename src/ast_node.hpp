@@ -154,7 +154,14 @@ struct Function_Call_Expression_Ast_Node: Expression_Ast_Node
   std::string to_expression() override
   {
     // @todo João, ajustar para considerar lista de argumentos
-    return this->name + "()";
+    std::string expr = this->name + "(";
+    for (auto i = 0; i < this->argument_list.size(); i++)
+    {
+      if (i != 0) expr += ", ";
+      expr += this->argument_list.at(i)->to_expression();
+    }
+    expr += ")";
+    return expr;
   }
 };
 
