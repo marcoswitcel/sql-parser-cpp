@@ -294,6 +294,59 @@ struct Function_Call_Expression_Resolver : Field_Resolver
   }
 };
 
+struct Expression_Resolver : Field_Resolver
+{
+  Expression_Ast_Node* expr;
+  CSVData *csv;
+
+  Expression_Resolver(CSVData *csv, Expression_Ast_Node* expr)
+  {
+    this->expr = expr;
+    this->csv = csv;
+  }
+
+  std::string resolve(std::vector<std::string> &data_row)
+  {
+    if (this->expr->type == Ast_Node_Type::String_Literal_Expression_Ast_Node)
+    {
+      auto string_expr = static_cast<String_Literal_Expression_Ast_Node*>(this->expr);
+      auto resolver = String_Literal_Resolver(string_expr->value);
+      return resolver.resolve(data_row);
+    }
+    else if (this->expr->type == Ast_Node_Type::Number_Literal_Expression_Ast_Node)
+    {
+      auto number_expr = static_cast<Number_Literal_Expression_Ast_Node*>(this->expr);
+      auto resolver = Number_Literal_Resolver(number_expr->value);
+      return resolver.resolve(data_row);
+    }
+    else if (this->expr->type == Ast_Node_Type::Ident_Expression_Ast_Node)
+    {
+      auto ident_expr = static_cast<Ident_Expression_Ast_Node*>(this->expr);
+      auto resolver = Field_By_Name_Resolver(*this->csv, ident_expr->ident_name);
+      return resolver.resolve(data_row);
+    }
+    else if (this->expr->type == Ast_Node_Type::Binary_Expression_Node)
+    {
+      auto bin_expr = static_cast<Binary_Expression_Ast_Node*>(this->expr);
+      Expression_Resolver resolver_left = Expression_Resolver(this->csv, bin_expr->left.get());
+      Expression_Resolver resolver_right = Expression_Resolver(this->csv, bin_expr->right.get());
+      return resolver_left.resolve(data_row) + resolver_right.resolve(data_row);
+    }
+    else if (this->expr->type == Ast_Node_Type::Function_Call_Expression_Ast_Node)
+    {
+      auto call_expr = static_cast<Function_Call_Expression_Ast_Node*>(this->expr);
+      auto resolver = Function_Call_Expression_Resolver(this->csv, call_expr);
+      return resolver.resolve(data_row);
+    }
+    else
+    {
+      // @note João, por hora não suporto outras expressões
+      assert(false);
+      return "";
+    }
+  }
+};
+
 struct Binary_Expression_Resolver : Field_Resolver
 {
   Binary_Expression_Ast_Node* bin_expr;
@@ -307,47 +360,8 @@ struct Binary_Expression_Resolver : Field_Resolver
 
   std::string resolve([[maybe_unused]] std::vector<std::string> &data_row)
   {
-    return resolve_expression(data_row, this->bin_expr->left.get()) + resolve_expression(data_row, this->bin_expr->right.get());
-  }
-
-  private:
-  std::string resolve_expression(std::vector<std::string> &data_row, Expression_Ast_Node* expr)
-  {
-    if (expr->type == Ast_Node_Type::String_Literal_Expression_Ast_Node)
-    {
-      auto string_expr = static_cast<String_Literal_Expression_Ast_Node*>(expr);
-      auto resolver = String_Literal_Resolver(string_expr->value);
-      return resolver.resolve(data_row);
-    }
-    else if (expr->type == Ast_Node_Type::Number_Literal_Expression_Ast_Node)
-    {
-      auto number_expr = static_cast<Number_Literal_Expression_Ast_Node*>(expr);
-      auto resolver = Number_Literal_Resolver(number_expr->value);
-      return resolver.resolve(data_row);
-    }
-    else if (expr->type == Ast_Node_Type::Ident_Expression_Ast_Node)
-    {
-      auto ident_expr = static_cast<Ident_Expression_Ast_Node*>(expr);
-      auto resolver = Field_By_Name_Resolver(*this->csv, ident_expr->ident_name);
-      return resolver.resolve(data_row);
-    }
-    else if (expr->type == Ast_Node_Type::Binary_Expression_Node)
-    {
-      auto bin_expr = static_cast<Binary_Expression_Ast_Node*>(expr);
-      return resolve_expression(data_row, bin_expr->left.get()) + resolve_expression(data_row, bin_expr->right.get());
-    }
-    else if (expr->type == Ast_Node_Type::Function_Call_Expression_Ast_Node)
-    {
-      auto call_expr = static_cast<Function_Call_Expression_Ast_Node*>(expr);
-      auto resolver = Function_Call_Expression_Resolver(this->csv, call_expr);
-      return resolver.resolve(data_row);
-    }
-    else
-    {
-      // @note João, por hora não suporto outras expressões
-      assert(false);
-      return "";
-    }
+    Expression_Resolver resolver = Expression_Resolver(this->csv, this->bin_expr);
+    return resolver.resolve(data_row);
   }
 };
 

@@ -103,7 +103,8 @@ struct Ident_Expression_Ast_Node: Expression_Ast_Node
   Ident_Expression_Ast_Node()
   {
     this->type = Ast_Node_Type::Ident_Expression_Ast_Node;
-    // std::cout << "construído ident" << this->serial_number << std::endl;
+    // @note João, por hora todos os Ident's são Strings
+    this->inferred_type = Inferred_Type::String;
   }
 
   std::string to_string() override
