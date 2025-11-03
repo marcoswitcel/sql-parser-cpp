@@ -973,7 +973,7 @@ void try_parse_ident(SQL_Parse_Context* parser, Token *token, bool *success)
   }
   
   // @todo João, melhorar para não ter dependência com o símbolo ','
-  while (c != END_OF_SOURCE && c != ',' && c != '(')
+  while (c != END_OF_SOURCE && c != ',' && c != '(' && c != ')')
   {
     if (!is_quoted && parser->is_whitespace(c))
     {
