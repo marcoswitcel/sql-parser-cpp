@@ -13,6 +13,7 @@
 
 #include "./utils.cpp"
 #include "./ast_node.hpp"
+#include "./resolver.hpp"
 
 #include "../lib/csv/src/csv.hpp"
 
@@ -193,13 +194,6 @@ bool evaluate_relational_binary_ast_node(const Binary_Expression_Ast_Node* node,
   return false;
 }
 
-struct Field_Resolver
-{
-  virtual ~Field_Resolver() = default;
-
-  virtual std::string resolve(std::vector<std::string> &data_row) = 0;
-};
-
 struct Field_By_Name_Resolver : Field_Resolver
 {
   int64_t index_of_field = -1;
@@ -255,45 +249,6 @@ struct Number_Literal_Resolver : Field_Resolver
   }
 };
 
-struct Function_Call_Expression_Resolver : Field_Resolver
-{
-  Function_Call_Expression_Ast_Node* call_expr;
-  CSVData *csv;
-
-  Function_Call_Expression_Resolver(CSVData *csv, Function_Call_Expression_Ast_Node* call_expr)
-  {
-    this->call_expr = call_expr;
-    this->csv = csv;
-  }
-
-  std::string resolve([[maybe_unused]] std::vector<std::string> &data_row)
-  {
-    if (this->call_expr->name == "CURRENT_DATE")
-    {
-      std::time_t current_date = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-      auto local_time = std::localtime(&current_date);
-      std::stringstream ss;
-      ss << std::put_time(local_time, "%Y-%m-%d");
-
-      return ss.str();
-    }
-    else if (this->call_expr->name == "LOWER")
-    {
-      // @todo João, falta implementar uma etapa para inferrir o tipo e nessa etapa aqui fazer o evaluate da expressão
-      // e para de usar a string fixa "TESTE"
-      auto expr = this->call_expr->argument_list.at(0);
-      assert(expr->type == Ast_Node_Type::String_Literal_Expression_Ast_Node);
-      auto string_expr = static_cast<String_Literal_Expression_Ast_Node*>(expr);
-      std::string value = string_expr->value;
-      std::transform(value.begin(), value.end(), value.begin(), [](unsigned char c) { return std::tolower(c); });
-      return value;
-    }
-
-    // @todo João, terminar de implementar
-    return "[FUNCTION CALL RETURN]";
-  }
-};
-
 struct Expression_Resolver : Field_Resolver
 {
   Expression_Ast_Node* expr;
@@ -346,6 +301,34 @@ struct Expression_Resolver : Field_Resolver
     }
   }
 };
+
+std::string Function_Call_Expression_Resolver::resolve(std::vector<std::string> &data_row)
+{
+  if (this->call_expr->name == "CURRENT_DATE")
+  {
+    std::time_t current_date = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    auto local_time = std::localtime(&current_date);
+    std::stringstream ss;
+    ss << std::put_time(local_time, "%Y-%m-%d");
+
+    return ss.str();
+  }
+  else if (this->call_expr->name == "LOWER")
+  {
+    // @todo João, falta implementar uma etapa para inferrir o tipo e nessa etapa aqui fazer o evaluate da expressão
+    // e para de usar a string fixa "TESTE"
+    auto expr = this->call_expr->argument_list.at(0);
+    
+    Expression_Resolver resolver = Expression_Resolver(this->csv, expr);
+    
+    std::string value = resolver.resolve(data_row);
+    std::transform(value.begin(), value.end(), value.begin(), [](unsigned char c) { return std::tolower(c); });
+    return value;
+  }
+
+  // @todo João, terminar de implementar
+  return "[FUNCTION CALL RETURN]";
+}
 
 struct Binary_Expression_Resolver : Field_Resolver
 {
