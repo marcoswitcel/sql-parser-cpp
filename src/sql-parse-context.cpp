@@ -224,8 +224,6 @@ Expression_Ast_Node* SQL_Parse_Context::eat_expression_ast_node()
 
         Expression_Ast_Node* expression_node = this->eat_expression_ast_node();
 
-        if (expression_node) std::cout << expression_node->to_string();
-
         if (expression_node && (expression_node->type == Ast_Node_Type::Ident_Expression_Ast_Node || expression_node->type == Ast_Node_Type::String_Literal_Expression_Ast_Node || expression_node->type == Ast_Node_Type::Number_Literal_Expression_Ast_Node || expression_node->type == Ast_Node_Type::Binary_Expression_Node || expression_node->type == Ast_Node_Type::Function_Call_Expression_Ast_Node))
         {
           argument_list.push_back(expression_node);
