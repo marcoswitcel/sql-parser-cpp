@@ -138,6 +138,8 @@ struct Function_Call_Expression_Ast_Node: Expression_Ast_Node
   Function_Call_Expression_Ast_Node()
   {
     this->type = Ast_Node_Type::Function_Call_Expression_Ast_Node;
+    // @note João, por hora todas retornam string
+    this->inferred_type = Inferred_Type::String;
   }
 
   std::string to_string() override
@@ -163,6 +165,17 @@ struct Function_Call_Expression_Ast_Node: Expression_Ast_Node
     }
     expr += ")";
     return expr;
+  }
+
+  Inferred_Type infer_type() override
+  {
+    // @note João, não é o melhor, mas por hora é isso...
+    for (auto &arg : this->argument_list)
+    {
+      arg->infer_type();
+    }
+
+    return this->inferred_type;
   }
 };
 
@@ -268,6 +281,16 @@ struct Binary_Expression_Ast_Node: Expression_Ast_Node
   std::string to_expression() override
   {
     return this->left->to_expression() + " || " + this->right->to_expression();
+  }
+
+  Inferred_Type infer_type() override
+  {
+    if (this->op == "concat")
+    {
+      this->inferred_type = Inferred_Type::String;
+    }
+
+    return this->inferred_type;
   }
 };
 
