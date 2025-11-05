@@ -48,3 +48,15 @@ struct String_Literal_Resolver : Field_Resolver
 
   std::string resolve([[maybe_unused]] std::vector<std::string> &data_row);
 };
+
+struct Number_Literal_Resolver : Field_Resolver
+{
+  int64_t value;
+
+  Number_Literal_Resolver(int64_t value)
+  {
+    this->value = value;
+  }
+
+  std::string resolve([[maybe_unused]] std::vector<std::string> &data_row);
+};

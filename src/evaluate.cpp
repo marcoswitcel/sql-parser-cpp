@@ -219,20 +219,10 @@ std::string String_Literal_Resolver::resolve([[maybe_unused]] std::vector<std::s
   return this->value;
 }
 
-struct Number_Literal_Resolver : Field_Resolver
+std::string Number_Literal_Resolver::resolve([[maybe_unused]] std::vector<std::string> &data_row)
 {
-  int64_t value;
-
-  Number_Literal_Resolver(int64_t value)
-  {
-    this->value = value;
-  }
-
-  std::string resolve([[maybe_unused]] std::vector<std::string> &data_row)
-  {
-    return std::to_string(this->value);
-  }
-};
+  return std::to_string(this->value);
+}
 
 struct Expression_Resolver : Field_Resolver
 {
