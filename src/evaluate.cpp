@@ -290,8 +290,6 @@ std::string Function_Call_Expression_Resolver::resolve(std::vector<std::string> 
   }
   else if (this->call_expr->name == "LOWER")
   {
-    // @todo João, falta implementar uma etapa para inferrir o tipo e nessa etapa aqui fazer o evaluate da expressão
-    // e para de usar a string fixa "TESTE"
     auto expr = this->call_expr->argument_list.at(0);
     
     Expression_Resolver resolver = Expression_Resolver(this->csv, expr);
