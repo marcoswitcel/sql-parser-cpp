@@ -194,45 +194,30 @@ bool evaluate_relational_binary_ast_node(const Binary_Expression_Ast_Node* node,
   return false;
 }
 
-struct Field_By_Name_Resolver : Field_Resolver
+Field_By_Name_Resolver::Field_By_Name_Resolver(CSVData &csv, std::string field_name)
 {
-  int64_t index_of_field = -1;
-
-  Field_By_Name_Resolver(CSVData &csv, std::string field_name)
+  auto it = std::find(csv.header.begin(), csv.header.end(), field_name);
+  
+  if (it == csv.header.end())
   {
-    auto it = std::find(csv.header.begin(), csv.header.end(), field_name);
-    
-    if (it == csv.header.end())
-    {
-      assert(false);
-      std::cout << "Error: field_name: " << field_name << " não existe no csv." << std::endl;
-    }
-    
-    this->index_of_field = std::distance(csv.header.begin(), it);
+    assert(false);
+    std::cout << "Error: field_name: " << field_name << " não existe no csv." << std::endl;
   }
+  
+  this->index_of_field = std::distance(csv.header.begin(), it);
+}
 
-  std::string resolve(std::vector<std::string> &data_row)
-  {
-    assert(this->index_of_field > -1);
-    // @note João, não trata a exception in runtime? talvez, talvez fosse melhor retornar string vazia
-    return data_row[this->index_of_field];
-  }
-};
-
-struct String_Literal_Resolver : Field_Resolver
+std::string Field_By_Name_Resolver::resolve(std::vector<std::string> &data_row)
 {
-  std::string value;
+  assert(this->index_of_field > -1);
+  // @note João, não trata a exception in runtime? talvez, talvez fosse melhor retornar string vazia
+  return data_row[this->index_of_field];
+}
 
-  String_Literal_Resolver(std::string string_value)
-  {
-    this->value = string_value;
-  }
-
-  std::string resolve([[maybe_unused]] std::vector<std::string> &data_row)
-  {
-    return this->value;
-  }
-};
+std::string String_Literal_Resolver::resolve([[maybe_unused]] std::vector<std::string> &data_row)
+{
+  return this->value;
+}
 
 struct Number_Literal_Resolver : Field_Resolver
 {
