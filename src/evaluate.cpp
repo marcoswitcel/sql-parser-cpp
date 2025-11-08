@@ -79,60 +79,31 @@ bool run_like_pattern_on(std::string text_input, std::string raw_like_pattern)
 }
 
 bool extract_lhs_and_rhs_expressions(
-  const Binary_Expression_Ast_Node* node, std::vector<std::string>* table_def,
-  std::vector<std::string>* data_row, std::string &lhs, std::string &rhs)
+  Binary_Expression_Ast_Node* node, CSVData &csv, std::vector<std::string> &data_row,
+  std::string &lhs, std::string &rhs)
 {
   assert(node->left->type == Ast_Node_Type::Ident_Expression_Ast_Node ||
     node->left->type == Ast_Node_Type::String_Literal_Expression_Ast_Node);
   assert(node->right->type == Ast_Node_Type::Ident_Expression_Ast_Node ||
     node->right->type == Ast_Node_Type::String_Literal_Expression_Ast_Node);
 
-  if (node->left->type == Ast_Node_Type::Ident_Expression_Ast_Node)
-  {
-    lhs = static_cast<Ident_Expression_Ast_Node*>(node->left.get())->ident_name;
-    int64_t index = index_of(*table_def, lhs);
-    if (index > -1)
-    {
-      lhs = data_row->at(index);
-    }
-    else
-    {
-      return false;
-    }
-  }
-  else if (node->left->type == Ast_Node_Type::String_Literal_Expression_Ast_Node)
-  {
-    lhs = static_cast<String_Literal_Expression_Ast_Node*>(node->left.get())->value;
-  }
+  // @todo João, incompleto, não validamos nomes usados na cláusula 'where'
+  Expression_Resolver resolver_left = Expression_Resolver(&csv, node->left.get());
+  Expression_Resolver resolver_right = Expression_Resolver(&csv, node->right.get());
 
-  if (node->right->type == Ast_Node_Type::Ident_Expression_Ast_Node)
-  {
-    rhs = static_cast<Ident_Expression_Ast_Node*>(node->right.get())->ident_name;
-    int64_t index = index_of(*table_def, rhs);
-    if (index > -1)
-    {
-      rhs = data_row->at(index);
-    }
-    else
-    {
-      return false;
-    }
-  }
-  else if (node->right->type == Ast_Node_Type::String_Literal_Expression_Ast_Node)
-  {
-    rhs = static_cast<String_Literal_Expression_Ast_Node*>(node->right.get())->value;
-  }
+  lhs = resolver_left.resolve(data_row);
+  rhs = resolver_right.resolve(data_row);
 
   return true;
 }
 
-bool evaluate_equals_binary_ast_node(const Binary_Expression_Ast_Node* node, std::vector<std::string>* table_def, std::vector<std::string>* data_row)
+bool evaluate_equals_binary_ast_node(Binary_Expression_Ast_Node* node, CSVData &csv, std::vector<std::string> &data_row)
 {
   assert(node->op == "=" || node->op == "<>");
 
   std::string lhs = "";
   std::string rhs = "";
-  if (!extract_lhs_and_rhs_expressions(node, table_def, data_row, lhs, rhs))
+  if (!extract_lhs_and_rhs_expressions(node, csv, data_row, lhs, rhs))
   {
     return false;
   }
@@ -141,18 +112,18 @@ bool evaluate_equals_binary_ast_node(const Binary_Expression_Ast_Node* node, std
   return lhs.compare(rhs) == 0;
 }
 
-bool evaluate_not_equals_binary_ast_node(const Binary_Expression_Ast_Node* node, std::vector<std::string>* table_def, std::vector<std::string>* data_row)
+bool evaluate_not_equals_binary_ast_node(Binary_Expression_Ast_Node* node, CSVData &csv, std::vector<std::string> &data_row)
 {
-  return !evaluate_equals_binary_ast_node(node, table_def, data_row);
+  return !evaluate_equals_binary_ast_node(node, csv, data_row);
 }
 
-bool evaluate_like_binary_ast_node(const Binary_Expression_Ast_Node* node, std::vector<std::string>* table_def, std::vector<std::string>* data_row)
+bool evaluate_like_binary_ast_node(Binary_Expression_Ast_Node* node, CSVData &csv, std::vector<std::string> &data_row)
 {
   assert(node->op == "like" || node->op == "not like");
 
   std::string lhs = "";
   std::string rhs = "";
-  if (!extract_lhs_and_rhs_expressions(node, table_def, data_row, lhs, rhs))
+  if (!extract_lhs_and_rhs_expressions(node, csv, data_row, lhs, rhs))
   {
     return false;
   }
@@ -160,33 +131,33 @@ bool evaluate_like_binary_ast_node(const Binary_Expression_Ast_Node* node, std::
   return run_like_pattern_on(lhs, rhs);
 }
 
-bool evaluate_relational_binary_ast_node(const Binary_Expression_Ast_Node* node, std::vector<std::string>* table_def, std::vector<std::string>* data_row)
+bool evaluate_relational_binary_ast_node(Binary_Expression_Ast_Node* node, CSVData &csv, std::vector<std::string> &data_row)
 {
   if (node->op == "=")
   {
-    return evaluate_equals_binary_ast_node(node, table_def, data_row);
+    return evaluate_equals_binary_ast_node(node, csv, data_row);
   }
   else if (node->op == "<>")
   {
-    return evaluate_not_equals_binary_ast_node(node, table_def, data_row);
+    return evaluate_not_equals_binary_ast_node(node, csv, data_row);
   }
   else if (node->op == "like")
   {
-    return evaluate_like_binary_ast_node(node, table_def, data_row);
+    return evaluate_like_binary_ast_node(node, csv, data_row);
   }
   else if (node->op == "not like")
   {
-    return !evaluate_like_binary_ast_node(node, table_def, data_row);
+    return !evaluate_like_binary_ast_node(node, csv, data_row);
   }
   else if (node->op == "or")
   {
-    return evaluate_relational_binary_ast_node(static_cast<const Binary_Expression_Ast_Node *>(node->left.get()), table_def, data_row) ||
-      evaluate_relational_binary_ast_node(static_cast<const Binary_Expression_Ast_Node *>(node->right.get()), table_def, data_row);
+    return evaluate_relational_binary_ast_node(static_cast<Binary_Expression_Ast_Node *>(node->left.get()), csv, data_row) ||
+      evaluate_relational_binary_ast_node(static_cast<Binary_Expression_Ast_Node *>(node->right.get()), csv, data_row);
   }
   else if (node->op == "and")
   {
-    return evaluate_relational_binary_ast_node(static_cast<const Binary_Expression_Ast_Node *>(node->left.get()), table_def, data_row) &&
-      evaluate_relational_binary_ast_node(static_cast<const Binary_Expression_Ast_Node *>(node->right.get()), table_def, data_row);
+    return evaluate_relational_binary_ast_node(static_cast<Binary_Expression_Ast_Node *>(node->left.get()), csv, data_row) &&
+      evaluate_relational_binary_ast_node(static_cast<Binary_Expression_Ast_Node *>(node->right.get()), csv, data_row);
   }
 
   // @todo João, por hora o makefile faz cair em uma das de cima
@@ -224,58 +195,52 @@ std::string Number_Literal_Resolver::resolve([[maybe_unused]] std::vector<std::s
   return std::to_string(this->value);
 }
 
-struct Expression_Resolver : Field_Resolver
+Expression_Resolver::Expression_Resolver(CSVData *csv, Expression_Ast_Node* expr)
 {
-  Expression_Ast_Node* expr;
-  CSVData *csv;
+  this->expr = expr;
+  this->csv = csv;
+}
 
-  Expression_Resolver(CSVData *csv, Expression_Ast_Node* expr)
+std::string Expression_Resolver::resolve(std::vector<std::string> &data_row)
+{
+  if (this->expr->type == Ast_Node_Type::String_Literal_Expression_Ast_Node)
   {
-    this->expr = expr;
-    this->csv = csv;
+    auto string_expr = static_cast<String_Literal_Expression_Ast_Node*>(this->expr);
+    auto resolver = String_Literal_Resolver(string_expr->value);
+    return resolver.resolve(data_row);
   }
-
-  std::string resolve(std::vector<std::string> &data_row)
+  else if (this->expr->type == Ast_Node_Type::Number_Literal_Expression_Ast_Node)
   {
-    if (this->expr->type == Ast_Node_Type::String_Literal_Expression_Ast_Node)
-    {
-      auto string_expr = static_cast<String_Literal_Expression_Ast_Node*>(this->expr);
-      auto resolver = String_Literal_Resolver(string_expr->value);
-      return resolver.resolve(data_row);
-    }
-    else if (this->expr->type == Ast_Node_Type::Number_Literal_Expression_Ast_Node)
-    {
-      auto number_expr = static_cast<Number_Literal_Expression_Ast_Node*>(this->expr);
-      auto resolver = Number_Literal_Resolver(number_expr->value);
-      return resolver.resolve(data_row);
-    }
-    else if (this->expr->type == Ast_Node_Type::Ident_Expression_Ast_Node)
-    {
-      auto ident_expr = static_cast<Ident_Expression_Ast_Node*>(this->expr);
-      auto resolver = Field_By_Name_Resolver(*this->csv, ident_expr->ident_name);
-      return resolver.resolve(data_row);
-    }
-    else if (this->expr->type == Ast_Node_Type::Binary_Expression_Node)
-    {
-      auto bin_expr = static_cast<Binary_Expression_Ast_Node*>(this->expr);
-      Expression_Resolver resolver_left = Expression_Resolver(this->csv, bin_expr->left.get());
-      Expression_Resolver resolver_right = Expression_Resolver(this->csv, bin_expr->right.get());
-      return resolver_left.resolve(data_row) + resolver_right.resolve(data_row);
-    }
-    else if (this->expr->type == Ast_Node_Type::Function_Call_Expression_Ast_Node)
-    {
-      auto call_expr = static_cast<Function_Call_Expression_Ast_Node*>(this->expr);
-      auto resolver = Function_Call_Expression_Resolver(this->csv, call_expr);
-      return resolver.resolve(data_row);
-    }
-    else
-    {
-      // @note João, por hora não suporto outras expressões
-      assert(false);
-      return "";
-    }
+    auto number_expr = static_cast<Number_Literal_Expression_Ast_Node*>(this->expr);
+    auto resolver = Number_Literal_Resolver(number_expr->value);
+    return resolver.resolve(data_row);
   }
-};
+  else if (this->expr->type == Ast_Node_Type::Ident_Expression_Ast_Node)
+  {
+    auto ident_expr = static_cast<Ident_Expression_Ast_Node*>(this->expr);
+    auto resolver = Field_By_Name_Resolver(*this->csv, ident_expr->ident_name);
+    return resolver.resolve(data_row);
+  }
+  else if (this->expr->type == Ast_Node_Type::Binary_Expression_Node)
+  {
+    auto bin_expr = static_cast<Binary_Expression_Ast_Node*>(this->expr);
+    Expression_Resolver resolver_left = Expression_Resolver(this->csv, bin_expr->left.get());
+    Expression_Resolver resolver_right = Expression_Resolver(this->csv, bin_expr->right.get());
+    return resolver_left.resolve(data_row) + resolver_right.resolve(data_row);
+  }
+  else if (this->expr->type == Ast_Node_Type::Function_Call_Expression_Ast_Node)
+  {
+    auto call_expr = static_cast<Function_Call_Expression_Ast_Node*>(this->expr);
+    auto resolver = Function_Call_Expression_Resolver(this->csv, call_expr);
+    return resolver.resolve(data_row);
+  }
+  else
+  {
+    // @note João, por hora não suporto outras expressões
+    assert(false);
+    return "";
+  }
+}
 
 std::string Function_Call_Expression_Resolver::resolve(std::vector<std::string> &data_row)
 {
@@ -450,7 +415,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
     // @todo João, é necessário validar se o 'comando' faz sentido de acordo com a estrutura da tabela
     if (select.where && select.where->conditions.get())
     {
-      if (!evaluate_relational_binary_ast_node(select.where->conditions.get(), &csv.header, &data_row))
+      if (!evaluate_relational_binary_ast_node(select.where->conditions.get(), csv, data_row))
       {
         continue;
       }
