@@ -28,6 +28,8 @@ struct Function_Call_Expression_Resolver : Field_Resolver
   std::string resolve(std::vector<std::string> &data_row);
 };
 
+// @note provavelmente deveria chamar esse resolver de 'Ident_Resolver', se fosse pra ser um 'field resolver' provavelmente
+// deveria operar em cima de todas expressões válidas para 'fields' do select
 struct Field_By_Name_Resolver : Field_Resolver
 {
   int64_t index_of_field = -1;
