@@ -337,20 +337,71 @@ Binary_Expression_Ast_Node* SQL_Parse_Context::eat_binary_expression_ast_node()
 
     if (token.type == Token_Type::Ident)
     {
-      auto ident = new Ident_Expression_Ast_Node();
-      ident->ident_name = static_cast<Ident_Token*>(token.data)->ident;
-  
+      // @note João, esse bloco é uma cópia do bloco de parse presenten no método `eat_expression_ast_node`
+      Token next_token = this->peek_token();
+      Expression_Ast_Node* expression = NULL;
+      if (next_token.type == Token_Type::Open_Parenthesis)
+      {
+        this->eat_token();
+        
+        std::vector<Expression_Ast_Node*> argument_list;
+        bool closed_parenthesis = false;
+        
+        this->skip_whitespace();
+        while (!this->is_finished())
+        {
+          if (this->error)
+          {
+            return NULL;
+          }
+
+          if (this->peek_token().type == Token_Type::Close_Parenthesis)
+          {
+            this->eat_token();
+            closed_parenthesis = true;
+            break;
+          }
+
+          Expression_Ast_Node* expression_node = this->eat_expression_ast_node();
+
+          if (expression_node && (expression_node->type == Ast_Node_Type::Ident_Expression_Ast_Node || expression_node->type == Ast_Node_Type::String_Literal_Expression_Ast_Node || expression_node->type == Ast_Node_Type::Number_Literal_Expression_Ast_Node || expression_node->type == Ast_Node_Type::Binary_Expression_Node || expression_node->type == Ast_Node_Type::Function_Call_Expression_Ast_Node))
+          {
+            argument_list.push_back(expression_node);
+          }
+
+          if (this->peek_token().type == Token_Type::Comma)
+          {
+            this->eat_token();
+          }
+
+          this->skip_whitespace();
+        }
+
+        if (!closed_parenthesis) return NULL;
+
+        auto call = new Function_Call_Expression_Ast_Node();
+        call->name = static_cast<Ident_Token*>(token.data)->ident;
+        call->argument_list = argument_list;
+        expression = call;
+      }
+      else 
+      {
+        auto ident = new Ident_Expression_Ast_Node();
+        ident->ident_name = static_cast<Ident_Token*>(token.data)->ident;
+        expression = ident;  
+      }
+
       if (node->left == NULL)
       {
-        node->left = std::unique_ptr<Ident_Expression_Ast_Node>(ident);
+        node->left = std::unique_ptr<Expression_Ast_Node>(expression);
       }
       else if (node->right == NULL)
       {
-        node->right = std::unique_ptr<Ident_Expression_Ast_Node>(ident);
+        node->right = std::unique_ptr<Expression_Ast_Node>(expression);
       }
       else
       {
-        delete ident;
+        delete expression;
         this->error = true;
         return NULL;
       }

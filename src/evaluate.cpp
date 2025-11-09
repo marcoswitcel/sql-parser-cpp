@@ -82,11 +82,6 @@ bool extract_lhs_and_rhs_expressions(
   Binary_Expression_Ast_Node* node, CSVData &csv, std::vector<std::string> &data_row,
   std::string &lhs, std::string &rhs)
 {
-  assert(node->left->type == Ast_Node_Type::Ident_Expression_Ast_Node ||
-    node->left->type == Ast_Node_Type::String_Literal_Expression_Ast_Node);
-  assert(node->right->type == Ast_Node_Type::Ident_Expression_Ast_Node ||
-    node->right->type == Ast_Node_Type::String_Literal_Expression_Ast_Node);
-
   // @todo João, incompleto, não validamos nomes usados na cláusula 'where'
   Expression_Resolver resolver_left = Expression_Resolver(&csv, node->left.get());
   Expression_Resolver resolver_right = Expression_Resolver(&csv, node->right.get());
