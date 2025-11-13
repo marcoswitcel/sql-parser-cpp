@@ -258,6 +258,16 @@ std::string Function_Call_Expression_Resolver::resolve(std::vector<std::string> 
     std::transform(value.begin(), value.end(), value.begin(), [](unsigned char c) { return std::tolower(c); });
     return value;
   }
+  else if (this->call_expr->name == "UPPER")
+  {
+    auto expr = this->call_expr->argument_list.at(0);
+    
+    Expression_Resolver resolver = Expression_Resolver(this->csv, expr);
+    
+    std::string value = resolver.resolve(data_row);
+    std::transform(value.begin(), value.end(), value.begin(), [](unsigned char c) { return std::toupper(c); });
+    return value;
+  }
 
   // @todo João, terminar de implementar
   return "[FUNCTION CALL RETURN]";
@@ -288,6 +298,10 @@ bool known_function_name_and_argument_list(Function_Call_Expression_Ast_Node* ca
     return call_expr->argument_list.size() == 0;
   }
   else if (call_expr->name == "LOWER")
+  {
+    return call_expr->argument_list.size() == 1 && call_expr->argument_list.at(0)->inferred_type == Inferred_Type::String;
+  }
+  else if (call_expr->name == "UPPER")
   {
     return call_expr->argument_list.size() == 1 && call_expr->argument_list.at(0)->inferred_type == Inferred_Type::String;
   }
