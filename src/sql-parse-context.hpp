@@ -28,6 +28,7 @@ struct SQL_Parse_Context
   Ast_Node* eat_node();
   Expression_Ast_Node* eat_expression_ast_node();
   Binary_Expression_Ast_Node* eat_binary_expression_ast_node();
+  Expression_Ast_Node* eat_ident_or_function_call(Token &token);
 
   inline bool is_finished();
   inline bool is_whitespace(char value);
