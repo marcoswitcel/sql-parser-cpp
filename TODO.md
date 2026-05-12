@@ -13,3 +13,6 @@
 * Falta parsear e integrar
   * falta parsear a palvra chave 'as' para renomear colunas -- ok
   * Falta passar o rename para o print_as_table -- ok
+* Implementar condicionais extra
+  *  Comparação para números
+* Implementar funções de de agrupamento
