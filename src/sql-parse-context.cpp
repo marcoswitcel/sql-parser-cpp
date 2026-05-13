@@ -426,6 +426,26 @@ Binary_Expression_Ast_Node* SQL_Parse_Context::eat_binary_expression_ast_node()
         return NULL;
       }
     }
+    else if (token.type == Token_Type::Number)
+    {
+      auto number_value = new Number_Literal_Expression_Ast_Node();
+      number_value->value = static_cast<Number_Token*>(token.data)->value;
+  
+  
+      if (node->left == NULL)
+      {
+        node->left = std::unique_ptr<Number_Literal_Expression_Ast_Node>(number_value);
+      }
+      else if (node->right == NULL)
+      {
+        node->right = std::unique_ptr<Number_Literal_Expression_Ast_Node>(number_value);
+      }
+      else
+      {
+        this->error = true;
+        return NULL;
+      }
+    }
     else
     {
       // @todo João, leak on return, serve para os returns acima também...
