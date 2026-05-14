@@ -42,7 +42,7 @@ int main(int argc, const char* argv[])
   SQL_Parse_Context parser(sql_command);
 
   Ast_Node* node = parser.eat_node();
-  
+
   if (bind_defs_found.found)
   {
     for (auto bind : split_by(bind_defs_found.value, ','))
@@ -66,7 +66,14 @@ int main(int argc, const char* argv[])
     table_binds["csv_file"] = std::string(csv_found.value);
   }
 
-  if (node && node->type == Ast_Node_Type::Select_Ast_Node)
+  if (parser.error) {
+    std::cout << "O comando SQL provido não pode ser parseado e executado." << std::endl;
+    if (parser.error_message.length() > 0) 
+    {
+      std::cout << "Erro: " << parser.error_message << std::endl;
+    }
+  }
+  else if (node && node->type == Ast_Node_Type::Select_Ast_Node)
   {
     auto select = dynamic_cast<Select_Ast_Node*>(node);
     auto table_name = select->from->ident_name;

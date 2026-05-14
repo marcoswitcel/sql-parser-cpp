@@ -449,7 +449,7 @@ Binary_Expression_Ast_Node* SQL_Parse_Context::eat_binary_expression_ast_node()
     else
     {
       // @todo João, leak on return, serve para os returns acima também...
-      this->error = true;
+      this->report_error("Operação não suportada ainda");
       return NULL;
     }
   }
@@ -1068,3 +1068,8 @@ void try_parse_ident(SQL_Parse_Context* parser, Token *token, bool *success)
   *success = true;
 }
 
+void SQL_Parse_Context::report_error(std::string error_message)
+{
+  this->error = true;
+  this->error_message = error_message;
+}

@@ -14,6 +14,7 @@ struct SQL_Parse_Context
   std::string source;
   uint64_t index = 0;
   bool error = false;
+  std::string error_message;
 
   SQL_Parse_Context(std::string source);
 
@@ -29,6 +30,13 @@ struct SQL_Parse_Context
   Expression_Ast_Node* eat_expression_ast_node();
   Binary_Expression_Ast_Node* eat_binary_expression_ast_node();
   Expression_Ast_Node* eat_ident_or_function_call(Token &token);
+
+  /**
+   * @brief reporta um erro irrecuperável de parsing
+   * 
+   * @param error_message mensagem de erro que deve ser apresentada
+   */
+  void report_error(std::string error_message);
 
   inline bool is_finished();
   inline bool is_whitespace(char value);
