@@ -446,6 +446,14 @@ Binary_Expression_Ast_Node* SQL_Parse_Context::eat_binary_expression_ast_node()
         return NULL;
       }
     }
+    else if (token.type == Token_Type::Lower_Than)
+    {
+      node->op = "<";
+    }
+    else if (token.type == Token_Type::Greater_Than)
+    {
+      node->op = ">";
+    }
     else
     {
       // @todo João, leak on return, serve para os returns acima também...
