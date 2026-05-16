@@ -43,7 +43,12 @@ struct SQL_Parse_Context
   inline void skip_whitespace();
 };
 
-typedef void (*Parse_Function)(SQL_Parse_Context*, Token *, bool *);
+/**
+ * @brief Função que realiza o parse de tokens, atualiza o estado do parser caso haja sucesso
+ * sinaliza via `success`.
+ * 
+ */
+typedef void (*Parse_Function)(SQL_Parse_Context* parser, Token* token, bool* success);
 
 void try_parse_describe(SQL_Parse_Context* parser, Token *token, bool *success);
 void try_parse_select(SQL_Parse_Context* parser, Token *token, bool *success);

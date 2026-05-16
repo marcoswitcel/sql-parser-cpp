@@ -107,7 +107,7 @@ bool evaluate_equals_binary_ast_node(Binary_Expression_Ast_Node* node, CSVData &
   return lhs.compare(rhs) == 0;
 }
 
-int evaluate_compare_binary_ast_node(Binary_Expression_Ast_Node* node, CSVData &csv, std::vector<std::string> &data_row)
+float evaluate_compare_binary_ast_node(Binary_Expression_Ast_Node* node, CSVData &csv, std::vector<std::string> &data_row)
 {
   assert(node->op == ">" || node->op == "<");
 
@@ -119,7 +119,7 @@ int evaluate_compare_binary_ast_node(Binary_Expression_Ast_Node* node, CSVData &
   }
 
   // @todo João, completamente errado... precisa considerar strings inválidas e principalmente, precisa retornar os números diretamente
-  return std::stoi(lhs) - std::stoi(rhs);
+  return std::stof(lhs) - std::stof(rhs);
 }
 
 bool evaluate_not_equals_binary_ast_node(Binary_Expression_Ast_Node* node, CSVData &csv, std::vector<std::string> &data_row)
