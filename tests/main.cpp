@@ -51,7 +51,7 @@ void test_ast_node_type()
   assert(ast_sub_type_of(Ast_Node_Type::Function_Call_Expression_Ast_Node, Ast_Node_Type::Expression_Node));
 }
 
-void test_parse_describe() {
+void test_parse_describe_01() {
   std::string sql = "Describe Iris";
   SQL_Parse_Context parser(sql);
 
@@ -67,6 +67,22 @@ void test_parse_describe() {
   assert(describe->to_expression() == sql);
 }
 
+void test_parse_describe_02() {
+  std::string sql = "Describe \"Iris 2\"";
+  SQL_Parse_Context parser(sql);
+
+  Ast_Node* node = parser.eat_node();
+
+  assert(node != NULL);
+  assert(node->type == Ast_Node_Type::Describe_Ast_Node);
+
+  Describe_Ast_Node* describe = static_cast<Describe_Ast_Node*>(node);
+
+  assert(describe->ident_name->ident_name == "Iris 2");
+  // @todo joão, teste sensível ao camelCase
+  assert(describe->to_expression() == sql);
+}
+
 int main()
 {
   std::cout << "Iniciando testes" << std::endl << std::endl;
@@ -75,8 +91,10 @@ int main()
   std::cout << "test_ast_node_type......................................OK" << std::endl;
   test_run_like_pattern_on();
   std::cout << "test_run_like_pattern_on................................OK" << std::endl;
-  test_parse_describe();
-  std::cout << "test_parse_describe.....................................OK" << std::endl;
+  test_parse_describe_01();
+  std::cout << "test_parse_describe_01..................................OK" << std::endl;
+  test_parse_describe_02();
+  std::cout << "test_parse_describe_02..................................OK" << std::endl;
 
   std::cout << std::endl << "Fim testes" << std::endl;
 
