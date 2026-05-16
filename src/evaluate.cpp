@@ -328,6 +328,11 @@ bool known_function_name_and_argument_list(Function_Call_Expression_Ast_Node* ca
   {
     return call_expr->argument_list.size() == 1 && call_expr->argument_list.at(0)->inferred_type == Inferred_Type::String;
   }
+  else if (call_expr->name == "MAX")
+  {
+    // @wip @todo João, avaliar, deveria suportar texto também aparenemtente...
+    return call_expr->argument_list.size() == 1 && call_expr->argument_list.at(0)->inferred_type == Inferred_Type::Number;
+  }
 
   return false;
 }
@@ -427,7 +432,8 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
     }
     else
     {
-      assert(false);
+      std::cout << "A expressão a seguir não pode ser interpretada: " << std::endl << field->to_expression() << std::endl;
+      return false;
     }
   }
 
@@ -439,6 +445,9 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
     
     return false;
   }
+
+  // @todo João, acho que aqui precisaria ter um atepa que executasse os groupbys e as funções de agregação, assim produzindo um novo
+  // dataset...
 
   vector<CSV_Data_Row> new_dataset;
 

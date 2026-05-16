@@ -356,6 +356,12 @@ struct Select_Ast_Node: Ast_Node
 
     return desc;
   }
+
+  bool is_aggregating()
+  {
+    // @todo João, falta implementar
+    return false;
+  }
 };
 
 struct Describe_Ast_Node: Ast_Node
