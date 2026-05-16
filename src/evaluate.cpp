@@ -501,7 +501,7 @@ bool run_describe_on_csv(Describe_Ast_Node &describe, CSVData &csv)
     dataset.push_back(new_row);
   }
 
-  std::cout << "Describe of table: " << describe.ident_name << std::endl;
+  std::cout << "Describe of table: " << describe.ident_name->to_expression() << std::endl;
   print_as_table(header, dataset, Columns_Print_Mode::All_Columns, NULL, 30);
   
   return false;

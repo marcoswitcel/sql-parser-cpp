@@ -366,7 +366,7 @@ struct Select_Ast_Node: Ast_Node
 
 struct Describe_Ast_Node: Ast_Node
 {
-  std::string ident_name;
+  std::unique_ptr<Ident_Expression_Ast_Node> ident_name;
   
   Describe_Ast_Node()
   {
@@ -377,8 +377,13 @@ struct Describe_Ast_Node: Ast_Node
   {
     std::string desc = "Describe_Ast_Node { serial: ";
     desc += std::to_string(this->serial_number);
-    desc += ", ident_name: \"" + this->ident_name +  "\" }";
+    desc += ", ident_name: \"" + this->ident_name->ident_name +  "\" }";
 
     return desc;
+  }
+
+  std::string to_expression() override
+  {
+    return "Describe " + this->ident_name->to_expression();
   }
 };

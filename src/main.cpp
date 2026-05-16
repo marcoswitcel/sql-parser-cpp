@@ -109,7 +109,7 @@ int main(int argc, const char* argv[])
   else if (node && node->type == Ast_Node_Type::Describe_Ast_Node)
   {
     auto describe = dynamic_cast<Describe_Ast_Node*>(node);
-    auto table_name = describe->ident_name;
+    auto table_name = describe->ident_name->ident_name;
 
     if (table_binds.count(table_name) > 0)
     {

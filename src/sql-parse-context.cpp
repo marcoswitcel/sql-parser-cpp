@@ -178,7 +178,8 @@ Ast_Node* SQL_Parse_Context::eat_node()
 
     if (token.type == Token_Type::Ident)
     {
-      describe->ident_name = static_cast<Ident_Token*>(token.data)->ident;
+      describe->ident_name = std::unique_ptr<Ident_Expression_Ast_Node>(new Ident_Expression_Ast_Node());
+      describe->ident_name->ident_name =  static_cast<Ident_Token*>(token.data)->ident;
       
       return describe;
     }
