@@ -935,7 +935,6 @@ void try_parse_number(SQL_Parse_Context* parser, Token *token, bool *success)
   size_t i = 0;
   int32_t c = parser->peek_n_char(i);
 
-  // @todo João, ainda falta bloquear números com zero a esquerda, exceto o zero...
   if (c == END_OF_SOURCE || parser->is_whitespace(c))
   {
     token->type = Token_Type::None;
@@ -945,10 +944,6 @@ void try_parse_number(SQL_Parse_Context* parser, Token *token, bool *success)
 
   if (c == '0' && is_digit(parser->peek_n_char(i+1)))
   {
-    // @todo João, falta a habilitade de sinalizar um erro impeditivo de tokenização.
-    // Acredito que faria sentido usar o atributo de 'error' para finalizar a tokenização.
-    // Seria necessário ajustar apenas no loop do método `eat_token`.
-    // @note Implementado, falta validar se vai atender, senão reverter.
     token->type = Token_Type::None;
     *success = false;
     parser->error = true;
@@ -995,7 +990,6 @@ void try_parse_number(SQL_Parse_Context* parser, Token *token, bool *success)
   *success = true;
 }
 
-// @todo João, incluir àspas duplas para permitir parsear identificadores com caracteres especiais (aparentemente ANSI é a áspa dupla)
 // @note João, acho que copiar a `try_parse_string` e trocar o tipo de àspas já resolveria...
 void try_parse_ident(SQL_Parse_Context* parser, Token *token, bool *success)
 {
