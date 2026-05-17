@@ -6,6 +6,7 @@
 #include <vector>
 #include <algorithm>
 #include <string>
+#include <cctype>
 
 #include "./trace.hpp"
 
@@ -69,3 +70,11 @@ int64_t index_of(std::vector<std::string> &list, std::string &neddle_value)
   return -1;
 }
 
+bool ignore_case_equals(const std::string &a, const std::string &b)
+{
+  auto char_equals = [](char a, char b) {
+    return std::tolower(a) == std::tolower(b);
+  };
+
+  return std::equal(a.begin(), a.end(), b.begin(), b.end(), char_equals);
+}

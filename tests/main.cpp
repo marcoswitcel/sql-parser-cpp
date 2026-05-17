@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <assert.h>
 
+#include "../src/utils.cpp"
 #include "../src/ast_node.hpp"
 #include "../src/sql-parse-context.cpp"
 #include "../src/evaluate.cpp"
@@ -63,8 +64,7 @@ void test_parse_describe_01() {
   Describe_Ast_Node* describe = static_cast<Describe_Ast_Node*>(node);
 
   assert(describe->ident_name->ident_name == "Iris");
-  // @todo joão, teste sensível ao camelCase
-  assert(describe->to_expression() == sql);
+  assert(ignore_case_equals(describe->to_expression(), sql));
 }
 
 void test_parse_describe_02() {
@@ -79,8 +79,7 @@ void test_parse_describe_02() {
   Describe_Ast_Node* describe = static_cast<Describe_Ast_Node*>(node);
 
   assert(describe->ident_name->ident_name == "Iris 2");
-  // @todo joão, teste sensível ao camelCase
-  assert(describe->to_expression() == sql);
+  assert(ignore_case_equals(describe->to_expression(), sql));
 }
 
 int main()
