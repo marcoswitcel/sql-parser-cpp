@@ -120,7 +120,6 @@ struct Ident_Expression_Ast_Node: Expression_Ast_Node
 
   std::string to_expression() override
   {
-    // @todo João, complementar essa validação para incluir qualquer caractere especial
     if (contains(this->ident_name, ' '))
     {
       return "\"" + this->ident_name + "\"";
@@ -185,7 +184,6 @@ struct From_Ast_Node: Ast_Node
   From_Ast_Node()
   {
     this->type = Ast_Node_Type::From_Ast_Node;
-    // std::cout << "construído ident" << this->serial_number << std::endl;
   }
 
   std::string to_string() override
@@ -354,12 +352,6 @@ struct Select_Ast_Node: Ast_Node
     desc += " }";
 
     return desc;
-  }
-
-  bool is_aggregating()
-  {
-    // @todo João, falta implementar
-    return false;
   }
 };
 

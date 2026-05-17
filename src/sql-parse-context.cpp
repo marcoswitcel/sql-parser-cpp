@@ -123,7 +123,7 @@ Ast_Node* SQL_Parse_Context::eat_node()
               select->where = std::unique_ptr<Where_Ast_Node>(new Where_Ast_Node());
 
               Binary_Expression_Ast_Node* bin_exp = this->eat_binary_expression_ast_node();
-              // @todo João, em caso de nullo deveria retornar nullo pra sinalizar o erro, por hora, pelo menos...
+              
               if (bin_exp)
               {
                 select->where->conditions = std::unique_ptr<Binary_Expression_Ast_Node>(bin_exp);
@@ -377,7 +377,6 @@ Binary_Expression_Ast_Node* SQL_Parse_Context::eat_binary_expression_ast_node()
     }
     else if (token.type == Token_Type::Equals)
     {
-      // @todo João, falta vários operadores...
       node->op = "=";
     }
     else if (token.type == Token_Type::Not_Equals)
@@ -553,13 +552,14 @@ Token SQL_Parse_Context::eat_token()
  */
 Token SQL_Parse_Context::peek_token()
 {
+  // salva index
   auto index = this->index;
 
-  // @todo João, na verdade, vou precisar bufferizar o peek_token,
-  // mas por hora vou só dar um eat e reverter os estados
+  // tenta consumir o token
   Token token = this->eat_token();
 
-  // @note o error é reportado, mas o index é revertido
+  // reverte o index para "desfazer" o avanço, mas mantém o estado
+  // do campo que sinaliza se houve erro
   this->index = index;
 
   return token;

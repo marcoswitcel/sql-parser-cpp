@@ -9,7 +9,6 @@
 #include "./ast_node.hpp"
 #include "./evaluate.cpp"
 
-// @todo João, considerar uma forma mais elegante de fazer esse import
 #include "../lib/csv/src/csv.hpp"
 
 
