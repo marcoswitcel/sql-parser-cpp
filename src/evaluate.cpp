@@ -292,7 +292,7 @@ std::string Function_Call_Expression_Resolver::resolve(std::vector<std::string> 
     return value;
   }
 
-  // @todo João, terminar de implementar
+  assert(false);
   return "[FUNCTION CALL RETURN]";
 }
 
@@ -330,7 +330,7 @@ bool known_function_name_and_argument_list(Function_Call_Expression_Ast_Node* ca
   }
   else if (call_expr->name == "MAX")
   {
-    // @wip @todo João, avaliar, deveria suportar texto também aparenemtente...
+    // @wip @todo João, avaliar, deveria suportar texto também aparentemente...
     return call_expr->argument_list.size() == 1 && call_expr->argument_list.at(0)->inferred_type == Inferred_Type::Number;
   }
 
