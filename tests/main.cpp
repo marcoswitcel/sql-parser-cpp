@@ -52,7 +52,8 @@ void test_ast_node_type()
   assert(ast_sub_type_of(Ast_Node_Type::Function_Call_Expression_Ast_Node, Ast_Node_Type::Expression_Node));
 }
 
-void test_parse_describe_01() {
+void test_parse_describe_01()
+{
   std::string sql = "Describe Iris";
   SQL_Parse_Context parser(sql);
 
@@ -67,7 +68,8 @@ void test_parse_describe_01() {
   assert(ignore_case_equals(describe->to_expression(), sql));
 }
 
-void test_parse_describe_02() {
+void test_parse_describe_02()
+{
   std::string sql = "Describe \"Iris 2\"";
   SQL_Parse_Context parser(sql);
 
