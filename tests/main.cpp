@@ -84,6 +84,37 @@ void test_parse_describe_02()
   assert(ignore_case_equals(describe->to_expression(), sql));
 }
 
+void test_parse_select_01()
+{
+  std::string sql = "Select * From csv_filename Where a = 2 and b like '%b%'";
+  SQL_Parse_Context parser(sql);
+
+  Ast_Node* node = parser.eat_node();
+
+  assert(node != NULL);
+  assert(node->type == Ast_Node_Type::Select_Ast_Node);
+
+  Select_Ast_Node* select = static_cast<Select_Ast_Node*>(node);
+
+  assert(select->fields.size() == 1);
+  assert(select->fields.at(0).get()->type == Ast_Node_Type::Ident_Expression_Ast_Node);
+  auto ident = static_cast<Ident_Expression_Ast_Node*>(select->fields.at(0).get());
+  assert(ident->ident_name == "*");
+  
+  assert(select->from->ident_name == "csv_filename");
+
+  assert(select->where->conditions.get() != NULL);
+
+  auto conditions = static_cast<Binary_Expression_Ast_Node*>(select->where->conditions.get());
+  assert(conditions->op == "and");
+  assert(conditions->left.get()->type == Ast_Node_Type::Binary_Expression_Node);
+  assert(conditions->right.get()->type == Ast_Node_Type::Binary_Expression_Node);
+
+  // @todo João, terminar de validar ident e number e ident like e string
+  auto left = static_cast<Binary_Expression_Ast_Node*>(conditions->left.get());
+  auto right = static_cast<Binary_Expression_Ast_Node*>(conditions->right.get());
+}
+
 int main()
 {
   std::cout << "Iniciando testes" << std::endl << std::endl;
@@ -96,6 +127,8 @@ int main()
   std::cout << "test_parse_describe_01..................................OK" << std::endl;
   test_parse_describe_02();
   std::cout << "test_parse_describe_02..................................OK" << std::endl;
+  test_parse_select_01();
+  std::cout << "test_parse_select_01....................................OK" << std::endl;
 
   std::cout << std::endl << "Fim testes" << std::endl;
 
