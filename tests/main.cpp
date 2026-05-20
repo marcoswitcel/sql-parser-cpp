@@ -86,7 +86,7 @@ void test_parse_describe_02()
 
 void test_parse_select_01()
 {
-  std::string sql = "Select * From csv_filename Where a = 2 and b like '%b%'";
+  std::string sql = "Select *, teste as renomeado From csv_filename Where a = 2 and b like '%b%'";
   SQL_Parse_Context parser(sql);
 
   Ast_Node* node = parser.eat_node();
@@ -96,10 +96,21 @@ void test_parse_select_01()
 
   Select_Ast_Node* select = static_cast<Select_Ast_Node*>(node);
 
-  assert(select->fields.size() == 1);
+  assert(select->fields.size() == 2);
+  
   assert(select->fields.at(0).get()->type == Ast_Node_Type::Ident_Expression_Ast_Node);
-  auto ident = static_cast<Ident_Expression_Ast_Node*>(select->fields.at(0).get());
-  assert(ident->ident_name == "*");
+  {
+    auto ident = static_cast<Ident_Expression_Ast_Node*>(select->fields.at(0).get());
+    assert(ident->ident_name == "*");
+    assert(ident->as.size() == 0);
+  }
+
+  assert(select->fields.at(1).get()->type == Ast_Node_Type::Ident_Expression_Ast_Node);
+  {
+    auto ident = static_cast<Ident_Expression_Ast_Node*>(select->fields.at(1).get());
+    assert(ident->ident_name == "teste");
+    assert(ident->as == "renomeado");
+  }
   
   assert(select->from->ident_name == "csv_filename");
 
