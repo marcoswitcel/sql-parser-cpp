@@ -110,9 +110,15 @@ void test_parse_select_01()
   assert(conditions->left.get()->type == Ast_Node_Type::Binary_Expression_Node);
   assert(conditions->right.get()->type == Ast_Node_Type::Binary_Expression_Node);
 
-  // @todo João, terminar de validar ident e number e ident like e string
   auto left = static_cast<Binary_Expression_Ast_Node*>(conditions->left.get());
+  assert(left->op == "=");
+  assert(left->left.get()->type == Ast_Node_Type::Ident_Expression_Ast_Node);
+  assert(left->right.get()->type == Ast_Node_Type::Number_Literal_Expression_Ast_Node);
+
   auto right = static_cast<Binary_Expression_Ast_Node*>(conditions->right.get());
+  assert(right->op == "like");
+  assert(right->left.get()->type == Ast_Node_Type::Ident_Expression_Ast_Node);
+  assert(right->right.get()->type == Ast_Node_Type::String_Literal_Expression_Ast_Node);
 }
 
 int main()
