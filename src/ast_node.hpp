@@ -120,12 +120,17 @@ struct Ident_Expression_Ast_Node: Expression_Ast_Node
 
   std::string to_expression() override
   {
-    if (contains(this->ident_name, ' '))
+    std::string result = (contains(this->ident_name, ' '))
+      ? "\"" + this->ident_name + "\""
+      : this->ident_name;
+    
+    if (this->as.size() > 0)
     {
-      return "\"" + this->ident_name + "\"";
+      // @note João, mover isso pra dentro da classe Expression_Ast_Node
+      result += " as " + this->as;
     }
 
-    return this->ident_name;
+    return result;
   }
 };
 
@@ -353,6 +358,25 @@ struct Select_Ast_Node: Ast_Node
 
     return desc;
   }
+
+  std::string to_expression() override
+  {
+    std::string result = "";
+    result += "Select ";
+    for (size_t i = 0; i < this->fields.size(); i++)
+    {
+      if (i > 0)
+      {
+        result += ", ";
+      }
+      auto field = this->fields.at(i).get();
+      result += field->to_expression();
+    }
+    result += " From ";
+    result += this->from->to_expression();
+
+    return result;
+  }  
 };
 
 struct Describe_Ast_Node: Ast_Node
