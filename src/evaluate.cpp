@@ -415,6 +415,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
       {
         new_header.push_back(bin_expr->as);
       }
+      // @todo joão, falta validar idents...
       field_resolver.push_back(new Binary_Expression_Resolver(&csv, bin_expr));
     }
     else if (field->type == Ast_Node_Type::Function_Call_Expression_Ast_Node && known_function_name_and_argument_list(static_cast<Function_Call_Expression_Ast_Node*>(field.get())))
@@ -428,6 +429,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
       {
         new_header.push_back(call_expr->as);
       }
+      // @todo joão, falta validar idents...
       field_resolver.push_back(new Function_Call_Expression_Resolver(&csv, call_expr));
     }
     else
