@@ -26,6 +26,9 @@ enum class Token_Type {
   And,
   Or,
   Concat,
+  // por hora group by são dois tokens...
+  Group,
+  By,
   // non-terminal
   String,
   Number,

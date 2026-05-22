@@ -128,8 +128,22 @@ Ast_Node* SQL_Parse_Context::eat_node()
               {
                 select->where->conditions = std::unique_ptr<Binary_Expression_Ast_Node>(bin_exp);
               }
+            }
 
-              return select;
+            if (token.type == Token_Type::Group || this->last_eaten_token.type == Token_Type::Group)
+            {
+              token = this->eat_token();
+
+              if (token.type == Token_Type::By)
+              {
+                // @todo João, terminar aqui... @wip
+                return select;
+              }
+              else
+              {
+                this->report_error("Token inválido depois de Group: " + get_description(token.type));
+                return NULL;
+              }
             }
             else if (this->is_finished())
             {
@@ -338,6 +352,11 @@ Expression_Ast_Node* SQL_Parse_Context::eat_expression_ast_node()
   return expression;
 }
 
+/**
+ * @brief 
+ * @todo joão, a função atual não garante a ordem correta... "a > 2" e "> a 2" funcionam...
+ * @return Binary_Expression_Ast_Node* 
+ */
 Binary_Expression_Ast_Node* SQL_Parse_Context::eat_binary_expression_ast_node()
 {
   Binary_Expression_Ast_Node* node = new Binary_Expression_Ast_Node();
@@ -509,6 +528,8 @@ Parse_Function terminals[] = {
   try_parse_or,
   try_parse_and,
   try_parse_concat,
+  try_parse_group,
+  try_parse_by,
   // non-terminals
   try_parse_number,
   try_parse_string,
@@ -535,6 +556,7 @@ Token SQL_Parse_Context::eat_token()
     {
       assert(success && !this->error);
       this->error = false;
+      this->last_eaten_token = token;
       return token;
     } else if (this->error) {
       break;
@@ -648,6 +670,36 @@ void try_parse_concat(SQL_Parse_Context* parser, Token *token, bool *success)
   if (is_consumed)
   {
     token->type = Token_Type::Concat;
+    *success = true;
+    return;
+  }
+  
+  token->type = Token_Type::None;
+  *success = false;
+}
+
+void try_parse_group(SQL_Parse_Context* parser, Token *token, bool *success)
+{
+  bool is_consumed = try_consume_keyword(parser, "group");
+  
+  if (is_consumed)
+  {
+    token->type = Token_Type::Group;
+    *success = true;
+    return;
+  }
+  
+  token->type = Token_Type::None;
+  *success = false;
+}
+
+void try_parse_by(SQL_Parse_Context* parser, Token *token, bool *success)
+{
+  bool is_consumed = try_consume_keyword(parser, "by");
+  
+  if (is_consumed)
+  {
+    token->type = Token_Type::By;
     *success = true;
     return;
   }

@@ -15,6 +15,7 @@ struct SQL_Parse_Context
   uint64_t index = 0;
   bool error = false;
   std::string error_message;
+  Token last_eaten_token;
 
   SQL_Parse_Context(std::string source);
 
@@ -69,6 +70,8 @@ void try_parse_close_parenthesis(SQL_Parse_Context* parser, Token *token, bool *
 void try_parse_or(SQL_Parse_Context* parser, Token *token, bool *success);
 void try_parse_and(SQL_Parse_Context* parser, Token *token, bool *success);
 void try_parse_concat(SQL_Parse_Context* parser, Token *token, bool *success);
+void try_parse_group(SQL_Parse_Context* parser, Token *token, bool *success);
+void try_parse_by(SQL_Parse_Context* parser, Token *token, bool *success);
 void try_parse_string(SQL_Parse_Context* parser, Token *token, bool *success);
 void try_parse_number(SQL_Parse_Context* parser, Token *token, bool *success);
 void try_parse_ident(SQL_Parse_Context* parser, Token *token, bool *success);
