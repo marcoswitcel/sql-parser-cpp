@@ -136,7 +136,10 @@ Ast_Node* SQL_Parse_Context::eat_node()
 
               if (token.type == Token_Type::By)
               {
-                // @todo João, terminar aqui... @wip
+                select->group_by = std::unique_ptr<Group_By_Ast_Node>(new Group_By_Ast_Node());
+                
+                // @todo João, terminar de fazer o parse dos idents separados por vírgula
+
                 return select;
               }
               else

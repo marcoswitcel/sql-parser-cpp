@@ -20,17 +20,18 @@ enum class Inferred_Type
 
 enum class Ast_Node_Type
 {
-  None = 0,
-  Select_Ast_Node = 1 << 0,
-  From_Ast_Node = 1 << 1,
-  Where_Ast_Node = 1 << 2,
-  Describe_Ast_Node = 1 << 3,
-  Expression_Node = 1 << 4, // categoria
-  String_Literal_Expression_Ast_Node = Expression_Node | (1 << 5),
-  Number_Literal_Expression_Ast_Node = Expression_Node | (1 << 6),
-  Ident_Expression_Ast_Node          = Expression_Node | (1 << 7),
-  Function_Call_Expression_Ast_Node  = Expression_Node | (1 << 8),
-  Binary_Expression_Node = Expression_Node | (1 << 9), // sub-categoria
+  None              = 0,
+  Select_Ast_Node   = 1 << 0,
+  From_Ast_Node     = 1 << 1,
+  Where_Ast_Node    = 1 << 2,
+  Group_By_Ast_Node = 1 << 3,
+  Describe_Ast_Node = 1 << 4,
+  Expression_Node   = 1 << 5, // categoria
+  String_Literal_Expression_Ast_Node = Expression_Node | (1 << 6),
+  Number_Literal_Expression_Ast_Node = Expression_Node | (1 << 7),
+  Ident_Expression_Ast_Node          = Expression_Node | (1 << 8),
+  Function_Call_Expression_Ast_Node  = Expression_Node | (1 << 9),
+  Binary_Expression_Node             = Expression_Node | (1 << 10), // sub-categoria
 };
 
 Ast_Node_Type operator&(Ast_Node_Type a, Ast_Node_Type b)
@@ -324,11 +325,32 @@ struct Where_Ast_Node: Ast_Node
   }
 };
 
+struct Group_By_Ast_Node: Ast_Node
+{
+  std::vector<std::unique_ptr<Expression_Ast_Node>> groups;
+  
+  Group_By_Ast_Node()
+  {
+    this->type = Ast_Node_Type::Group_By_Ast_Node;
+  }
+
+  std::string to_string() override
+  {
+    std::string desc = "Group_By_Ast_Node { serial: ";
+    desc += std::to_string(this->serial_number);
+    desc += ", groups: [] }"; // @todo João, terminar aqui...
+
+    return desc;
+  }
+};
+
+
 struct Select_Ast_Node: Ast_Node
 {
   std::vector<std::shared_ptr<Expression_Ast_Node>> fields;
   std::shared_ptr<From_Ast_Node> from;
   std::unique_ptr<Where_Ast_Node> where;
+  std::unique_ptr<Group_By_Ast_Node> group_by;
 
   Select_Ast_Node()
   {
