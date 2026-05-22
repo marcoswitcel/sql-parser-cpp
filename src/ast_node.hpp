@@ -49,6 +49,27 @@ inline bool ast_sub_type_of(Ast_Node_Type maybe_sub_type, Ast_Node_Type type) no
   return (maybe_sub_type & type) == type;
 }
 
+// declarando
+struct Ast_Node_Visitor;
+struct Select_Ast_Node;
+struct From_Ast_Node;
+struct Where_Ast_Node;
+struct Group_By_Ast_Node;
+struct Expression_Ast_Node;
+struct Describe_Ast_Node;
+
+struct Ast_Node_Visitor
+{
+  virtual ~Ast_Node_Visitor() = default;
+
+  virtual void visit(Select_Ast_Node &node) = 0;
+  virtual void visit(From_Ast_Node &node) = 0;
+  virtual void visit(Where_Ast_Node &node) = 0;
+  virtual void visit(Group_By_Ast_Node &node) = 0;
+  virtual void visit(Expression_Ast_Node &node) = 0;
+  virtual void visit(Describe_Ast_Node &node) = 0;
+};
+
 struct Ast_Node
 {
   static uint64_t serial_counter;
@@ -73,6 +94,7 @@ struct Ast_Node
   }
 
   virtual std::string to_string() = 0;
+  virtual void accept(Ast_Node_Visitor &visitor) = 0;
 
   virtual std::string to_expression()
   {
@@ -94,6 +116,11 @@ struct Expression_Ast_Node: Ast_Node
   virtual Inferred_Type infer_type()
   {
     return this->inferred_type;
+  }
+
+  void accept(Ast_Node_Visitor &visitor) override
+  {
+    visitor.visit(*this);
   }
 };
 
@@ -132,6 +159,11 @@ struct Ident_Expression_Ast_Node: Expression_Ast_Node
     }
 
     return result;
+  }
+
+  void accept(Ast_Node_Visitor &visitor) override
+  {
+    visitor.visit(*this);
   }
 };
 
@@ -181,6 +213,11 @@ struct Function_Call_Expression_Ast_Node: Expression_Ast_Node
 
     return this->inferred_type;
   }
+
+  void accept(Ast_Node_Visitor &visitor) override
+  {
+    visitor.visit(*this);
+  }
 };
 
 struct From_Ast_Node: Ast_Node
@@ -199,6 +236,11 @@ struct From_Ast_Node: Ast_Node
     desc += ", ident_name: \"" + this->ident_name +  "\" }";
 
     return desc;
+  }
+
+  void accept(Ast_Node_Visitor &visitor) override
+  {
+    visitor.visit(*this);
   }
 };
 
@@ -231,6 +273,11 @@ struct String_Literal_Expression_Ast_Node: Expression_Ast_Node
     static std::regex quote("'");
     return "'" + std::regex_replace(this->value, quote, "''") + "'";
   }
+
+  void accept(Ast_Node_Visitor &visitor) override
+  {
+    visitor.visit(*this);
+  }
 };
 
 struct Number_Literal_Expression_Ast_Node: Expression_Ast_Node
@@ -254,6 +301,11 @@ struct Number_Literal_Expression_Ast_Node: Expression_Ast_Node
   std::string to_expression() override
   {
     return std::to_string(this->value);
+  }
+
+  void accept(Ast_Node_Visitor &visitor) override
+  {
+    visitor.visit(*this);
   }
 };
 
@@ -295,6 +347,11 @@ struct Binary_Expression_Ast_Node: Expression_Ast_Node
 
     return this->inferred_type;
   }
+
+  void accept(Ast_Node_Visitor &visitor) override
+  {
+    visitor.visit(*this);
+  }
 };
 
 struct Where_Ast_Node: Ast_Node
@@ -323,6 +380,11 @@ struct Where_Ast_Node: Ast_Node
 
     return desc;
   }
+
+  void accept(Ast_Node_Visitor &visitor) override
+  {
+    visitor.visit(*this);
+  }
 };
 
 struct Group_By_Ast_Node: Ast_Node
@@ -341,6 +403,11 @@ struct Group_By_Ast_Node: Ast_Node
     desc += ", groups: [] }"; // @todo João, terminar aqui...
 
     return desc;
+  }
+
+  void accept(Ast_Node_Visitor &visitor) override
+  {
+    visitor.visit(*this);
   }
 };
 
@@ -399,6 +466,11 @@ struct Select_Ast_Node: Ast_Node
 
     return result;
   }  
+
+  void accept(Ast_Node_Visitor &visitor) override
+  {
+    visitor.visit(*this);
+  }
 };
 
 struct Describe_Ast_Node: Ast_Node
@@ -422,5 +494,47 @@ struct Describe_Ast_Node: Ast_Node
   std::string to_expression() override
   {
     return "Describe " + this->ident_name->to_expression();
+  }
+
+  void accept(Ast_Node_Visitor &visitor) override
+  {
+    visitor.visit(*this);
+  }
+};
+
+
+// @todo joão, esse print é só pra testar, preciso do collector
+struct Print_Ast_Node_Visitor : Ast_Node_Visitor
+{
+  void visit(Select_Ast_Node &node)
+  {
+    std::cout << "|Select_Ast_Node|" << node.serial_number << std::endl;
+
+    this->visit(*node.from.get());
+  }
+
+  void visit(From_Ast_Node &node)
+  {
+    std::cout << "|From_Ast_Node|" << node.serial_number << std::endl;
+  }
+
+  void visit(Where_Ast_Node &node)
+  {
+    std::cout << "|Where_Ast_Node|" << node.serial_number << std::endl;
+  }
+
+  void visit(Group_By_Ast_Node &node)
+  {
+    std::cout << "|Group_By_Ast_Node|" << node.serial_number << std::endl;
+  }
+
+  void visit(Expression_Ast_Node &node)
+  {
+    std::cout << "|Expression_Ast_Node|" << node.serial_number << std::endl;
+  }
+
+  void visit(Describe_Ast_Node &node)
+  {
+    std::cout << "|Describe_Ast_Node|" << node.serial_number << std::endl;
   }
 };
