@@ -138,7 +138,38 @@ Ast_Node* SQL_Parse_Context::eat_node()
               {
                 select->group_by = std::unique_ptr<Group_By_Ast_Node>(new Group_By_Ast_Node());
                 
-                // @todo João, terminar de fazer o parse dos idents separados por vírgula
+                bool expect_comma = false;
+                while (!this->is_finished())
+                {
+                  token = this->eat_token();
+
+                  if (token.type == Token_Type::Ident && !expect_comma)
+                  {
+                    auto ident_name = new Ident_Expression_Ast_Node();
+                    ident_name->ident_name =  static_cast<Ident_Token*>(token.data)->ident;
+
+                    select->group_by->groups.push_back(std::unique_ptr<Expression_Ast_Node>(ident_name));
+
+                    expect_comma = true;
+                  }
+                  else if (token.type == Token_Type::Comma && expect_comma)
+                  {
+                    expect_comma = false;
+                  }
+                  else
+                  {
+                    this->report_error("Token inválido depois no Group By: " + get_description(token.type));
+                    return NULL;
+                  }
+
+                  this->skip_whitespace();
+                }
+
+                if (!expect_comma)
+                {
+                  this->report_error("Vírgula sobrando");
+                  return NULL;
+                }
 
                 return select;
               }
@@ -165,7 +196,7 @@ Ast_Node* SQL_Parse_Context::eat_node()
         }
         else if (token.type == Token_Type::Comma)
         {
-
+          // apenas consome e no final do bloco faz o skip do whitespace
         }
         else
         {
