@@ -45,7 +45,7 @@ void test_run_like_pattern_on()
 
 void test_ast_node_type()
 {
-  assert(ast_sub_type_of(Ast_Node_Type::Binary_Expression_Node, Ast_Node_Type::Expression_Node));
+  assert(ast_sub_type_of(Ast_Node_Type::Binary_Expression_Ast_Node, Ast_Node_Type::Expression_Node));
   assert(ast_sub_type_of(Ast_Node_Type::Ident_Expression_Ast_Node, Ast_Node_Type::Expression_Node));
   assert(ast_sub_type_of(Ast_Node_Type::String_Literal_Expression_Ast_Node, Ast_Node_Type::Expression_Node));
   assert(ast_sub_type_of(Ast_Node_Type::Number_Literal_Expression_Ast_Node, Ast_Node_Type::Expression_Node));
@@ -118,8 +118,8 @@ void test_parse_select_01()
 
   auto conditions = static_cast<Binary_Expression_Ast_Node*>(select->where->conditions.get());
   assert(conditions->op == "and");
-  assert(conditions->left.get()->type == Ast_Node_Type::Binary_Expression_Node);
-  assert(conditions->right.get()->type == Ast_Node_Type::Binary_Expression_Node);
+  assert(conditions->left.get()->type == Ast_Node_Type::Binary_Expression_Ast_Node);
+  assert(conditions->right.get()->type == Ast_Node_Type::Binary_Expression_Ast_Node);
 
   auto left = static_cast<Binary_Expression_Ast_Node*>(conditions->left.get());
   assert(left->op == "=");

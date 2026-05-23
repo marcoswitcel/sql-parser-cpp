@@ -13,8 +13,9 @@
 
 #include "./utils.cpp"
 #include "./ast_node.hpp"
+#include "./collector_ast_node_visitor.hpp"
 #include "./resolver.hpp"
-
+// Dependências
 #include "../lib/csv/src/csv.hpp"
 
 
