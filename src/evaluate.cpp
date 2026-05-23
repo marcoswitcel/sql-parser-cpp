@@ -472,8 +472,10 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
     return false;
   }
 
-  // @todo João, acho que aqui precisaria ter um atepa que executasse os groupbys e as funções de agregação, assim produzindo um novo
-  // dataset...
+  if (select.group_by->groups.size() > 0)
+  {
+    // @todo João falta implementar o agrupamento
+  }
 
   vector<CSV_Data_Row> new_dataset;
 
