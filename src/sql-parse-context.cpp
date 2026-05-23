@@ -101,7 +101,7 @@ Ast_Node* SQL_Parse_Context::eat_node()
       // @note atualizado: talvez fosse melhor só fazer o eat_token e reverter se der erro? um mecanismo de revert automático seria melhor que um método peek_n_token?
       // Pergunto isso porque um peek_n_token apresenta várias complexidades, como, parsear token a token e armazenar num buffer? e se der erro? armazenar em alguma
       // estrutura? 
-      if (expression_node && (expression_node->type == Ast_Node_Type::Ident_Expression_Ast_Node || expression_node->type == Ast_Node_Type::String_Literal_Expression_Ast_Node || expression_node->type == Ast_Node_Type::Number_Literal_Expression_Ast_Node || expression_node->type == Ast_Node_Type::Binary_Expression_Node || expression_node->type == Ast_Node_Type::Function_Call_Expression_Ast_Node))
+      if (expression_node && (expression_node->type == Ast_Node_Type::Ident_Expression_Ast_Node || expression_node->type == Ast_Node_Type::String_Literal_Expression_Ast_Node || expression_node->type == Ast_Node_Type::Number_Literal_Expression_Ast_Node || expression_node->type == Ast_Node_Type::Binary_Expression_Ast_Node || expression_node->type == Ast_Node_Type::Function_Call_Expression_Ast_Node))
       {
         select->fields.push_back(std::shared_ptr<Expression_Ast_Node>(expression_node));
         
@@ -274,7 +274,7 @@ Expression_Ast_Node* SQL_Parse_Context::eat_ident_or_function_call(Token &token)
 
       Expression_Ast_Node* expression_node = this->eat_expression_ast_node();
 
-      if (expression_node && (expression_node->type == Ast_Node_Type::Ident_Expression_Ast_Node || expression_node->type == Ast_Node_Type::String_Literal_Expression_Ast_Node || expression_node->type == Ast_Node_Type::Number_Literal_Expression_Ast_Node || expression_node->type == Ast_Node_Type::Binary_Expression_Node || expression_node->type == Ast_Node_Type::Function_Call_Expression_Ast_Node))
+      if (expression_node && (expression_node->type == Ast_Node_Type::Ident_Expression_Ast_Node || expression_node->type == Ast_Node_Type::String_Literal_Expression_Ast_Node || expression_node->type == Ast_Node_Type::Number_Literal_Expression_Ast_Node || expression_node->type == Ast_Node_Type::Binary_Expression_Ast_Node || expression_node->type == Ast_Node_Type::Function_Call_Expression_Ast_Node))
       {
         argument_list.push_back(expression_node);
       }

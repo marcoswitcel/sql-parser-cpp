@@ -239,7 +239,7 @@ std::string Expression_Resolver::resolve(std::vector<std::string> &data_row)
     auto resolver = Field_By_Name_Resolver(*this->csv, ident_expr->ident_name);
     return resolver.resolve(data_row);
   }
-  else if (this->expr->type == Ast_Node_Type::Binary_Expression_Node)
+  else if (this->expr->type == Ast_Node_Type::Binary_Expression_Ast_Node)
   {
     auto bin_expr = static_cast<Binary_Expression_Ast_Node*>(this->expr);
     Expression_Resolver resolver_left = Expression_Resolver(this->csv, bin_expr->left.get());
@@ -337,8 +337,31 @@ bool known_function_name_and_argument_list(Function_Call_Expression_Ast_Node* ca
   return false;
 }
 
+bool does_field_exist(CSVData &csv, std::string field_name)
+{
+  auto it = std::find(csv.header.begin(), csv.header.end(), field_name);
+  
+  return it != csv.header.end();
+}
+
 bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
 {
+
+  Collector_Ast_Node_Visitor collector;
+
+  select.accept(collector);
+
+  for (auto field : collector.idents)
+  {
+    if (field == "*") continue;
+
+    if (!does_field_exist(csv, field))
+    {
+      std::cout << "Error: field_name: " << field << " não existe no csv." << std::endl;
+      return false;
+    }
+  }
+
   vector<std::string> new_header;
   vector<Field_Resolver*> field_resolver;
   
@@ -404,7 +427,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
       }
       field_resolver.push_back(new Number_Literal_Resolver(number->value));
     }
-    else if (field->type == Ast_Node_Type::Binary_Expression_Node && static_cast<Binary_Expression_Ast_Node*>(field.get())->op == "concat")
+    else if (field->type == Ast_Node_Type::Binary_Expression_Ast_Node && static_cast<Binary_Expression_Ast_Node*>(field.get())->op == "concat")
     {
       auto bin_expr = static_cast<Binary_Expression_Ast_Node*>(field.get());
       if (bin_expr->as.empty())
