@@ -27,12 +27,12 @@ enum class Ast_Node_Type
   Where_Ast_Node    = 1 << 2,
   Group_By_Ast_Node = 1 << 3,
   Describe_Ast_Node = 1 << 4,
-  Expression_Node   = 1 << 5, // categoria
-  String_Literal_Expression_Ast_Node = Expression_Node | (1 << 6),
-  Number_Literal_Expression_Ast_Node = Expression_Node | (1 << 7),
-  Ident_Expression_Ast_Node          = Expression_Node | (1 << 8),
-  Function_Call_Expression_Ast_Node  = Expression_Node | (1 << 9),
-  Binary_Expression_Ast_Node         = Expression_Node | (1 << 10), // sub-categoria
+  Expression_Ast_Node   = 1 << 5, // categoria
+  String_Literal_Expression_Ast_Node = Expression_Ast_Node | (1 << 6),
+  Number_Literal_Expression_Ast_Node = Expression_Ast_Node | (1 << 7),
+  Ident_Expression_Ast_Node          = Expression_Ast_Node | (1 << 8),
+  Function_Call_Expression_Ast_Node  = Expression_Ast_Node | (1 << 9),
+  Binary_Expression_Ast_Node         = Expression_Ast_Node | (1 << 10), // sub-categoria
 };
 
 Ast_Node_Type operator&(Ast_Node_Type a, Ast_Node_Type b)

@@ -45,11 +45,11 @@ void test_run_like_pattern_on()
 
 void test_ast_node_type()
 {
-  assert(ast_sub_type_of(Ast_Node_Type::Binary_Expression_Ast_Node, Ast_Node_Type::Expression_Node));
-  assert(ast_sub_type_of(Ast_Node_Type::Ident_Expression_Ast_Node, Ast_Node_Type::Expression_Node));
-  assert(ast_sub_type_of(Ast_Node_Type::String_Literal_Expression_Ast_Node, Ast_Node_Type::Expression_Node));
-  assert(ast_sub_type_of(Ast_Node_Type::Number_Literal_Expression_Ast_Node, Ast_Node_Type::Expression_Node));
-  assert(ast_sub_type_of(Ast_Node_Type::Function_Call_Expression_Ast_Node, Ast_Node_Type::Expression_Node));
+  assert(ast_sub_type_of(Ast_Node_Type::Binary_Expression_Ast_Node, Ast_Node_Type::Expression_Ast_Node));
+  assert(ast_sub_type_of(Ast_Node_Type::Ident_Expression_Ast_Node, Ast_Node_Type::Expression_Ast_Node));
+  assert(ast_sub_type_of(Ast_Node_Type::String_Literal_Expression_Ast_Node, Ast_Node_Type::Expression_Ast_Node));
+  assert(ast_sub_type_of(Ast_Node_Type::Number_Literal_Expression_Ast_Node, Ast_Node_Type::Expression_Ast_Node));
+  assert(ast_sub_type_of(Ast_Node_Type::Function_Call_Expression_Ast_Node, Ast_Node_Type::Expression_Ast_Node));
 }
 
 void test_parse_describe_01()
