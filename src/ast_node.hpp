@@ -32,7 +32,7 @@ enum class Ast_Node_Type
   Number_Literal_Expression_Ast_Node = Expression_Node | (1 << 7),
   Ident_Expression_Ast_Node          = Expression_Node | (1 << 8),
   Function_Call_Expression_Ast_Node  = Expression_Node | (1 << 9),
-  Binary_Expression_Ast_Node             = Expression_Node | (1 << 10), // sub-categoria
+  Binary_Expression_Ast_Node         = Expression_Node | (1 << 10), // sub-categoria
 };
 
 Ast_Node_Type operator&(Ast_Node_Type a, Ast_Node_Type b)
