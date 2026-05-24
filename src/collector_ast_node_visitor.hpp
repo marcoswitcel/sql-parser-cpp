@@ -5,6 +5,7 @@
 #include <cstdint>
 
 #include "./ast_node.hpp"
+#include "./ast_node_visitor.hpp"
 
 
 struct Collector_Ast_Node_Visitor : Ast_Node_Visitor
