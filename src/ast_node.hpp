@@ -481,3 +481,10 @@ struct Describe_Ast_Node: Ast_Node
     visitor.visit(*this);
   }
 };
+
+/**
+ * @brief faz o cast para o tipo específico se o campo type bater com o tipo solicitado, senão retorna null
+ * @note João, considerar fazer a versão com função genérica e check baseado no atributo estático
+ * 
+ */
+#define Cast_If(Type, Ast_Node_Instance) ((Ast_Node_Instance).type == Ast_Node_Type::Type ? static_cast<Type*>(&(Ast_Node_Instance)) : NULL)

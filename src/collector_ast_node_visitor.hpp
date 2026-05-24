@@ -48,9 +48,8 @@ struct Collector_Ast_Node_Visitor : Ast_Node_Visitor
 
   void visit(Expression_Ast_Node &node)
   {
-    if (node.type == Ast_Node_Type::Ident_Expression_Ast_Node)
+    if (auto ident = Cast_If(Ident_Expression_Ast_Node, node))
     {
-      auto ident = static_cast<Ident_Expression_Ast_Node*>(&node);
       idents.push_back(ident->ident_name);
     }
     else if (node.type == Ast_Node_Type::Number_Literal_Expression_Ast_Node)
