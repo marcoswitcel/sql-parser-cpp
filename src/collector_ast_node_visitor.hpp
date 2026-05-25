@@ -52,26 +52,22 @@ struct Collector_Ast_Node_Visitor : Ast_Node_Visitor
     {
       idents.push_back(ident->ident_name);
     }
-    else if (node.type == Ast_Node_Type::Number_Literal_Expression_Ast_Node)
+    else if (auto number = Cast_If(Number_Literal_Expression_Ast_Node, node))
     {
-      auto number = static_cast<Number_Literal_Expression_Ast_Node*>(&node);
       numbers.push_back(number->value);
     }
-    else if (node.type == Ast_Node_Type::String_Literal_Expression_Ast_Node)
+    else if (auto string = Cast_If(String_Literal_Expression_Ast_Node, node))
     {
-      auto string = static_cast<String_Literal_Expression_Ast_Node*>(&node);
+      
       strings.push_back(string->value);
     }
-    else if (node.type == Ast_Node_Type::Binary_Expression_Ast_Node)
+    else if (auto binary_expression = Cast_If(Binary_Expression_Ast_Node, node))
     {
-      auto binary_expression = static_cast<Binary_Expression_Ast_Node*>(&node);
       this->visit(*binary_expression->left);
       this->visit(*binary_expression->right);
     }
-    else if (node.type == Ast_Node_Type::Function_Call_Expression_Ast_Node)
+    else if (auto function_call = Cast_If(Function_Call_Expression_Ast_Node, node))
     {
-      auto function_call = static_cast<Function_Call_Expression_Ast_Node*>(&node);
-
       for (auto argument : function_call->argument_list)
       {
         this->visit(*argument);
