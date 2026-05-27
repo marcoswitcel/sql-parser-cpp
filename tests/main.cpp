@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <assert.h>
 
+#include "../src/ordered_map.hpp"
 #include "../src/utils.cpp"
 #include "../src/ast_node.hpp"
 #include "../src/sql-parse-context.cpp"
@@ -132,6 +133,28 @@ void test_parse_select_01()
   assert(right->right.get()->type == Ast_Node_Type::String_Literal_Expression_Ast_Node);
 }
 
+void test_ordered_map_01()
+{
+  Ordered_Map<std::string, size_t> map;
+
+  assert(map.size() == 0);
+
+  map.put("nome", 2);
+  assert(map.size() == 1);
+
+  map.put("nome", 3);
+  assert(map.size() == 1);
+
+  map.put("banana", 5);
+  assert(map.size() == 2);
+
+  assert(map.ordered_list.at(0).first == "nome");
+  assert(map.ordered_list.at(0).second == 3);
+
+  assert(map.ordered_list.at(1).first == "banana");
+  assert(map.ordered_list.at(1).second == 5);
+}
+
 int main()
 {
   std::cout << "Iniciando testes" << std::endl << std::endl;
@@ -146,6 +169,8 @@ int main()
   std::cout << "test_parse_describe_02..................................OK" << std::endl;
   test_parse_select_01();
   std::cout << "test_parse_select_01....................................OK" << std::endl;
+  test_ordered_map_01();
+  std::cout << "test_ordered_map_01....................................OK" << std::endl;
 
   std::cout << std::endl << "Fim testes" << std::endl;
 
