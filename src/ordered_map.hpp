@@ -48,7 +48,13 @@ struct Ordered_Map
     return this->ordered_list.size();
   }
 
-  // @todo João, implementar métodos "remove" e "clear"
+  void clear()
+  {
+    this->ordered_list.clear();
+    this->map.clear();
+  }
+
+  // @todo João, implementar métodos "remove"
   // @todo João, melhorar iteração, ocultar a lista...
 
 };

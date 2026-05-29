@@ -153,6 +153,9 @@ void test_ordered_map_01()
 
   assert(map.ordered_list.at(1).first == "banana");
   assert(map.ordered_list.at(1).second == 5);
+
+  map.clear();
+  assert(map.size() == 0);
 }
 
 int main()
