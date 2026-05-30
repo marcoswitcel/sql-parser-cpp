@@ -320,7 +320,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
     return false;
   }
 
-  if (select.group_by->groups.size() > 0)
+  if (select.group_by && select.group_by->groups.size() > 0)
   {
     // @todo João falta implementar o agrupamento
   }

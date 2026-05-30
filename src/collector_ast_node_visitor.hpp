@@ -23,8 +23,9 @@ struct Collector_Ast_Node_Visitor : Ast_Node_Visitor
     }
 
     this->visit(*node.from);
-    this->visit(*node.where);
-    this->visit(*node.group_by);
+    // campos opcionais
+    if (node.where) this->visit(*node.where);
+    if (node.group_by) this->visit(*node.group_by);
   }
 
   void visit(From_Ast_Node &node)

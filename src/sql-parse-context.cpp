@@ -128,6 +128,11 @@ Ast_Node* SQL_Parse_Context::eat_node()
               {
                 select->where->conditions = std::unique_ptr<Binary_Expression_Ast_Node>(bin_exp);
               }
+              else
+              {
+                this->report_error("Não pode parsear a expressão após Where");
+                return NULL;
+              }
             }
 
             if (token.type == Token_Type::Group || this->last_eaten_token.type == Token_Type::Group)

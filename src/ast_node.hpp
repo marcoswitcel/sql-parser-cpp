@@ -396,7 +396,15 @@ struct Select_Ast_Node: Ast_Node
 {
   std::vector<std::shared_ptr<Expression_Ast_Node>> fields;
   std::shared_ptr<From_Ast_Node> from;
+  /**
+   * @brief define se o select possuia uma cláusula where e as expressões associadas
+   * Campo opcional
+   */
   std::unique_ptr<Where_Ast_Node> where;
+  /**
+   * @brief define se o select possuía uma regra de agrupamento associada
+   * Campo opcional
+   */
   std::unique_ptr<Group_By_Ast_Node> group_by;
 
   Select_Ast_Node()
