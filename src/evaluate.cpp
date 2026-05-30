@@ -15,11 +15,20 @@
 #include "./ast_node.hpp"
 #include "./collector_ast_node_visitor.hpp"
 #include "./resolver.cpp"
+#include "./ordered_map.hpp"
 // Dependências
 #include "../lib/csv/src/csv.hpp"
 
 
 using std::vector;
+
+
+struct Grouping_Field
+{
+  enum { Values, Subgroup } type;
+  std::unique_ptr<Grouping_Field> data;
+  
+};
 
 bool run_like_pattern_on_done_manually(std::string text_input, std::string like_pattern)
 {
@@ -322,7 +331,54 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
 
   if (select.group_by && select.group_by->groups.size() > 0)
   {
-    // @todo João falta implementar o agrupamento
+    auto &grouping_field = select.group_by->groups.at(0);
+    
+    if (auto ident = Cast_If(Ident_Expression_Ast_Node, *grouping_field))
+    {
+      auto &field_name = ident->ident_name;
+      Ordered_Map<std::string, std::vector<CSV_Data_Row*>> ordered;
+      Field_By_Name_Resolver field_resolver(csv, field_name);
+      
+      for (CSV_Data_Row &data_row: csv.dataset)
+      {
+        auto result = field_resolver.resolve(data_row);
+        
+        auto result_set = ordered.lookup(result);
+
+        if (result_set)
+        {
+          result_set->push_back(&data_row);
+        }
+        else
+        {
+          std::vector<CSV_Data_Row*> new_set;
+          new_set.push_back(&data_row);
+          ordered.put(result, new_set);
+        }
+      }
+    
+      /*
+      for (auto [ name, collection ] : ordered.ordered_list)
+      {
+        std::cout << name << std::endl;
+        for (auto row : collection)
+        {
+          std::cout << field_resolver.resolve(*row) << std::endl;
+        }
+      }
+      */
+    }
+
+    /*
+    Ordered_Map<std::string, CSV_Data_Row> ordered;
+    for (auto  &it : select.group_by->groups)
+    {
+      if (auto ident = Cast_If(Ident_Expression_Ast_Node, *it))
+      {
+        std::cout << ident->ident_name << std::endl;
+      }
+    }
+    */
   }
 
   vector<CSV_Data_Row> new_dataset;
