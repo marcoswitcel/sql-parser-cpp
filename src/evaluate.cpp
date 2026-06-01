@@ -23,13 +23,6 @@
 using std::vector;
 
 
-struct Grouping_Field
-{
-  enum { Values, Subgroup } type;
-  std::unique_ptr<Grouping_Field> data;
-  
-};
-
 bool run_like_pattern_on_done_manually(std::string text_input, std::string like_pattern)
 {
   size_t input_index = 0;
