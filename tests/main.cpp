@@ -4,10 +4,12 @@
 #include <assert.h>
 
 #include "../src/ordered_map.hpp"
+#include "../src/aggregator.cpp"
 #include "../src/utils.cpp"
 #include "../src/ast_node.hpp"
 #include "../src/sql-parse-context.cpp"
 #include "../src/evaluate.cpp"
+#include "./csv_data_set.cpp"
 
 void test_run_like_pattern_on()
 {
@@ -158,6 +160,32 @@ void test_ordered_map_01()
   assert(map.size() == 0);
 }
 
+void test_value_aggregator_01()
+{
+  CSVData dummy_csv = make_dummy_csv();
+  auto field_resolver = std::make_unique<Field_By_Name_Resolver>(dummy_csv, "number");
+
+  std::unique_ptr<Aggregator> aggregator = std::make_unique<Value_Aggregator>(field_resolver);
+
+  for (auto &data_row : dummy_csv.dataset)
+  {
+    aggregator->aggregate(&data_row);
+  }
+
+  assert(aggregator->type == Aggregator_Type::Values);
+  auto value_aggregator = static_cast<Value_Aggregator*>(aggregator.get());
+
+  assert(value_aggregator->ordered_data.ordered_list.size() == 3);
+
+  assert(value_aggregator->ordered_data.ordered_list.at(0).first == "05");
+  assert(value_aggregator->ordered_data.ordered_list.at(0).second.size() == 1);
+  assert(value_aggregator->ordered_data.ordered_list.at(1).first == "03");
+  assert(value_aggregator->ordered_data.ordered_list.at(1).second.size() == 2);
+  assert(value_aggregator->ordered_data.ordered_list.at(2).first == "01");
+  assert(value_aggregator->ordered_data.ordered_list.at(2).second.size() == 1);
+
+}
+
 int main()
 {
   std::cout << "Iniciando testes" << std::endl << std::endl;
@@ -173,7 +201,9 @@ int main()
   test_parse_select_01();
   std::cout << "test_parse_select_01....................................OK" << std::endl;
   test_ordered_map_01();
-  std::cout << "test_ordered_map_01....................................OK" << std::endl;
+  std::cout << "test_ordered_map_01.....................................OK" << std::endl;
+  test_value_aggregator_01();
+  std::cout << "test_value_aggregator_01................................OK" << std::endl;
 
   std::cout << std::endl << "Fim testes" << std::endl;
 
