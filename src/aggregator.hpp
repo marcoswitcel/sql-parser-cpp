@@ -21,6 +21,8 @@ struct Aggregator
 
   virtual void aggregate(CSV_Data_Row* row) = 0;
 
+  virtual size_t size() = 0;
+
   virtual std::unique_ptr<Aggregator> clone() = 0;
 };
 
@@ -34,6 +36,8 @@ struct Value_Aggregator: Aggregator
   Value_Aggregator(std::unique_ptr<Field_By_Name_Resolver> &field_resolver);
 
   void aggregate(CSV_Data_Row* row);
+
+  size_t size();
   
   std::unique_ptr<Aggregator> clone();
 };
@@ -46,9 +50,11 @@ struct Subgrouping_Aggregator: Aggregator
   Ordered_Map<std::string, std::shared_ptr<Aggregator>>ordered_data;
   std::shared_ptr<Aggregator> subgrouping_aggregator;
 
-  Subgrouping_Aggregator(std::unique_ptr<Aggregator> &subgrouping_aggregator, std::unique_ptr<Field_By_Name_Resolver> &field_resolver);
+  Subgrouping_Aggregator(std::unique_ptr<Field_By_Name_Resolver> &field_resolver, std::unique_ptr<Aggregator> &subgrouping_aggregator);
 
   void aggregate(CSV_Data_Row* row);
+
+  size_t size();
   
   std::unique_ptr<Aggregator> clone();
 };

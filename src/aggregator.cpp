@@ -33,12 +33,17 @@ void Value_Aggregator::aggregate(CSV_Data_Row* row)
   }
 }
 
+size_t Value_Aggregator::size()
+{
+  return this->ordered_data.size();
+}
+
 std::unique_ptr<Aggregator> Value_Aggregator::clone()
 {
   return std::make_unique<Value_Aggregator>(*this);
 }
 
-Subgrouping_Aggregator::Subgrouping_Aggregator(std::unique_ptr<Aggregator> &subgrouping_aggregator, std::unique_ptr<Field_By_Name_Resolver> &field_resolver)
+Subgrouping_Aggregator::Subgrouping_Aggregator(std::unique_ptr<Field_By_Name_Resolver> &field_resolver, std::unique_ptr<Aggregator> &subgrouping_aggregator)
 {
   this->type = Aggregator_Type::Subgrouping;
 
@@ -65,6 +70,11 @@ void Subgrouping_Aggregator::aggregate(CSV_Data_Row* row)
 
     this->ordered_data.put(result, std::move(new_aggregator));
   }
+}
+
+size_t Subgrouping_Aggregator::size()
+{
+  return this->ordered_data.size();
 }
 
 std::unique_ptr<Aggregator> Subgrouping_Aggregator::clone()

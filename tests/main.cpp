@@ -175,7 +175,7 @@ void test_value_aggregator_01()
   assert(aggregator->type == Aggregator_Type::Values);
   auto value_aggregator = static_cast<Value_Aggregator*>(aggregator.get());
 
-  assert(value_aggregator->ordered_data.ordered_list.size() == 3);
+  assert(value_aggregator->size() == 3);
 
   assert(value_aggregator->ordered_data.ordered_list.at(0).first == "05");
   assert(value_aggregator->ordered_data.ordered_list.at(0).second.size() == 1);
@@ -184,6 +184,62 @@ void test_value_aggregator_01()
   assert(value_aggregator->ordered_data.ordered_list.at(2).first == "01");
   assert(value_aggregator->ordered_data.ordered_list.at(2).second.size() == 1);
 
+}
+
+void test_subgrouping_aggregator_02()
+{
+  CSVData dummy_csv = make_dummy_csv();
+  auto id_field_resolver = std::make_unique<Field_By_Name_Resolver>(dummy_csv, "id");
+  auto number_field_resolver = std::make_unique<Field_By_Name_Resolver>(dummy_csv, "number");
+
+  std::unique_ptr<Aggregator> number_field_aggregator = std::make_unique<Value_Aggregator>(number_field_resolver);
+  std::unique_ptr<Aggregator> root_aggregator = std::make_unique<Subgrouping_Aggregator>(id_field_resolver, number_field_aggregator);
+
+  for (auto &data_row : dummy_csv.dataset)
+  {
+    root_aggregator->aggregate(&data_row);
+  }
+
+  assert(root_aggregator->type == Aggregator_Type::Subgrouping);
+  auto subgrouping_aggregator = static_cast<Subgrouping_Aggregator*>(root_aggregator.get());
+
+  assert(subgrouping_aggregator->size() == 4);
+
+  assert(subgrouping_aggregator->ordered_data.ordered_list.at(0).first == "1");
+  assert(subgrouping_aggregator->ordered_data.ordered_list.at(0).second->size() == 1);
+  assert(subgrouping_aggregator->ordered_data.ordered_list.at(1).first == "2");
+  assert(subgrouping_aggregator->ordered_data.ordered_list.at(1).second->size() == 1);
+  assert(subgrouping_aggregator->ordered_data.ordered_list.at(2).first == "3");
+  assert(subgrouping_aggregator->ordered_data.ordered_list.at(2).second->size() == 1);
+  assert(subgrouping_aggregator->ordered_data.ordered_list.at(3).first == "4");
+  assert(subgrouping_aggregator->ordered_data.ordered_list.at(3).second->size() == 1);
+}
+
+void test_subgrouping_aggregator_03()
+{
+  CSVData dummy_csv = make_dummy_csv();
+  auto id_field_resolver = std::make_unique<Field_By_Name_Resolver>(dummy_csv, "id");
+  auto number_field_resolver = std::make_unique<Field_By_Name_Resolver>(dummy_csv, "number");
+
+  std::unique_ptr<Aggregator> id_field_aggregator = std::make_unique<Value_Aggregator>(id_field_resolver);
+  std::unique_ptr<Aggregator> root_aggregator = std::make_unique<Subgrouping_Aggregator>(number_field_resolver, id_field_aggregator);
+
+  for (auto &data_row : dummy_csv.dataset)
+  {
+    root_aggregator->aggregate(&data_row);
+  }
+
+  assert(root_aggregator->type == Aggregator_Type::Subgrouping);
+  auto subgrouping_aggregator = static_cast<Subgrouping_Aggregator*>(root_aggregator.get());
+
+  assert(subgrouping_aggregator->size() == 3);
+
+  assert(subgrouping_aggregator->ordered_data.ordered_list.at(0).first == "05");
+  assert(subgrouping_aggregator->ordered_data.ordered_list.at(0).second->size() == 1);
+  assert(subgrouping_aggregator->ordered_data.ordered_list.at(1).first == "03");
+  assert(subgrouping_aggregator->ordered_data.ordered_list.at(1).second->size() == 2);
+  assert(subgrouping_aggregator->ordered_data.ordered_list.at(2).first == "01");
+  assert(subgrouping_aggregator->ordered_data.ordered_list.at(2).second->size() == 1);
 }
 
 int main()
@@ -204,6 +260,10 @@ int main()
   std::cout << "test_ordered_map_01.....................................OK" << std::endl;
   test_value_aggregator_01();
   std::cout << "test_value_aggregator_01................................OK" << std::endl;
+  test_subgrouping_aggregator_02();
+  std::cout << "test_subgrouping_aggregator_02..........................OK" << std::endl;
+  test_subgrouping_aggregator_03();
+  std::cout << "test_subgrouping_aggregator_03..........................OK" << std::endl;
 
   std::cout << std::endl << "Fim testes" << std::endl;
 
