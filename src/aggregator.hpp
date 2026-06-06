@@ -21,6 +21,11 @@ struct Aggregator
 
   virtual void aggregate(CSV_Data_Row* row) = 0;
 
+  /**
+   * @brief define quantas cagetorias foram encontradas até o momento da chamada
+   * 
+   * @return size_t 
+   */
   virtual size_t size() = 0;
 
   virtual std::unique_ptr<Aggregator> clone() = 0;
