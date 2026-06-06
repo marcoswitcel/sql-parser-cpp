@@ -12,6 +12,9 @@
 
 enum class Aggregator_Type { Values, Subgrouping };
 
+
+union Aggregated_Data;
+
 struct Aggregator
 {
   Aggregator_Type type;
@@ -29,6 +32,8 @@ struct Aggregator
   virtual size_t size() = 0;
 
   virtual std::unique_ptr<Aggregator> clone() = 0;
+
+  virtual Aggregated_Data at(size_t index) = 0;
 };
 
 struct Value_Aggregator: Aggregator
@@ -45,6 +50,8 @@ struct Value_Aggregator: Aggregator
   size_t size();
   
   std::unique_ptr<Aggregator> clone();
+
+  Aggregated_Data at(size_t index);
 };
 
 struct Subgrouping_Aggregator: Aggregator
@@ -62,4 +69,12 @@ struct Subgrouping_Aggregator: Aggregator
   size_t size();
   
   std::unique_ptr<Aggregator> clone();
+
+  Aggregated_Data at(size_t index);
+};
+
+union Aggregated_Data
+{
+  std::vector<CSV_Data_Row*>* list;
+  Aggregator* aggregator;
 };

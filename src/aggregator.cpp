@@ -43,6 +43,12 @@ std::unique_ptr<Aggregator> Value_Aggregator::clone()
   return std::make_unique<Value_Aggregator>(*this);
 }
 
+Aggregated_Data Value_Aggregator::at(size_t index)
+{
+  auto &pair = this->ordered_data.ordered_list.at(index);
+  return { .list =  &pair.second };
+}
+
 Subgrouping_Aggregator::Subgrouping_Aggregator(std::unique_ptr<Field_By_Name_Resolver> &field_resolver, std::unique_ptr<Aggregator> &subgrouping_aggregator)
 {
   this->type = Aggregator_Type::Subgrouping;
@@ -80,4 +86,10 @@ size_t Subgrouping_Aggregator::size()
 std::unique_ptr<Aggregator> Subgrouping_Aggregator::clone()
 {
   return std::make_unique<Subgrouping_Aggregator>(*this);
+}
+
+Aggregated_Data Subgrouping_Aggregator::at(size_t index)
+{
+  auto &pair = this->ordered_data.ordered_list.at(index);
+  return { .aggregator = pair.second.get() };
 }
