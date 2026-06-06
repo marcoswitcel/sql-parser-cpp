@@ -323,30 +323,41 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
 
   if (select.group_by && select.group_by->groups.size() > 0)
   {
-    /*
-    auto &grouping_field = select.group_by->groups.at(0);
-    
-    if (auto ident = Cast_If(Ident_Expression_Ast_Node, *grouping_field))
+    std::unique_ptr<Aggregator> root_aggregator;
+
+    // montando estrutura de agregadores
+    for (size_t i = select.group_by->groups.size(); i > 0; i--)
     {
-      auto &field_name = ident->ident_name;
-      auto field_resolver = std::make_unique<Field_By_Name_Resolver>(csv, field_name);
-      auto root_aggregator = std::make_unique<Value_Aggregator>(field_resolver);
-      
-      for (CSV_Data_Row &data_row: csv.dataset)
+      std::unique_ptr<Expression_Ast_Node> &grouping_field = select.group_by->groups.at(i - 1);
+
+      if (auto ident = Cast_If(Ident_Expression_Ast_Node, *grouping_field))
       {
-        root_aggregator->aggregate(&data_row);
-      }
-    
-      for (auto &pair : root_aggregator->ordered_data.ordered_list)
-      {
-        std::cout << pair.first << std::endl;
-        for (auto row : pair.second)
+        auto &field_name = ident->ident_name;
+        auto field_resolver = std::make_unique<Field_By_Name_Resolver>(csv, field_name);
+        
+        if (root_aggregator)
         {
-          std::cout << root_aggregator->field_resolver->resolve(*row) << std::endl;
+          auto aggregator = std::make_unique<Subgrouping_Aggregator>(field_resolver, root_aggregator);
+          root_aggregator = std::move(aggregator);
+        }
+        else
+        {
+          auto aggregator = std::make_unique<Value_Aggregator>(field_resolver);
+          root_aggregator = std::move(aggregator);
         }
       }
+      else
+      {
+        std::cout << "A expressão a seguir não pode ser aplicada no Group By: " << std::endl << grouping_field->to_expression() << std::endl;
+        return false;
+      }
     }
-    */
+
+    // executando processo de agregação
+    for (CSV_Data_Row &data_row: csv.dataset)
+    {
+      root_aggregator->aggregate(&data_row);
+    }
   }
 
   vector<CSV_Data_Row> new_dataset;
