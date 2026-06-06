@@ -13,6 +13,7 @@
 
 #include "./utils.cpp"
 #include "./ast_node.hpp"
+#include "./aggregator.cpp"
 #include "./collector_ast_node_visitor.hpp"
 #include "./resolver.cpp"
 #include "./ordered_map.hpp"
@@ -322,51 +323,27 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
 
   if (select.group_by && select.group_by->groups.size() > 0)
   {
+    /*
     auto &grouping_field = select.group_by->groups.at(0);
     
     if (auto ident = Cast_If(Ident_Expression_Ast_Node, *grouping_field))
     {
       auto &field_name = ident->ident_name;
-      Ordered_Map<std::string, std::vector<CSV_Data_Row*>> ordered;
-      Field_By_Name_Resolver field_resolver(csv, field_name);
+      auto field_resolver = std::make_unique<Field_By_Name_Resolver>(csv, field_name);
+      auto root_aggregator = std::make_unique<Value_Aggregator>(field_resolver);
       
       for (CSV_Data_Row &data_row: csv.dataset)
       {
-        auto result = field_resolver.resolve(data_row);
-        
-        auto result_set = ordered.lookup(result);
-
-        if (result_set)
-        {
-          result_set->push_back(&data_row);
-        }
-        else
-        {
-          std::vector<CSV_Data_Row*> new_set;
-          new_set.push_back(&data_row);
-          ordered.put(result, new_set);
-        }
+        root_aggregator->aggregate(&data_row);
       }
     
-      /*
-      for (auto [ name, collection ] : ordered.ordered_list)
+      for (auto &pair : root_aggregator->ordered_data.ordered_list)
       {
-        std::cout << name << std::endl;
-        for (auto row : collection)
+        std::cout << pair.first << std::endl;
+        for (auto row : pair.second)
         {
-          std::cout << field_resolver.resolve(*row) << std::endl;
+          std::cout << root_aggregator->field_resolver->resolve(*row) << std::endl;
         }
-      }
-      */
-    }
-
-    /*
-    Ordered_Map<std::string, CSV_Data_Row> ordered;
-    for (auto  &it : select.group_by->groups)
-    {
-      if (auto ident = Cast_If(Ident_Expression_Ast_Node, *it))
-      {
-        std::cout << ident->ident_name << std::endl;
       }
     }
     */
