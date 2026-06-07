@@ -363,9 +363,10 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
     {
       for (size_t i = 0, size = root_aggregator->size(); i < size; i++)
       {
-        auto &collection = *root_aggregator->at(i).list;
+        auto [name, data] = root_aggregator->at(i);
 
-        for (auto &it : collection)
+        std::cout << "Grupo: " <<  name << std::endl;
+        for (auto &it : *data.list)
         {
           std::cout << it->at(0) << std::endl;
         }

@@ -33,7 +33,7 @@ struct Aggregator
 
   virtual std::unique_ptr<Aggregator> clone() = 0;
 
-  virtual Aggregated_Data at(size_t index) = 0;
+  virtual std::pair<std::string, Aggregated_Data> at(size_t index) = 0;
 };
 
 struct Value_Aggregator: Aggregator
@@ -51,7 +51,7 @@ struct Value_Aggregator: Aggregator
   
   std::unique_ptr<Aggregator> clone();
 
-  Aggregated_Data at(size_t index);
+  std::pair<std::string, Aggregated_Data> at(size_t index);
 };
 
 struct Subgrouping_Aggregator: Aggregator
@@ -70,7 +70,7 @@ struct Subgrouping_Aggregator: Aggregator
   
   std::unique_ptr<Aggregator> clone();
 
-  Aggregated_Data at(size_t index);
+  std::pair<std::string, Aggregated_Data> at(size_t index);
 };
 
 union Aggregated_Data
