@@ -5,6 +5,21 @@
 #include "./aggregator.hpp"
 
 
+size_t Aggregator::grouping_depth()
+{
+  size_t count = 1;
+
+  std::shared_ptr<Aggregator> group = this->get_subgrouping();
+
+  while (group)
+  {
+    count++;
+    group = group->get_subgrouping();
+  }
+
+  return count;
+}
+
 Value_Aggregator::Value_Aggregator(std::unique_ptr<Field_By_Name_Resolver> &field_resolver)
 {
   this->type = Aggregator_Type::Values;
@@ -47,6 +62,11 @@ std::pair<std::string, Aggregated_Data> Value_Aggregator::at(size_t index)
 {
   auto &pair = this->ordered_data.ordered_list.at(index);
   return std::make_pair(pair.first, Aggregated_Data { .list =  &pair.second });
+}
+
+std::shared_ptr<Aggregator> Value_Aggregator::get_subgrouping()
+{
+  return {}; // empty shared pointer
 }
 
 Subgrouping_Aggregator::Subgrouping_Aggregator(std::unique_ptr<Field_By_Name_Resolver> &field_resolver, std::unique_ptr<Aggregator> &subgrouping_aggregator)
@@ -92,4 +112,9 @@ std::pair<std::string, Aggregated_Data> Subgrouping_Aggregator::at(size_t index)
 {
   auto &pair = this->ordered_data.ordered_list.at(index);
   return std::make_pair(pair.first, Aggregated_Data { .aggregator = pair.second.get() });
+}
+
+std::shared_ptr<Aggregator> Subgrouping_Aggregator::get_subgrouping()
+{
+  return this->subgrouping_aggregator;
 }

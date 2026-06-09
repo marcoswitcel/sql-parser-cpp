@@ -240,6 +240,8 @@ void test_subgrouping_aggregator_03()
   assert(subgrouping_aggregator->ordered_data.ordered_list.at(1).second->size() == 2);
   assert(subgrouping_aggregator->ordered_data.ordered_list.at(2).first == "01");
   assert(subgrouping_aggregator->ordered_data.ordered_list.at(2).second->size() == 1);
+
+  assert(root_aggregator->grouping_depth() == 2);
 }
 
 int main()
