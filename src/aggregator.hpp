@@ -37,6 +37,11 @@ struct Aggregator
 
   virtual std::shared_ptr<Aggregator> get_subgrouping() = 0;
 
+  /**
+   * @brief Retorna o número de agrupamentos definidos nesse agregador
+   * 
+   * @return size_t 
+   */
   size_t grouping_depth();
 };
 
