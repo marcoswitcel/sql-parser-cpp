@@ -500,7 +500,7 @@ Binary_Expression_Ast_Node* SQL_Parse_Context::eat_binary_expression_ast_node()
       }
       else
       {
-        this->error = true;
+        this->report_error("Sem espaço para inserir o número");
         return NULL;
       }
     }
