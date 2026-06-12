@@ -20,6 +20,9 @@ struct Aggregator
   Aggregator_Type type;
   std::shared_ptr<Field_By_Name_Resolver> field_resolver;
 
+  // para iterar
+  int current_index;
+
   virtual ~Aggregator() = default;
 
   virtual void aggregate(CSV_Data_Row* row) = 0;
@@ -36,6 +39,10 @@ struct Aggregator
   virtual std::pair<std::string, Aggregated_Data> at(size_t index) = 0;
 
   virtual std::shared_ptr<Aggregator> get_subgrouping() = 0;
+
+  /*
+  std::unique_ptr<std::pair<std::vector<std::string>, CSV_Data_Row*>> get_next_group_value();
+  */
 
   /**
    * @brief Retorna o número de agrupamentos definidos nesse agregador
