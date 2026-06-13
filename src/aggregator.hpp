@@ -10,6 +10,8 @@
 // Dependências
 #include "../lib/csv/src/csv.hpp"
 
+using Group_Value = std::pair<std::vector<std::string>, std::vector<CSV_Data_Row*>>;
+
 enum class Aggregator_Type { Values, Subgrouping };
 
 
@@ -21,7 +23,7 @@ struct Aggregator
   std::shared_ptr<Field_By_Name_Resolver> field_resolver;
 
   // para iterar
-  int current_index;
+  int current_index = -1;
 
   virtual ~Aggregator() = default;
 
@@ -40,9 +42,7 @@ struct Aggregator
 
   virtual std::shared_ptr<Aggregator> get_subgrouping() = 0;
 
-  /*
-  std::unique_ptr<std::pair<std::vector<std::string>, CSV_Data_Row*>> get_next_group_value();
-  */
+  std::unique_ptr<Group_Value> get_next_group_value();
 
   /**
    * @brief Retorna o número de agrupamentos definidos nesse agregador

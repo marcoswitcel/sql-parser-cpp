@@ -20,43 +20,53 @@ size_t Aggregator::grouping_depth()
   return count;
 }
 
-/*
-std::unique_ptr<std::pair<std::vector<std::string>, CSV_Data_Row*>> Aggregator::get_next_group_value()
+std::unique_ptr<Group_Value> Aggregator::get_next_group_value()
 {
-  std::vector<std::string> field_names;
-  CSV_Data_Row* data_row = nullptr;
-  
   std::vector<Aggregator*> stack;
   stack.push_back(this);
+  
+  std::vector<std::string> field_names;
 
   while (stack.size() > 0)
   {
     auto aggregator = stack.at(stack.size() - 1);
     stack.pop_back();
+    
+    // inicializa o iterador caso não tenha iniciado
+    if (aggregator->current_index < 0) aggregator->current_index = 0;
 
     if (aggregator->type == Aggregator_Type::Values)
     {
       auto value_aggregator = static_cast<Value_Aggregator*>(aggregator);
 
-      if (value_aggregator->current_index < 0) value_aggregator->current_index = 0;
-
-      for (; value_aggregator->current_index < value_aggregator->size(); value_aggregator->current_index++)
+      if (value_aggregator->current_index < static_cast<int>(value_aggregator->size()))
       {
         auto value = value_aggregator->at(value_aggregator->current_index);
+        value_aggregator->current_index++;
         field_names.push_back(value.first);
-         
-        return std::make_unique<std::pair<std::vector<std::string>, CSV_Data_Row*>>(field_names, value.second.list);
+
+        return std::make_unique<Group_Value>(field_names, *value.second.list);
       }
     }
     else if (aggregator->type == Aggregator_Type::Subgrouping)
     {
-      // @todo João, terminar o subgrouping iterar e adicionar na stack
+      auto subgrouping_aggregator = static_cast<Subgrouping_Aggregator*>(aggregator);
+
+      if (subgrouping_aggregator->current_index < static_cast<int>(subgrouping_aggregator->size()))
+      {
+        auto value = subgrouping_aggregator->at(subgrouping_aggregator->current_index);
+        subgrouping_aggregator->current_index++;
+        field_names.push_back(value.first);
+        
+        stack.push_back(value.second.aggregator);
+        continue;
+      }
     }
   }
-
+  
   return {};
 }
-*/
+
 
 Value_Aggregator::Value_Aggregator(std::unique_ptr<Field_By_Name_Resolver> &field_resolver)
 {
