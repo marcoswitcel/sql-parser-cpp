@@ -22,6 +22,8 @@ size_t Aggregator::grouping_depth()
 
 std::unique_ptr<Group_Value> Aggregator::get_next_group_value()
 {
+  // @note João, pra deixar essa função mais rápida seria necessário preservar a stack e os "field names"
+  // mas não quero fazer isso agora...
   std::vector<Aggregator*> stack;
   stack.push_back(this);
   
