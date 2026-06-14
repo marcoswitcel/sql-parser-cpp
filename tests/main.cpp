@@ -286,7 +286,36 @@ void test_subgrouping_aggregator_03()
 
   assert(root_aggregator->grouping_depth() == 2);
 
-  // @todo João, incluir testes de agrupamento
+  auto group01 = subgrouping_aggregator->get_next_group_value();
+  assert(group01.get() != nullptr);
+  assert(group01->first.size() == 2);
+  assert(group01->first.at(0) == "05");
+  assert(group01->first.at(1) == "1");
+  assert(group01->second.size() == 1);
+
+  auto group02 = subgrouping_aggregator->get_next_group_value();
+  assert(group02.get() != nullptr);
+  assert(group02->first.size() == 2);
+  assert(group02->first.at(0) == "03");
+  assert(group02->first.at(1) == "2");
+  assert(group02->second.size() == 1);
+
+  auto group03 = subgrouping_aggregator->get_next_group_value();
+  assert(group03.get() != nullptr);
+  assert(group03->first.size() == 2);
+  assert(group03->first.at(0) == "03");
+  assert(group03->first.at(1) == "3");
+  assert(group03->second.size() == 1);
+
+  auto group04 = subgrouping_aggregator->get_next_group_value();
+  assert(group04.get() != nullptr);
+  assert(group04->first.size() == 2);
+  assert(group04->first.at(0) == "01");
+  assert(group04->first.at(1) == "4");
+  assert(group04->second.size() == 1);
+
+  auto group05 = subgrouping_aggregator->get_next_group_value();
+  assert(group05.get() == nullptr);
 }
 
 int main()

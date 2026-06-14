@@ -29,8 +29,7 @@ std::unique_ptr<Group_Value> Aggregator::get_next_group_value()
 
   while (stack.size() > 0)
   {
-    auto aggregator = stack.at(stack.size() - 1);
-    stack.pop_back();
+    auto aggregator = stack.back();
     
     // inicializa o iterador caso não tenha iniciado
     if (aggregator->current_index < 0) aggregator->current_index = 0;
@@ -55,13 +54,22 @@ std::unique_ptr<Group_Value> Aggregator::get_next_group_value()
       if (subgrouping_aggregator->current_index < static_cast<int>(subgrouping_aggregator->size()))
       {
         auto value = subgrouping_aggregator->at(subgrouping_aggregator->current_index);
-        subgrouping_aggregator->current_index++;
         field_names.push_back(value.first);
         
         stack.push_back(value.second.aggregator);
         continue;
       }
     }
+
+    stack.pop_back();
+
+    if (stack.size() > 0)
+    {
+      auto next = stack.back();
+      next->current_index++;
+    }
+    
+    if (field_names.size() > 0) field_names.pop_back();
   }
   
   return {};
