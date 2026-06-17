@@ -321,10 +321,13 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
     return false;
   }
 
-  if (select.group_by && select.group_by->groups.size() > 0)
-  {
-    std::unique_ptr<Aggregator> root_aggregator;
 
+  const auto hasWhere = select.where && select.where->conditions.get();
+  const auto hasGroupBy = select.group_by && select.group_by->groups.size() > 0;
+  std::unique_ptr<Aggregator> root_aggregator;
+
+  if (hasGroupBy)
+  {
     // montando estrutura de agregadores
     for (size_t i = select.group_by->groups.size(); i > 0; i--)
     {
@@ -352,20 +355,29 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
         return false;
       }
     }
-
+    
     // executando processo de agregação
     for (CSV_Data_Row &data_row: csv.dataset)
     {
+      if (hasWhere)
+      {
+        if (!evaluate_relational_binary_ast_node(select.where->conditions.get(), csv, data_row))
+        {
+          continue;
+        }
+      }
+      
       root_aggregator->aggregate(&data_row);
     }
   }
 
   vector<CSV_Data_Row> new_dataset;
 
+  // caminho rápido quando não há agregador
   for (CSV_Data_Row &data_row: csv.dataset)
   {
     // @todo João, é necessário validar se o 'comando' faz sentido de acordo com a estrutura da tabela
-    if (select.where && select.where->conditions.get())
+    if (hasWhere)
     {
       if (!evaluate_relational_binary_ast_node(select.where->conditions.get(), csv, data_row))
       {
