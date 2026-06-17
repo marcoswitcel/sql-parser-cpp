@@ -358,20 +358,6 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
     {
       root_aggregator->aggregate(&data_row);
     }
-
-    if (root_aggregator->type == Aggregator_Type::Values)
-    {
-      for (size_t i = 0, size = root_aggregator->size(); i < size; i++)
-      {
-        auto [name, data] = root_aggregator->at(i);
-
-        std::cout << "Grupo: " <<  name << std::endl;
-        for (auto &it : *data.list)
-        {
-          std::cout << it->at(0) << std::endl;
-        }
-      }
-    }
   }
 
   vector<CSV_Data_Row> new_dataset;
