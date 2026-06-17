@@ -324,6 +324,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
 
   const auto hasWhere = select.where && select.where->conditions.get();
   const auto hasGroupBy = select.group_by && select.group_by->groups.size() > 0;
+  vector<CSV_Data_Row> new_dataset;
   std::unique_ptr<Aggregator> root_aggregator;
 
   if (hasGroupBy)
@@ -369,30 +370,39 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
       
       root_aggregator->aggregate(&data_row);
     }
-  }
 
-  vector<CSV_Data_Row> new_dataset;
-
-  // caminho rápido quando não há agregador
-  for (CSV_Data_Row &data_row: csv.dataset)
-  {
-    // @todo João, é necessário validar se o 'comando' faz sentido de acordo com a estrutura da tabela
-    if (hasWhere)
+    // @todo João, @wip terminar aqui... a ideia é começar implementando o count(*), select species From Iris Group By Species
+    while (auto value = root_aggregator->get_next_group_value())
     {
-      if (!evaluate_relational_binary_ast_node(select.where->conditions.get(), csv, data_row))
+      if (value->first.size())
       {
-        continue;
+        std::cout << value->first.at(0) << std::endl;
       }
     }
-
-    std::vector<std::string> new_data_row;
-    
-    for (auto resolver : field_resolver)
+  }
+  else
+  {
+    // caminho rápido quando não há agregador
+    for (CSV_Data_Row &data_row: csv.dataset)
     {
-      new_data_row.push_back(resolver->resolve(data_row));
+      // @todo João, é necessário validar se o 'comando' faz sentido de acordo com a estrutura da tabela
+      if (hasWhere)
+      {
+        if (!evaluate_relational_binary_ast_node(select.where->conditions.get(), csv, data_row))
+        {
+          continue;
+        }
+      }
+  
+      std::vector<std::string> new_data_row;
+      
+      for (auto resolver : field_resolver)
+      {
+        new_data_row.push_back(resolver->resolve(data_row));
+      }
+  
+      new_dataset.push_back(new_data_row);
     }
-
-    new_dataset.push_back(new_data_row);
   }
 
   csv.header = new_header;
