@@ -86,8 +86,8 @@ bool extract_lhs_and_rhs_expressions(
   Binary_Expression_Ast_Node* node, CSVData &csv, std::vector<std::string> &data_row,
   std::string &lhs, std::string &rhs)
 {
-  Expression_Resolver resolver_left = Expression_Resolver(&csv, node->left.get());
-  Expression_Resolver resolver_right = Expression_Resolver(&csv, node->right.get());
+  Expression_Resolver resolver_left = Expression_Resolver(&csv.header, node->left.get());
+  Expression_Resolver resolver_right = Expression_Resolver(&csv.header, node->right.get());
 
   lhs = resolver_left.resolve(data_row);
   rhs = resolver_right.resolve(data_row);
@@ -230,7 +230,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
         for (auto column : csv.header)
         {
           new_header.push_back(column);
-          field_resolver.push_back(new Field_By_Name_Resolver(csv, column));
+          field_resolver.push_back(new Field_By_Name_Resolver(csv.header, column));
         }
       }
       else
@@ -249,7 +249,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
         {
           new_header.push_back(ident->as);
         }
-        field_resolver.push_back(new Field_By_Name_Resolver(csv, ident->ident_name));
+        field_resolver.push_back(new Field_By_Name_Resolver(csv.header, ident->ident_name));
       }
     }
     else if (field->type == Ast_Node_Type::String_Literal_Expression_Ast_Node)
@@ -289,7 +289,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
       {
         new_header.push_back(bin_expr->as);
       }
-      field_resolver.push_back(new Binary_Expression_Resolver(&csv, bin_expr));
+      field_resolver.push_back(new Binary_Expression_Resolver(&csv.header, bin_expr));
     }
     else if (field->type == Ast_Node_Type::Function_Call_Expression_Ast_Node && known_function_name_and_argument_list(static_cast<Function_Call_Expression_Ast_Node*>(field.get())))
     {
@@ -303,7 +303,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
         new_header.push_back(call_expr->as);
       }
       // @todo joão, falta validar idents...
-      field_resolver.push_back(new Function_Call_Expression_Resolver(&csv, call_expr));
+      field_resolver.push_back(new Function_Call_Expression_Resolver(&csv.header, call_expr));
     }
     else
     {
@@ -373,7 +373,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
       if (auto ident = Cast_If(Ident_Expression_Ast_Node, *grouping_field))
       {
         auto &field_name = ident->ident_name;
-        auto field_resolver = std::make_unique<Field_By_Name_Resolver>(csv, field_name);
+        auto field_resolver = std::make_unique<Field_By_Name_Resolver>(csv.header, field_name);
         
         if (root_aggregator)
         {

@@ -11,17 +11,17 @@
 #include "../lib/csv/src/csv.hpp"
 
 
-Field_By_Name_Resolver::Field_By_Name_Resolver(CSVData &csv, std::string field_name)
+Field_By_Name_Resolver::Field_By_Name_Resolver(CSV_Data_Row &header, std::string field_name)
 {
-  auto it = std::find(csv.header.begin(), csv.header.end(), field_name);
+  auto it = std::find(header.begin(), header.end(), field_name);
   
-  if (it == csv.header.end())
+  if (it == header.end())
   {
     assert(false);
     std::cout << "Error: field_name: " << field_name << " não existe no csv." << std::endl;
   }
   
-  this->index_of_field = std::distance(csv.header.begin(), it);
+  this->index_of_field = std::distance(header.begin(), it);
 }
 
 std::string Field_By_Name_Resolver::resolve(std::vector<std::string> &data_row)
@@ -41,10 +41,10 @@ std::string Number_Literal_Resolver::resolve([[maybe_unused]] std::vector<std::s
   return std::to_string(this->value);
 }
 
-Expression_Resolver::Expression_Resolver(CSVData *csv, Expression_Ast_Node* expr)
+Expression_Resolver::Expression_Resolver(CSV_Data_Row *header, Expression_Ast_Node* expr)
 {
   this->expr = expr;
-  this->csv = csv;
+  this->header = header;
 }
 
 std::string Expression_Resolver::resolve(std::vector<std::string> &data_row)
@@ -64,20 +64,20 @@ std::string Expression_Resolver::resolve(std::vector<std::string> &data_row)
   else if (this->expr->type == Ast_Node_Type::Ident_Expression_Ast_Node)
   {
     auto ident_expr = static_cast<Ident_Expression_Ast_Node*>(this->expr);
-    auto resolver = Field_By_Name_Resolver(*this->csv, ident_expr->ident_name);
+    auto resolver = Field_By_Name_Resolver(*this->header, ident_expr->ident_name);
     return resolver.resolve(data_row);
   }
   else if (this->expr->type == Ast_Node_Type::Binary_Expression_Ast_Node)
   {
     auto bin_expr = static_cast<Binary_Expression_Ast_Node*>(this->expr);
-    Expression_Resolver resolver_left = Expression_Resolver(this->csv, bin_expr->left.get());
-    Expression_Resolver resolver_right = Expression_Resolver(this->csv, bin_expr->right.get());
+    Expression_Resolver resolver_left = Expression_Resolver(this->header, bin_expr->left.get());
+    Expression_Resolver resolver_right = Expression_Resolver(this->header, bin_expr->right.get());
     return resolver_left.resolve(data_row) + resolver_right.resolve(data_row);
   }
   else if (this->expr->type == Ast_Node_Type::Function_Call_Expression_Ast_Node)
   {
     auto call_expr = static_cast<Function_Call_Expression_Ast_Node*>(this->expr);
-    auto resolver = Function_Call_Expression_Resolver(this->csv, call_expr);
+    auto resolver = Function_Call_Expression_Resolver(this->header, call_expr);
     return resolver.resolve(data_row);
   }
   else
@@ -103,7 +103,7 @@ std::string Function_Call_Expression_Resolver::resolve(std::vector<std::string> 
   {
     auto expr = this->call_expr->argument_list.at(0);
     
-    Expression_Resolver resolver = Expression_Resolver(this->csv, expr);
+    Expression_Resolver resolver = Expression_Resolver(this->header, expr);
     
     std::string value = resolver.resolve(data_row);
     std::transform(value.begin(), value.end(), value.begin(), [](unsigned char c) { return std::tolower(c); });
@@ -113,7 +113,7 @@ std::string Function_Call_Expression_Resolver::resolve(std::vector<std::string> 
   {
     auto expr = this->call_expr->argument_list.at(0);
     
-    Expression_Resolver resolver = Expression_Resolver(this->csv, expr);
+    Expression_Resolver resolver = Expression_Resolver(this->header, expr);
     
     std::string value = resolver.resolve(data_row);
     std::transform(value.begin(), value.end(), value.begin(), [](unsigned char c) { return std::toupper(c); });
@@ -127,17 +127,17 @@ std::string Function_Call_Expression_Resolver::resolve(std::vector<std::string> 
 struct Binary_Expression_Resolver : Field_Resolver
 {
   Binary_Expression_Ast_Node* bin_expr;
-  CSVData *csv;
+  CSV_Data_Row *header;
 
-  Binary_Expression_Resolver(CSVData *csv, Binary_Expression_Ast_Node* bin_expr)
+  Binary_Expression_Resolver(CSV_Data_Row *header, Binary_Expression_Ast_Node* bin_expr)
   {
     this->bin_expr = bin_expr;
-    this->csv = csv;
+    this->header = header;
   }
 
   std::string resolve([[maybe_unused]] std::vector<std::string> &data_row)
   {
-    Expression_Resolver resolver = Expression_Resolver(this->csv, this->bin_expr);
+    Expression_Resolver resolver = Expression_Resolver(this->header, this->bin_expr);
     return resolver.resolve(data_row);
   }
 };

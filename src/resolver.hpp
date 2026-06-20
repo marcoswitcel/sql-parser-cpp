@@ -25,12 +25,12 @@ struct Field_Resolver
 struct Function_Call_Expression_Resolver : Field_Resolver
 {
   Function_Call_Expression_Ast_Node* call_expr;
-  CSVData *csv;
+  CSV_Data_Row *header;
 
-  Function_Call_Expression_Resolver(CSVData *csv, Function_Call_Expression_Ast_Node* call_expr)
+  Function_Call_Expression_Resolver(CSV_Data_Row *header, Function_Call_Expression_Ast_Node* call_expr)
   {
     this->call_expr = call_expr;
-    this->csv = csv;
+    this->header = header;
   }
 
   std::string resolve(std::vector<std::string> &data_row);
@@ -45,7 +45,7 @@ struct Field_By_Name_Resolver : Field_Resolver
 {
   int64_t index_of_field = -1;
 
-  Field_By_Name_Resolver(CSVData &csv, std::string field_name);
+  Field_By_Name_Resolver(CSV_Data_Row &header, std::string field_name);
 
   std::string resolve(std::vector<std::string> &data_row);
 };
@@ -77,8 +77,9 @@ struct Number_Literal_Resolver : Field_Resolver
 struct Expression_Resolver : Field_Resolver
 {
   Expression_Ast_Node* expr;
-  CSVData *csv;
+  CSV_Data_Row *header;
 
-  Expression_Resolver(CSVData *csv, Expression_Ast_Node* expr);
+  Expression_Resolver(CSV_Data_Row *header, Expression_Ast_Node* expr);
+  
   std::string resolve(std::vector<std::string> &data_row);
 };
