@@ -347,17 +347,21 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
           }
           else
           {
-            // não deveria chegar aqui...
-            assert(false);
+            std::cout << "Por hora todas as expressões no Group By precisam ser identificadores simples." << std::endl;
+            return false;
           }
         }
-
-        assert(found); // @todo joão, converter para if com return aqui...
+        
+        if (!found)
+        {
+          std::cout << "Por hora todos os campos do select precisam estar contidos na cláusula Group By." << std::endl;
+          return false;
+        }
       }
       else
       {
-        // @todo João, assert temporário, enquanto não termino a implementação
-        assert(false);
+        std::cout << "Por hora todos os campos do select precisam ser compostos apenas por identificadores." << std::endl;
+        return false;
       }
     }
     
