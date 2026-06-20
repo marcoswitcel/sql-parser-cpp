@@ -11,7 +11,7 @@
 #include "../lib/csv/src/csv.hpp"
 
 
-Field_By_Name_Resolver::Field_By_Name_Resolver(CSV_Data_Row &header, std::string field_name)
+Field_By_Name_Resolver::Field_By_Name_Resolver(Tabular_Data_Header &header, std::string field_name)
 {
   auto it = std::find(header.begin(), header.end(), field_name);
   
@@ -41,7 +41,7 @@ std::string Number_Literal_Resolver::resolve([[maybe_unused]] std::vector<std::s
   return std::to_string(this->value);
 }
 
-Expression_Resolver::Expression_Resolver(CSV_Data_Row *header, Expression_Ast_Node* expr)
+Expression_Resolver::Expression_Resolver(Tabular_Data_Header *header, Expression_Ast_Node* expr)
 {
   this->expr = expr;
   this->header = header;
@@ -127,9 +127,9 @@ std::string Function_Call_Expression_Resolver::resolve(std::vector<std::string> 
 struct Binary_Expression_Resolver : Field_Resolver
 {
   Binary_Expression_Ast_Node* bin_expr;
-  CSV_Data_Row *header;
+  Tabular_Data_Header *header;
 
-  Binary_Expression_Resolver(CSV_Data_Row *header, Binary_Expression_Ast_Node* bin_expr)
+  Binary_Expression_Resolver(Tabular_Data_Header *header, Binary_Expression_Ast_Node* bin_expr)
   {
     this->bin_expr = bin_expr;
     this->header = header;

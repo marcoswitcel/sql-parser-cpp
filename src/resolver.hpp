@@ -5,7 +5,9 @@
 
 #include "./ast_node.hpp"
 
-#include "../lib/csv/src/csv.hpp"
+
+using Tabular_Data_Row = std::vector<std::string>;
+using Tabular_Data_Header = Tabular_Data_Row;
 
 struct Field_Resolver
 {
@@ -25,9 +27,9 @@ struct Field_Resolver
 struct Function_Call_Expression_Resolver : Field_Resolver
 {
   Function_Call_Expression_Ast_Node* call_expr;
-  CSV_Data_Row *header;
+  Tabular_Data_Header *header;
 
-  Function_Call_Expression_Resolver(CSV_Data_Row *header, Function_Call_Expression_Ast_Node* call_expr)
+  Function_Call_Expression_Resolver(Tabular_Data_Header *header, Function_Call_Expression_Ast_Node* call_expr)
   {
     this->call_expr = call_expr;
     this->header = header;
@@ -45,7 +47,7 @@ struct Field_By_Name_Resolver : Field_Resolver
 {
   int64_t index_of_field = -1;
 
-  Field_By_Name_Resolver(CSV_Data_Row &header, std::string field_name);
+  Field_By_Name_Resolver(Tabular_Data_Header &header, std::string field_name);
 
   std::string resolve(std::vector<std::string> &data_row);
 };
@@ -77,9 +79,9 @@ struct Number_Literal_Resolver : Field_Resolver
 struct Expression_Resolver : Field_Resolver
 {
   Expression_Ast_Node* expr;
-  CSV_Data_Row *header;
+  Tabular_Data_Header *header;
 
-  Expression_Resolver(CSV_Data_Row *header, Expression_Ast_Node* expr);
+  Expression_Resolver(Tabular_Data_Header *header, Expression_Ast_Node* expr);
   
   std::string resolve(std::vector<std::string> &data_row);
 };
