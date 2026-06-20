@@ -163,7 +163,7 @@ void test_ordered_map_01()
 void test_value_aggregator_01()
 {
   CSVData dummy_csv = make_dummy_csv();
-  auto field_resolver = std::make_unique<Field_By_Name_Resolver>(dummy_csv, "number");
+  auto field_resolver = std::make_unique<Field_By_Name_Resolver>(dummy_csv.header, "number");
 
   std::unique_ptr<Aggregator> aggregator = std::make_unique<Value_Aggregator>(field_resolver);
 
@@ -209,8 +209,8 @@ void test_value_aggregator_01()
 void test_subgrouping_aggregator_02()
 {
   CSVData dummy_csv = make_dummy_csv();
-  auto id_field_resolver = std::make_unique<Field_By_Name_Resolver>(dummy_csv, "id");
-  auto number_field_resolver = std::make_unique<Field_By_Name_Resolver>(dummy_csv, "number");
+  auto id_field_resolver = std::make_unique<Field_By_Name_Resolver>(dummy_csv.header, "id");
+  auto number_field_resolver = std::make_unique<Field_By_Name_Resolver>(dummy_csv.header, "number");
 
   std::unique_ptr<Aggregator> number_field_aggregator = std::make_unique<Value_Aggregator>(number_field_resolver);
   std::unique_ptr<Aggregator> root_aggregator = std::make_unique<Subgrouping_Aggregator>(id_field_resolver, number_field_aggregator);
@@ -261,8 +261,8 @@ void test_subgrouping_aggregator_02()
 void test_subgrouping_aggregator_03()
 {
   CSVData dummy_csv = make_dummy_csv();
-  auto id_field_resolver = std::make_unique<Field_By_Name_Resolver>(dummy_csv, "id");
-  auto number_field_resolver = std::make_unique<Field_By_Name_Resolver>(dummy_csv, "number");
+  auto id_field_resolver = std::make_unique<Field_By_Name_Resolver>(dummy_csv.header, "id");
+  auto number_field_resolver = std::make_unique<Field_By_Name_Resolver>(dummy_csv.header, "number");
 
   std::unique_ptr<Aggregator> id_field_aggregator = std::make_unique<Value_Aggregator>(id_field_resolver);
   std::unique_ptr<Aggregator> root_aggregator = std::make_unique<Subgrouping_Aggregator>(number_field_resolver, id_field_aggregator);
