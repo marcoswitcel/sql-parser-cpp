@@ -329,6 +329,38 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
 
   if (hasGroupBy)
   {
+    for (auto &field : select.fields)
+    {
+      if (auto ident = Cast_If(Ident_Expression_Ast_Node, *field))
+      {
+        bool found = false;
+
+        for (auto &grouping_field : select.group_by->groups)
+        {
+          if (auto group_by_ident = Cast_If(Ident_Expression_Ast_Node, *grouping_field))
+          {
+            if (group_by_ident->ident_name == ident->ident_name)
+            {
+              found = true;
+              continue;
+            } 
+          }
+          else
+          {
+            // não deveria chegar aqui...
+            assert(false);
+          }
+        }
+
+        assert(found); // @todo joão, converter para if com return aqui...
+      }
+      else
+      {
+        // @todo João, assert temporário, enquanto não termino a implementação
+        assert(false);
+      }
+    }
+    
     // montando estrutura de agregadores
     for (size_t i = select.group_by->groups.size(); i > 0; i--)
     {
