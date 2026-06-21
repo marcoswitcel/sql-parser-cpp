@@ -329,6 +329,8 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
 
   if (hasGroupBy)
   {
+    vector<std::unique_ptr<Field_By_Name_Resolver>> field_by_name_resolvers;
+    
     for (auto &field : select.fields)
     {
       if (auto ident = Cast_If(Ident_Expression_Ast_Node, *field))
@@ -341,6 +343,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
           {
             if (group_by_ident->ident_name == ident->ident_name)
             {
+              field_by_name_resolvers.push_back(std::make_unique<Field_By_Name_Resolver>(csv.header, ident->ident_name));
               found = true;
               continue;
             } 
@@ -407,13 +410,23 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
       root_aggregator->aggregate(&data_row);
     }
 
+    for (auto &field_by_name_resolver : field_by_name_resolvers)
+    {
+      // @todo João, temporario
+      field_by_name_resolver->index_of_field = 0;
+    }
+    
     // @todo João, @wip terminar aqui... a ideia é começar implementando o count(*), select species From Iris Group By Species
     while (auto value = root_aggregator->get_next_group_value())
     {
-      if (value->first.size())
+      std::vector<std::string> new_data_row;
+
+      for (auto &resolver : field_by_name_resolvers)
       {
-        std::cout << value->first.at(0) << std::endl;
+        new_data_row.push_back(resolver->resolve(value->first));
       }
+  
+      new_dataset.push_back(new_data_row);
     }
   }
   else
