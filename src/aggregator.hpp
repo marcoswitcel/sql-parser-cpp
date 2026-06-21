@@ -42,6 +42,8 @@ struct Aggregator
 
   virtual std::shared_ptr<Aggregator> get_subgrouping() = 0;
 
+  std::unique_ptr<Tabular_Data_Header> get_header();
+
   std::unique_ptr<Group_Value> get_next_group_value();
 
   /**

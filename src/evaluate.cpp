@@ -329,8 +329,6 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
 
   if (hasGroupBy)
   {
-    vector<std::unique_ptr<Field_By_Name_Resolver>> field_by_name_resolvers;
-    
     for (auto &field : select.fields)
     {
       if (auto ident = Cast_If(Ident_Expression_Ast_Node, *field))
@@ -343,7 +341,6 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
           {
             if (group_by_ident->ident_name == ident->ident_name)
             {
-              field_by_name_resolvers.push_back(std::make_unique<Field_By_Name_Resolver>(csv.header, ident->ident_name));
               found = true;
               continue;
             } 
@@ -410,10 +407,15 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
       root_aggregator->aggregate(&data_row);
     }
 
-    for (auto &field_by_name_resolver : field_by_name_resolvers)
+    auto grouping_header = root_aggregator->get_header();
+    vector<std::unique_ptr<Field_By_Name_Resolver>> field_by_name_resolvers;
+    
+    for (auto &field : select.fields)
     {
-      // @todo João, temporario
-      field_by_name_resolver->index_of_field = 0;
+      if (auto ident = Cast_If(Ident_Expression_Ast_Node, *field))
+      {
+        field_by_name_resolvers.push_back(std::make_unique<Field_By_Name_Resolver>(*grouping_header, ident->ident_name));
+      }
     }
     
     // @todo João, @wip terminar aqui... a ideia é começar implementando o count(*), select species From Iris Group By Species

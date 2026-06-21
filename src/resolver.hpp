@@ -46,6 +46,7 @@ struct Function_Call_Expression_Resolver : Field_Resolver
 struct Field_By_Name_Resolver : Field_Resolver
 {
   int64_t index_of_field = -1;
+  std::string field_name;
 
   Field_By_Name_Resolver(Tabular_Data_Header &header, std::string field_name);
 

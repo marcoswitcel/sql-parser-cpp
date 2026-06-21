@@ -20,6 +20,23 @@ size_t Aggregator::grouping_depth()
   return count;
 }
 
+std::unique_ptr<Tabular_Data_Header> Aggregator::get_header()
+{
+  auto header = std::make_unique<Tabular_Data_Header>();
+  header->push_back(this->field_resolver->field_name);
+
+  std::shared_ptr<Aggregator> group = this->get_subgrouping();
+  while (group)
+  {
+    header->push_back(group->field_resolver->field_name);
+    group = group->get_subgrouping();
+  }
+
+  if (header->empty()) return {};
+
+  return header;
+}
+
 std::unique_ptr<Group_Value> Aggregator::get_next_group_value()
 {
   // @note João, pra deixar essa função mais rápida seria necessário preservar a stack e os "field names"

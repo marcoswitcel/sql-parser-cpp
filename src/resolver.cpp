@@ -22,6 +22,7 @@ Field_By_Name_Resolver::Field_By_Name_Resolver(Tabular_Data_Header &header, std:
   }
   
   this->index_of_field = std::distance(header.begin(), it);
+  this->field_name = field_name;
 }
 
 std::string Field_By_Name_Resolver::resolve(std::vector<std::string> &data_row)
