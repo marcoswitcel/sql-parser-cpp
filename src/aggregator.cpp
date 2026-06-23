@@ -102,7 +102,7 @@ Value_Aggregator::Value_Aggregator(std::unique_ptr<Field_By_Name_Resolver> &fiel
   this->field_resolver = std::move(field_resolver);
 }
 
-void Value_Aggregator::aggregate(CSV_Data_Row* row)
+void Value_Aggregator::aggregate(Tabular_Data_Row* row)
 {
   auto result = this->field_resolver->resolve(*row);
         
@@ -116,7 +116,7 @@ void Value_Aggregator::aggregate(CSV_Data_Row* row)
   else
   {
     // se não tem cria e adiciona e vincula
-    std::vector<CSV_Data_Row*> new_set;
+    std::vector<Tabular_Data_Row*> new_set;
     new_set.push_back(row);
 
     this->ordered_data.put(result, new_set);
@@ -152,7 +152,7 @@ Subgrouping_Aggregator::Subgrouping_Aggregator(std::unique_ptr<Field_By_Name_Res
   this->field_resolver = std::move(field_resolver);
 }
 
-void Subgrouping_Aggregator::aggregate(CSV_Data_Row* row)
+void Subgrouping_Aggregator::aggregate(Tabular_Data_Row* row)
 {
   auto result = this->field_resolver->resolve(*row);
         

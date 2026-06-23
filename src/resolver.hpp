@@ -21,7 +21,7 @@ struct Field_Resolver
    * @param data_row 
    * @return std::string 
    */
-  virtual std::string resolve(std::vector<std::string> &data_row) = 0;
+  virtual std::string resolve(Tabular_Data_Row &data_row) = 0;
 };
 
 struct Function_Call_Expression_Resolver : Field_Resolver
@@ -35,7 +35,7 @@ struct Function_Call_Expression_Resolver : Field_Resolver
     this->header = header;
   }
 
-  std::string resolve(std::vector<std::string> &data_row);
+  std::string resolve(Tabular_Data_Row &data_row);
 };
 
 // @note provavelmente deveria chamar esse resolver de 'Ident_Resolver', se fosse pra ser um 'field resolver' provavelmente
@@ -50,7 +50,7 @@ struct Field_By_Name_Resolver : Field_Resolver
 
   Field_By_Name_Resolver(Tabular_Data_Header &header, std::string field_name);
 
-  std::string resolve(std::vector<std::string> &data_row);
+  std::string resolve(Tabular_Data_Row &data_row);
 };
 
 struct String_Literal_Resolver : Field_Resolver
@@ -62,7 +62,7 @@ struct String_Literal_Resolver : Field_Resolver
     this->value = string_value;
   }
 
-  std::string resolve([[maybe_unused]] std::vector<std::string> &data_row);
+  std::string resolve([[maybe_unused]] Tabular_Data_Row &data_row);
 };
 
 struct Number_Literal_Resolver : Field_Resolver
@@ -74,7 +74,7 @@ struct Number_Literal_Resolver : Field_Resolver
     this->value = value;
   }
 
-  std::string resolve([[maybe_unused]] std::vector<std::string> &data_row);
+  std::string resolve([[maybe_unused]] Tabular_Data_Row &data_row);
 };
 
 struct Expression_Resolver : Field_Resolver
@@ -84,5 +84,5 @@ struct Expression_Resolver : Field_Resolver
 
   Expression_Resolver(Tabular_Data_Header *header, Expression_Ast_Node* expr);
   
-  std::string resolve(std::vector<std::string> &data_row);
+  std::string resolve(Tabular_Data_Row &data_row);
 };

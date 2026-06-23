@@ -25,19 +25,19 @@ Field_By_Name_Resolver::Field_By_Name_Resolver(Tabular_Data_Header &header, std:
   this->field_name = field_name;
 }
 
-std::string Field_By_Name_Resolver::resolve(std::vector<std::string> &data_row)
+std::string Field_By_Name_Resolver::resolve(Tabular_Data_Row &data_row)
 {
   assert(this->index_of_field > -1);
   // @note João, não trata a exception in runtime? talvez, talvez fosse melhor retornar string vazia
   return data_row[this->index_of_field];
 }
 
-std::string String_Literal_Resolver::resolve([[maybe_unused]] std::vector<std::string> &data_row)
+std::string String_Literal_Resolver::resolve([[maybe_unused]] Tabular_Data_Row &data_row)
 {
   return this->value;
 }
 
-std::string Number_Literal_Resolver::resolve([[maybe_unused]] std::vector<std::string> &data_row)
+std::string Number_Literal_Resolver::resolve([[maybe_unused]] Tabular_Data_Row &data_row)
 {
   return std::to_string(this->value);
 }
@@ -48,7 +48,7 @@ Expression_Resolver::Expression_Resolver(Tabular_Data_Header *header, Expression
   this->header = header;
 }
 
-std::string Expression_Resolver::resolve(std::vector<std::string> &data_row)
+std::string Expression_Resolver::resolve(Tabular_Data_Row &data_row)
 {
   if (this->expr->type == Ast_Node_Type::String_Literal_Expression_Ast_Node)
   {
@@ -89,7 +89,7 @@ std::string Expression_Resolver::resolve(std::vector<std::string> &data_row)
   }
 }
 
-std::string Function_Call_Expression_Resolver::resolve(std::vector<std::string> &data_row)
+std::string Function_Call_Expression_Resolver::resolve(Tabular_Data_Row &data_row)
 {
   if (this->call_expr->name == "CURRENT_DATE")
   {
@@ -136,7 +136,7 @@ struct Binary_Expression_Resolver : Field_Resolver
     this->header = header;
   }
 
-  std::string resolve([[maybe_unused]] std::vector<std::string> &data_row)
+  std::string resolve([[maybe_unused]] Tabular_Data_Row &data_row)
   {
     Expression_Resolver resolver = Expression_Resolver(this->header, this->bin_expr);
     return resolver.resolve(data_row);

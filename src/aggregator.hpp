@@ -7,10 +7,8 @@
 #include "./ordered_map.hpp"
 #include "./resolver.hpp"
 
-// Dependências
-#include "../lib/csv/src/csv.hpp"
 
-using Group_Value = std::pair<std::vector<std::string>, std::vector<CSV_Data_Row*>>;
+using Group_Value = std::pair<Tabular_Data_Row, std::vector<Tabular_Data_Row*>>;
 
 enum class Aggregator_Type { Values, Subgrouping };
 
@@ -27,7 +25,7 @@ struct Aggregator
 
   virtual ~Aggregator() = default;
 
-  virtual void aggregate(CSV_Data_Row* row) = 0;
+  virtual void aggregate(Tabular_Data_Row* row) = 0;
 
   /**
    * @brief define quantas cagetorias foram encontradas até o momento da chamada
@@ -59,11 +57,11 @@ struct Value_Aggregator: Aggregator
   /**
    * @brief Não é responsável pelos ponteiros
    */
-  Ordered_Map<std::string, std::vector<CSV_Data_Row*>> ordered_data;
+  Ordered_Map<std::string, std::vector<Tabular_Data_Row*>> ordered_data;
   
   Value_Aggregator(std::unique_ptr<Field_By_Name_Resolver> &field_resolver);
 
-  void aggregate(CSV_Data_Row* row);
+  void aggregate(Tabular_Data_Row* row);
 
   size_t size();
   
@@ -84,7 +82,7 @@ struct Subgrouping_Aggregator: Aggregator
 
   Subgrouping_Aggregator(std::unique_ptr<Field_By_Name_Resolver> &field_resolver, std::unique_ptr<Aggregator> &subgrouping_aggregator);
 
-  void aggregate(CSV_Data_Row* row);
+  void aggregate(Tabular_Data_Row* row);
 
   size_t size();
   
@@ -97,6 +95,6 @@ struct Subgrouping_Aggregator: Aggregator
 
 union Aggregated_Data
 {
-  std::vector<CSV_Data_Row*>* list;
+  std::vector<Tabular_Data_Row*>* list;
   Aggregator* aggregator;
 };
