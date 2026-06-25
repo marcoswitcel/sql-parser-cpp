@@ -6,8 +6,10 @@
 #include "./ast_node.hpp"
 
 
+using std::vector; 
 using Tabular_Data_Row = std::vector<std::string>;
 using Tabular_Data_Header = Tabular_Data_Row;
+
 
 struct Field_Resolver
 {
@@ -85,4 +87,21 @@ struct Expression_Resolver : Field_Resolver
   Expression_Resolver(Tabular_Data_Header *header, Expression_Ast_Node* expr);
   
   std::string resolve(Tabular_Data_Row &data_row);
+};
+
+struct Aggregation_Field_Resolver
+{
+  virtual ~Aggregation_Field_Resolver() = default;
+
+  virtual std::string resolve(Tabular_Data_Row &grouped_data, vector<Tabular_Data_Row*> &rows) = 0;
+};
+
+struct Field_By_Name_Aggregation_Resolver : Aggregation_Field_Resolver
+{
+  int64_t index_of_field = -1;
+  std::string field_name;
+
+  Field_By_Name_Aggregation_Resolver(Tabular_Data_Header &header, std::string field_name);
+
+  std::string resolve(Tabular_Data_Row &grouped_data, vector<Tabular_Data_Row*> &rows);
 };

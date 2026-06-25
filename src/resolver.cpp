@@ -165,3 +165,24 @@ bool known_function_name_and_argument_list(Function_Call_Expression_Ast_Node* ca
 
   return false;
 }
+
+Field_By_Name_Aggregation_Resolver::Field_By_Name_Aggregation_Resolver(Tabular_Data_Header &header, std::string field_name)
+{
+  auto it = std::find(header.begin(), header.end(), field_name);
+  
+  if (it == header.end())
+  {
+    assert(false);
+    std::cout << "Error: field_name: " << field_name << " não existe no csv." << std::endl;
+  }
+  
+  this->index_of_field = std::distance(header.begin(), it);
+  this->field_name = field_name;
+}
+
+std::string Field_By_Name_Aggregation_Resolver::resolve(Tabular_Data_Row &grouped_data, [[maybe_unused]] vector<Tabular_Data_Row*> &rows)
+{
+  assert(this->index_of_field > -1);
+  // @note João, não trata a exception in runtime? talvez, talvez fosse melhor retornar string vazia
+  return grouped_data[this->index_of_field];
+}

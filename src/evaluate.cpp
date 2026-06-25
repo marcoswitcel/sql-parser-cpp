@@ -408,13 +408,13 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
     }
 
     auto grouping_header = root_aggregator->get_header();
-    vector<std::unique_ptr<Field_By_Name_Resolver>> field_by_name_resolvers;
+    vector<std::unique_ptr<Field_By_Name_Aggregation_Resolver>> field_by_name_resolvers;
     
     for (auto &field : select.fields)
     {
       if (auto ident = Cast_If(Ident_Expression_Ast_Node, *field))
       {
-        field_by_name_resolvers.push_back(std::make_unique<Field_By_Name_Resolver>(*grouping_header, ident->ident_name));
+        field_by_name_resolvers.push_back(std::make_unique<Field_By_Name_Aggregation_Resolver>(*grouping_header, ident->ident_name));
       }
     }
     
@@ -425,7 +425,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
 
       for (auto &resolver : field_by_name_resolvers)
       {
-        new_data_row.push_back(resolver->resolve(value->first));
+        new_data_row.push_back(resolver->resolve(value->first, value->second));
       }
   
       new_dataset.push_back(new_data_row);
