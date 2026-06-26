@@ -162,6 +162,10 @@ bool known_function_name_and_argument_list(Function_Call_Expression_Ast_Node* ca
     // @wip @todo João, avaliar, deveria suportar texto também aparentemente...
     return call_expr->argument_list.size() == 1 && call_expr->argument_list.at(0)->inferred_type == Inferred_Type::Number;
   }
+  else if (call_expr->name == "COUNT")
+  {
+    // @todo João, implementar cheque aqui...
+  }
 
   return false;
 }
@@ -185,4 +189,16 @@ std::string Field_By_Name_Aggregation_Resolver::resolve(Tabular_Data_Row &groupe
   assert(this->index_of_field > -1);
   // @note João, não trata a exception in runtime? talvez, talvez fosse melhor retornar string vazia
   return grouped_data[this->index_of_field];
+}
+
+std::string Function_Call_Expression_Aggregation_Resolver::resolve(Tabular_Data_Row &grouped_data, vector<Tabular_Data_Row*> &rows)
+{
+  if (this->call_expr->name == "COUNT")
+  {
+    // @todo João, implementar aqui...
+    return "1";
+  }
+
+  assert(false);
+  return "[AGGREGATION FUNCTION CALL RETURN]";
 }

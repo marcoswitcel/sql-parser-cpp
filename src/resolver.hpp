@@ -105,3 +105,21 @@ struct Field_By_Name_Aggregation_Resolver : Aggregation_Field_Resolver
 
   std::string resolve(Tabular_Data_Row &grouped_data, vector<Tabular_Data_Row*> &rows);
 };
+
+struct Function_Call_Expression_Aggregation_Resolver : Aggregation_Field_Resolver
+{
+  Function_Call_Expression_Ast_Node* call_expr;
+  Tabular_Data_Header *header;
+
+  Function_Call_Expression_Aggregation_Resolver(Tabular_Data_Header *header, Function_Call_Expression_Ast_Node* call_expr)
+  {
+    this->call_expr = call_expr;
+    this->header = header;
+  }
+
+  std::string resolve(Tabular_Data_Row &grouped_data, vector<Tabular_Data_Row*> &rows);
+};
+
+// @todo João, precisa retornar uma mensagem clara no caso de current_date(1) ou currante_date('1'), aí sim podemos
+// continuar com o COUNT(*)
+
