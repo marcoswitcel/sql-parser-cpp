@@ -7,6 +7,9 @@
 #include "./ast_node.hpp"
 
 
+// @note João, considerar outras formas de identificar a terminação dos tokens que não envolva a dependência nos seguintes caracteres
+#define Is_Expression_Terminator(CHAR) (CHAR == ',' || CHAR == '(' || CHAR == ')')
+
 constexpr int32_t END_OF_SOURCE = -9999;
 
 struct SQL_Parse_Context

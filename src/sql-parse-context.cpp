@@ -1041,7 +1041,7 @@ void try_parse_number(SQL_Parse_Context* parser, Token *token, bool *success)
     return;
   }
 
-  while (c != END_OF_SOURCE && !parser->is_whitespace(c) && c != ',' && c != '(' && c != ')')
+  while (c != END_OF_SOURCE && !parser->is_whitespace(c) && !Is_Expression_Terminator(c))
   {
     if (!is_digit(c))
     {
@@ -1105,8 +1105,7 @@ void try_parse_ident(SQL_Parse_Context* parser, Token *token, bool *success)
     return;
   }
   
-  // @todo João, melhorar para não ter dependência com o símbolo ','
-  while (c != END_OF_SOURCE && c != ',' && c != '(' && c != ')')
+  while (c != END_OF_SOURCE && !Is_Expression_Terminator(c))
   {
     if (!is_quoted && parser->is_whitespace(c))
     {
