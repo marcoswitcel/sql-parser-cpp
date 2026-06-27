@@ -164,7 +164,14 @@ bool known_function_name_and_argument_list(Function_Call_Expression_Ast_Node* ca
   }
   else if (call_expr->name == "COUNT")
   {
-    // @todo João, implementar cheque aqui...
+    if (call_expr->argument_list.size() != 1) return false;
+    
+    auto expr = call_expr->argument_list.at(0);
+
+    if (auto ident = Cast_If(Ident_Expression_Ast_Node, *expr))
+    {
+      if (ident->ident_name == "*") return true;
+    }
   }
 
   return false;
