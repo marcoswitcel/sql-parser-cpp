@@ -111,7 +111,7 @@ struct Function_Call_Expression_Aggregation_Resolver : Aggregation_Field_Resolve
   Function_Call_Expression_Ast_Node* call_expr;
   Tabular_Data_Header *header;
 
-  Function_Call_Expression_Aggregation_Resolver(Tabular_Data_Header *header, Function_Call_Expression_Ast_Node* call_expr)
+  Function_Call_Expression_Aggregation_Resolver(Tabular_Data_Header *header, Function_Call_Expression_Ast_Node *call_expr)
   {
     this->call_expr = call_expr;
     this->header = header;

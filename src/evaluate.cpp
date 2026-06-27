@@ -354,13 +354,21 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
         
         if (!found)
         {
-          std::cout << "Por hora todos os campos do select precisam estar contidos na cláusula Group By." << std::endl;
+          std::cout << "Por hora todos os identificadores do select precisam estar contidos na cláusula Group By." << std::endl;
+          return false;
+        }
+      }
+      else if (auto func = Cast_If(Function_Call_Expression_Ast_Node, *field))
+      {
+        if (func->name != "COUNT")
+        {
+          std::cout << "Por hora todas as chamadas de funções precisam ser para funções de agregação. Apenas COUNT é suportado." << std::endl;
           return false;
         }
       }
       else
       {
-        std::cout << "Por hora todos os campos do select precisam ser compostos apenas por identificadores." << std::endl;
+        std::cout << "Por hora todos os campos do select precisam ser compostos apenas por identificadores ou funções agregadoras." << std::endl;
         return false;
       }
     }
@@ -408,13 +416,17 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
     }
 
     auto grouping_header = root_aggregator->get_header();
-    vector<std::unique_ptr<Field_By_Name_Aggregation_Resolver>> field_by_name_resolvers;
+    vector<std::unique_ptr<Aggregation_Field_Resolver>> field_aggregation_resolvers;
     
     for (auto &field : select.fields)
     {
       if (auto ident = Cast_If(Ident_Expression_Ast_Node, *field))
       {
-        field_by_name_resolvers.push_back(std::make_unique<Field_By_Name_Aggregation_Resolver>(*grouping_header, ident->ident_name));
+        field_aggregation_resolvers.push_back(std::make_unique<Field_By_Name_Aggregation_Resolver>(*grouping_header, ident->ident_name));
+      }
+      else if (auto func = Cast_If(Function_Call_Expression_Ast_Node, *field))
+      {
+        field_aggregation_resolvers.push_back(std::make_unique<Function_Call_Expression_Aggregation_Resolver>(grouping_header.get(), func));
       }
     }
     
@@ -423,7 +435,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
     {
       std::vector<std::string> new_data_row;
 
-      for (auto &resolver : field_by_name_resolvers)
+      for (auto &resolver : field_aggregation_resolvers)
       {
         new_data_row.push_back(resolver->resolve(value->first, value->second));
       }

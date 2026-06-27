@@ -198,12 +198,11 @@ std::string Field_By_Name_Aggregation_Resolver::resolve(Tabular_Data_Row &groupe
   return grouped_data[this->index_of_field];
 }
 
-std::string Function_Call_Expression_Aggregation_Resolver::resolve(Tabular_Data_Row &grouped_data, vector<Tabular_Data_Row*> &rows)
+std::string Function_Call_Expression_Aggregation_Resolver::resolve([[maybe_unused]] Tabular_Data_Row &grouped_data, vector<Tabular_Data_Row*> &rows)
 {
   if (this->call_expr->name == "COUNT")
   {
-    // @todo João, implementar aqui...
-    return "1";
+    return std::to_string(rows.size());
   }
 
   assert(false);
