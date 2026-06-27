@@ -1041,7 +1041,7 @@ void try_parse_number(SQL_Parse_Context* parser, Token *token, bool *success)
     return;
   }
 
-  while (c != END_OF_SOURCE && !parser->is_whitespace(c) && c != ',')
+  while (c != END_OF_SOURCE && !parser->is_whitespace(c) && c != ',' && c != '(' && c != ')')
   {
     if (!is_digit(c))
     {
