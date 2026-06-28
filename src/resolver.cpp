@@ -174,6 +174,10 @@ bool known_function_name_and_argument_list(Function_Call_Expression_Ast_Node* ca
       if (ident->ident_name == "*") return true;
     }
   }
+  else if (call_expr->name == "SUM")
+  {
+    return call_expr->argument_list.size() == 1 && call_expr->argument_list.at(0)->type == Ast_Node_Type::Ident_Expression_Ast_Node;
+  }
 
   return false;
 }
@@ -233,6 +237,39 @@ std::string Function_Call_Expression_Aggregation_Resolver::resolve([[maybe_unuse
     }
 
     return std::to_string(max_value);
+  }
+  else if (this->call_expr->name == "SUM")
+  {
+    auto expr = this->call_expr->argument_list.at(0);
+    
+    Expression_Resolver resolver = Expression_Resolver(this->header_data, expr);
+    
+    // @note Não é possível ter 0 linhas, porém, é possível que todas as linhas falhem
+    // no processo de parse, por isso usamos NaN
+    double sum_value = std::numeric_limits<double>::quiet_NaN();
+
+    for (auto data_row : rows)
+    {
+      auto raw_value = resolver.resolve(*data_row);
+
+      try 
+      {
+        auto value = std::stod(raw_value);
+
+        if (std::isnan(sum_value))
+        {
+          sum_value = value;
+        }
+        else
+        {
+          sum_value += value;
+        }
+      }
+      catch (std::invalid_argument& ex) {}
+      catch (std::out_of_range& ex) {}
+    }
+
+    return std::to_string(sum_value);
   }
 
 
