@@ -360,9 +360,9 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
       }
       else if (auto func = Cast_If(Function_Call_Expression_Ast_Node, *field))
       {
-        if (func->name != "COUNT")
+        if (func->name != "COUNT" && func->name != "MAX")
         {
-          std::cout << "Por hora todas as chamadas de funções precisam ser para funções de agregação. Apenas COUNT é suportado." << std::endl;
+          std::cout << "Por hora todas as chamadas de funções precisam ser para funções de agregação. Apenas COUNT e MAX são suportados." << std::endl;
           return false;
         }
       }
@@ -426,7 +426,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
       }
       else if (auto func = Cast_If(Function_Call_Expression_Ast_Node, *field))
       {
-        field_aggregation_resolvers.push_back(std::make_unique<Function_Call_Expression_Aggregation_Resolver>(grouping_header.get(), func));
+        field_aggregation_resolvers.push_back(std::make_unique<Function_Call_Expression_Aggregation_Resolver>(grouping_header.get(), &csv.header, func));
       }
     }
     

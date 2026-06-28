@@ -109,12 +109,15 @@ struct Field_By_Name_Aggregation_Resolver : Aggregation_Field_Resolver
 struct Function_Call_Expression_Aggregation_Resolver : Aggregation_Field_Resolver
 {
   Function_Call_Expression_Ast_Node* call_expr;
-  Tabular_Data_Header *header;
+  Tabular_Data_Header* header_grouped_data;
+  Tabular_Data_Header* header_data;
+  
 
-  Function_Call_Expression_Aggregation_Resolver(Tabular_Data_Header *header, Function_Call_Expression_Ast_Node *call_expr)
+  Function_Call_Expression_Aggregation_Resolver(Tabular_Data_Header* header_grouped_data,Tabular_Data_Header* header_data, Function_Call_Expression_Ast_Node* call_expr)
   {
     this->call_expr = call_expr;
-    this->header = header;
+    this->header_grouped_data = header_grouped_data;
+    this->header_data = header_data;
   }
 
   std::string resolve(Tabular_Data_Row &grouped_data, vector<Tabular_Data_Row*> &rows);

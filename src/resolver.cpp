@@ -4,6 +4,8 @@
 #include <vector>
 #include <iomanip>
 #include <chrono>
+#include <limits>
+#include <cmath>
 
 #include "./ast_node.hpp"
 #include "./resolver.hpp"
@@ -159,8 +161,7 @@ bool known_function_name_and_argument_list(Function_Call_Expression_Ast_Node* ca
   }
   else if (call_expr->name == "MAX")
   {
-    // @wip @todo João, avaliar, deveria suportar texto também aparentemente...
-    return call_expr->argument_list.size() == 1 && call_expr->argument_list.at(0)->inferred_type == Inferred_Type::Number;
+    return call_expr->argument_list.size() == 1 && call_expr->argument_list.at(0)->type == Ast_Node_Type::Ident_Expression_Ast_Node;
   }
   else if (call_expr->name == "COUNT")
   {
@@ -204,6 +205,36 @@ std::string Function_Call_Expression_Aggregation_Resolver::resolve([[maybe_unuse
   {
     return std::to_string(rows.size());
   }
+  else if (this->call_expr->name == "MAX")
+  {
+    auto expr = this->call_expr->argument_list.at(0);
+    
+    Expression_Resolver resolver = Expression_Resolver(this->header_data, expr);
+    
+    // @note Não é possível ter 0 linhas, porém, é possível que todas as linhas falhem
+    // no processo de parse, por isso usamos NaN
+    double max_value = std::numeric_limits<double>::quiet_NaN();
+
+    for (auto data_row : rows)
+    {
+      auto raw_value = resolver.resolve(*data_row);
+
+      try 
+      {
+        auto value = std::stod(raw_value);
+
+        if (value > max_value || std::isnan(max_value))
+        {
+          max_value = value;
+        }
+      }
+      catch (std::invalid_argument& ex) {}
+      catch (std::out_of_range& ex) {}
+    }
+
+    return std::to_string(max_value);
+  }
+
 
   assert(false);
   return "[AGGREGATION FUNCTION CALL RETURN]";
