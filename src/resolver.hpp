@@ -123,6 +123,32 @@ struct Function_Call_Expression_Aggregation_Resolver : Aggregation_Field_Resolve
   std::string resolve(Tabular_Data_Row &grouped_data, vector<Tabular_Data_Row*> &rows);
 };
 
-// @todo João, precisa retornar uma mensagem clara no caso de current_date(1) ou currante_date('1'), aí sim podemos
-// continuar com o COUNT(*)
+struct Builtin_Function_Definition
+{
+  std::string name;
+  bool is_aggregation_needed;
+};
 
+/**
+ * @brief Existe apenas para listar as funções e expectativas 
+ * 
+ */
+static Builtin_Function_Definition functions_builtin[] = {
+  // Funções
+  // Retorna a data atual
+  { .name = "CURRENT_DATE", .is_aggregation_needed = false, },
+  // Converte a string para lowercase
+  { .name = "LOWER", .is_aggregation_needed = false, },
+  // Converte a string para uppercase
+  { .name = "UPPER", .is_aggregation_needed = false, },
+  
+  // Funções de agregação
+  // Retorna o maior valor numérico do grupo para a data coluna
+  { .name = "MAX", .is_aggregation_needed = true, },
+  // Retorna o menor valor numérico do grupo para a data coluna
+  { .name = "MIN", .is_aggregation_needed = true, },
+  // Retorna a quantidade de registros do grupo para a data coluna
+  { .name = "COUNT", .is_aggregation_needed = true, },
+  // Retorna a soma dos valores do grupo para a data coluna
+  { .name = "SUM", .is_aggregation_needed = true, },
+};
