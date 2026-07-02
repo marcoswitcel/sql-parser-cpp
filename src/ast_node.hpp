@@ -155,8 +155,6 @@ struct Function_Call_Expression_Ast_Node: Expression_Ast_Node
   Function_Call_Expression_Ast_Node()
   {
     this->type = Ast_Node_Type::Function_Call_Expression_Ast_Node;
-    // @note João, por hora todas retornam string
-    this->inferred_type = Inferred_Type::String;
   }
 
   std::string to_string() override
@@ -185,6 +183,38 @@ struct Function_Call_Expression_Ast_Node: Expression_Ast_Node
 
   Inferred_Type infer_type() override
   {
+    if (this->inferred_type == Inferred_Type::Not_Inferred)
+    {
+      if (this->name == "CURRENT_DATE")
+      {
+        this->inferred_type = Inferred_Type::String;
+      }
+      else if (this->name == "LOWER")
+      {
+        this->inferred_type = Inferred_Type::String;
+      }
+      else if (this->name == "UPPER")
+      {
+        this->inferred_type = Inferred_Type::String;
+      }
+      else if (this->name == "MAX")
+      {
+        this->inferred_type = Inferred_Type::Number;
+      }
+      else if (this->name == "MIN")
+      {
+        this->inferred_type = Inferred_Type::Number;
+      }
+      else if (this->name == "COUNT")
+      {
+        this->inferred_type = Inferred_Type::Number;
+      }
+      else if (this->name == "SUM")
+      {
+        this->inferred_type = Inferred_Type::Number;
+      }
+    }
+
     // @note João, não é o melhor, mas por hora é isso...
     for (auto &arg : this->argument_list)
     {
