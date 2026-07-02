@@ -55,6 +55,65 @@ void test_ast_node_type()
   assert(ast_sub_type_of(Ast_Node_Type::Function_Call_Expression_Ast_Node, Ast_Node_Type::Expression_Ast_Node));
 }
 
+void test_tokenizer()
+{
+  std::string sql = "Select teste as 'Teste renomeado', UPPER(nome) From tabela_teste ";
+  SQL_Parse_Context parser(sql);
+
+  Token token;
+  
+  token = parser.eat_token();
+  assert(token.type == Token_Type::Select);
+  assert(!parser.error);
+
+  token = parser.eat_token();
+  assert(token.type == Token_Type::Ident);
+  assert(!parser.error);
+
+  token = parser.eat_token();
+  assert(token.type == Token_Type::As);
+  assert(!parser.error);
+
+  token = parser.eat_token();
+  assert(token.type == Token_Type::String);
+  assert(!parser.error);
+
+  token = parser.eat_token();
+  assert(token.type == Token_Type::Comma);
+  assert(!parser.error);
+
+  token = parser.eat_token();
+  assert(token.type == Token_Type::Ident);
+  assert(!parser.error);
+
+  token = parser.eat_token();
+  assert(token.type == Token_Type::Open_Parenthesis);
+  assert(!parser.error);
+
+  token = parser.eat_token();
+  assert(token.type == Token_Type::Ident);
+  assert(!parser.error);
+
+  token = parser.eat_token();
+  assert(token.type == Token_Type::Close_Parenthesis);
+  assert(!parser.error);
+
+  token = parser.eat_token();
+  assert(token.type == Token_Type::From);
+  assert(!parser.error);
+
+  token = parser.eat_token();
+  assert(token.type == Token_Type::Ident);
+  assert(!parser.error);
+
+  assert(!parser.is_finished());
+  assert(!parser.error);
+
+  parser.skip_whitespace();
+  assert(parser.is_finished());
+  assert(!parser.error);
+}
+
 void test_parse_describe_01()
 {
   std::string sql = "Describe Iris";
@@ -326,6 +385,8 @@ int main()
   std::cout << "test_ast_node_type......................................OK" << std::endl;
   test_run_like_pattern_on();
   std::cout << "test_run_like_pattern_on................................OK" << std::endl;
+  test_tokenizer();
+  std::cout << "test_tokenizer..........................................OK" << std::endl;
   test_parse_describe_01();
   std::cout << "test_parse_describe_01..................................OK" << std::endl;
   test_parse_describe_02();
