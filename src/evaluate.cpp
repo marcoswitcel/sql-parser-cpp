@@ -216,7 +216,6 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
   vector<std::string> new_header;
   vector<Field_Resolver*> field_resolver;
   
-  // @todo João ainda falta validação semântica dos campos...
   for (auto field : select.fields)
   {
     field->infer_type();

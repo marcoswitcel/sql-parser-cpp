@@ -114,6 +114,20 @@ void test_tokenizer()
   assert(!parser.error);
 }
 
+void test_string_tokenizer()
+{
+  std::string sql = " 'teste string' ";
+  SQL_Parse_Context parser(sql);
+
+  Token token;
+  
+  token = parser.eat_token();
+  assert(token.type == Token_Type::String);
+  assert(!parser.error);
+
+  // @todo João, continuar testando casos previsos no `try_parse_string`
+}
+
 void test_parse_describe_01()
 {
   std::string sql = "Describe Iris";
@@ -387,6 +401,8 @@ int main()
   std::cout << "test_run_like_pattern_on................................OK" << std::endl;
   test_tokenizer();
   std::cout << "test_tokenizer..........................................OK" << std::endl;
+  test_string_tokenizer();
+  std::cout << "test_string_tokenizer...................................OK" << std::endl;
   test_parse_describe_01();
   std::cout << "test_parse_describe_01..................................OK" << std::endl;
   test_parse_describe_02();
