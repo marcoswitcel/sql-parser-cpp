@@ -21,6 +21,7 @@ void test_run_like_pattern_on()
   assert(run_like_pattern_on("ward", "w_rd"));
   assert(run_like_pattern_on("word", "w___"));
   assert(run_like_pattern_on("word", "____"));
+  assert(run_like_pattern_on("word", "___d"));
   assert(!run_like_pattern_on("word", "_____"));
   assert(!run_like_pattern_on("words", "____"));
 
@@ -41,7 +42,7 @@ void test_run_like_pattern_on()
 
   // case insensitive tests
   assert(run_like_pattern_on("Word The Other Word", "%The%"));
-  assert(run_like_pattern_on("Word the Other Word", "%The%"));
+  assert(!run_like_pattern_on("Word the Other Word", "%The%"));
   assert(run_like_pattern_on("Word The Other Word", "%the%"));
   assert(run_like_pattern_on("Word the Other Word", "%the%"));
 }

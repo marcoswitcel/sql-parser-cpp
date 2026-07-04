@@ -8,7 +8,6 @@
 #include <ctime>
 #include <vector>
 #include <chrono>
-#include <regex>
 #include <algorithm>
 
 #include "./utils.cpp"
@@ -24,26 +23,31 @@
 using std::vector;
 
 
-bool run_like_pattern_on_done_manually(std::string text_input, std::string like_pattern)
+bool run_like_pattern_on_internal(const std::string &text_input, size_t input_index_parameter, const std::string &like_pattern, size_t pattern_index_parameter)
 {
-  size_t input_index = 0;
-  size_t pattern_index = 0;
+  size_t input_index = input_index_parameter;
+  size_t pattern_index = pattern_index_parameter;
 
   while (input_index < text_input.size())
   {
     if (pattern_index >= like_pattern.size()) return false;
 
-    auto pattern_char = like_pattern.at(pattern_index);
-    auto text_char = text_input.at(input_index);
+    auto &pattern_char = like_pattern.at(pattern_index);
+    auto &text_char = text_input.at(input_index);
+
     if (pattern_char == '%')
     {
       if (pattern_index + 1 == like_pattern.size())
       {
         return true;
       }
-      // @todo João, incompleto: acredito que fazer o match considerando a parte concreta e fazer um sub-match na string
-      // restante e fazer backtrack caso não encontre pode funcionar, só precisa achar um match completo para retornar true
-      return false;
+      
+      if (run_like_pattern_on_internal(text_input, input_index, like_pattern, pattern_index_parameter + 1))
+      {
+        return true;
+      }
+
+      input_index++;
     }
     else if (pattern_char == '_')
     {
@@ -53,33 +57,28 @@ bool run_like_pattern_on_done_manually(std::string text_input, std::string like_
     else
     {
       if (pattern_char != text_char) return false;
+
       input_index++;
       pattern_index++;
-    }
+    } 
   }
 
-  return input_index >= text_input.size() && pattern_index >= like_pattern.size();
+  if (input_index < text_input.size()) return false;
+
+  if (pattern_index >= like_pattern.size()) return true;
+
+  for (; pattern_index < like_pattern.size(); pattern_index++)
+  {
+    auto &pattern_char = like_pattern.at(pattern_index);
+    if (pattern_char != '%') return false;
+  }
+
+  return true;
 }
 
 bool run_like_pattern_on(std::string text_input, std::string raw_like_pattern)
 {
-  static std::regex percentage("%");
-  static std::regex underscore("_");
-  static std::regex period("\\.");
-
-  std::string pattern = raw_like_pattern;
-
-  // @todo João, mais caracteres para sanitizar aqui....
-  pattern = std::regex_replace(pattern, period, "\\.");
-  pattern = std::regex_replace(pattern, underscore, ".");
-  pattern = std::regex_replace(pattern, percentage, ".*");
-
-  pattern = "^" + pattern + "$";
-  // @note João, por hora fiz o teste case insensitive, mas... poderia ser case insentitive e usar uma função 'TO_LOWER'
-  // para obter o comportamento desejado, isso quando tiver funções implementadas... Acho que seria melhor, mas por hora
-  // fica 'case insensitive' mesmo.
-  std::regex like_pattern_regex(pattern, std::regex::icase);
-  return std::regex_match(text_input, like_pattern_regex);
+  return run_like_pattern_on_internal(text_input, 0, raw_like_pattern, 0);
 }
 
 bool extract_lhs_and_rhs_expressions(
