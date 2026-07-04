@@ -32,8 +32,8 @@ bool run_like_pattern_on_internal(const std::string &text_input, size_t input_in
   {
     if (pattern_index >= like_pattern.size()) return false;
 
-    auto &pattern_char = like_pattern.at(pattern_index);
-    auto &text_char = text_input.at(input_index);
+    auto &pattern_char = like_pattern[pattern_index];
+    auto &text_char = text_input[input_index];
 
     if (pattern_char == '%')
     {
@@ -42,7 +42,7 @@ bool run_like_pattern_on_internal(const std::string &text_input, size_t input_in
         return true;
       }
       
-      if (run_like_pattern_on_internal(text_input, input_index, like_pattern, pattern_index_parameter + 1))
+      if (run_like_pattern_on_internal(text_input, input_index, like_pattern, pattern_index + 1))
       {
         return true;
       }
@@ -69,7 +69,7 @@ bool run_like_pattern_on_internal(const std::string &text_input, size_t input_in
 
   for (; pattern_index < like_pattern.size(); pattern_index++)
   {
-    auto &pattern_char = like_pattern.at(pattern_index);
+    auto &pattern_char = like_pattern[pattern_index];
     if (pattern_char != '%') return false;
   }
 

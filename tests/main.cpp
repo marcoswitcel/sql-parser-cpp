@@ -36,6 +36,11 @@ void test_run_like_pattern_on()
   assert(run_like_pattern_on("words", "%w%s%"));
   assert(run_like_pattern_on("words", "%w%ds%"));
   assert(!run_like_pattern_on("word", "%w%d_%"));
+
+  assert(run_like_pattern_on("words", "w%%ords"));
+  assert(run_like_pattern_on("words", "%%wo%%rds%%"));
+  assert(run_like_pattern_on("words", "%%w%%rds%%"));
+
   assert(run_like_pattern_on("A small text sample", "%"));
   assert(run_like_pattern_on("A small text sample", "A small%"));
   assert(run_like_pattern_on("A small text sample", "%small%"));
