@@ -5,7 +5,6 @@
 #include <vector>
 #include <cstdint>
 #include <assert.h>
-#include <regex>
 #include <memory>
 
 #include "./ast_node_visitor.hpp"
@@ -280,8 +279,7 @@ struct String_Literal_Expression_Ast_Node: Expression_Ast_Node
 
   std::string to_expression() override
   {
-    static std::regex quote("'");
-    return "'" + std::regex_replace(this->value, quote, "''") + "'";
+    return "'" + replace_char_with(this->value, '\'', "''") + "'";
   }
 
   void accept(Ast_Node_Visitor &visitor) override

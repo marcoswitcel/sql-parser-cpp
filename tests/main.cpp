@@ -55,6 +55,15 @@ void test_run_like_pattern_on()
   assert(run_like_pattern_on("Word the Other Word", "%the%"));
 }
 
+void test_replace_char_with()
+{
+  const std::string sample = " oi com ' ";
+
+  assert(replace_char_with(sample, '\'', "''") == " oi com '' ");
+  assert(replace_char_with("ola", '\'', "''") == "ola");
+  assert(replace_char_with("", '\'', "''") == "");
+}
+
 void test_ast_node_type()
 {
   assert(ast_sub_type_of(Ast_Node_Type::Binary_Expression_Ast_Node, Ast_Node_Type::Expression_Ast_Node));
@@ -410,6 +419,8 @@ int main()
   std::cout << "test_run_like_pattern_on................................OK" << std::endl;
   test_tokenizer();
   std::cout << "test_tokenizer..........................................OK" << std::endl;
+  test_replace_char_with();
+  std::cout << "test_replace_char_with..................................OK" << std::endl;
   test_string_tokenizer();
   std::cout << "test_string_tokenizer...................................OK" << std::endl;
   test_parse_describe_01();

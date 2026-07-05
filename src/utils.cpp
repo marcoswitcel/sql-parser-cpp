@@ -78,3 +78,25 @@ bool ignore_case_equals(const std::string &a, const std::string &b)
 
   return std::equal(a.begin(), a.end(), b.begin(), b.end(), char_equals);
 }
+
+std::string replace_char_with(const std::string &original_text, char character, const std::string &replacement)
+{
+  std::string new_string;
+  auto number_of_bytes = replacement.size();
+
+  size_t count = 0;
+  for (auto c : original_text)
+  {
+    count += (c == character) ? number_of_bytes : 1;
+  }
+
+  new_string.reserve(count);
+
+  for (auto c : original_text)
+  {
+    if (c == character) new_string += replacement;
+    else                new_string += c;
+  }
+
+  return new_string;
+}
