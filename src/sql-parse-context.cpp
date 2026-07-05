@@ -1114,6 +1114,7 @@ void try_parse_ident(SQL_Parse_Context* parser, Token *token, bool *success)
 
     // @todo João @wip ainda não lida com áspas duplas no meio de um ident com "quote"
     // @note João, vai bugar com ',' no meio de sequência 'quotadas'
+    // @note João, buga também com "..." no meio das sequências 'quotadas'
     if (is_quoted && c == double_quote)
     {
       i++;

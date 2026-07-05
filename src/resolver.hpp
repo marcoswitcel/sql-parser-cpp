@@ -131,7 +131,10 @@ struct Builtin_Function_Definition
 
 /**
  * @brief Existe apenas para listar as funções e expectativas 
- * 
+ * @note Ideias de funções
+ * - MEDIA (agregação) soma e divide pelo total
+ * - TRUNCATE (padrão) trunca uma string
+ * - FIRST (agregação) retorna a primeira ocorrência 
  */
 static Builtin_Function_Definition functions_builtin[] = {
   // Funções
