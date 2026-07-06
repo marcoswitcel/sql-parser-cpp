@@ -154,4 +154,6 @@ static Builtin_Function_Definition functions_builtin[] = {
   { .name = "COUNT", .is_aggregation_needed = true, },
   // Retorna a soma dos valores do grupo para a data coluna
   { .name = "SUM", .is_aggregation_needed = true, },
+  // Retorna a média dos valores do grupo para a data coluna
+  { .name = "AVG", .is_aggregation_needed = true, },
 };

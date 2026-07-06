@@ -212,6 +212,10 @@ struct Function_Call_Expression_Ast_Node: Expression_Ast_Node
       {
         this->inferred_type = Inferred_Type::Number;
       }
+      else if (this->name == "AVG")
+      {
+        this->inferred_type = Inferred_Type::Number;
+      }
     }
 
     // @note João, não é o melhor, mas por hora é isso...

@@ -358,9 +358,9 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
       }
       else if (auto func = Cast_If(Function_Call_Expression_Ast_Node, *field))
       {
-        if (func->name != "COUNT" && func->name != "MAX" && func->name != "SUM" && func->name != "MIN")
+        if (func->name != "COUNT" && func->name != "MAX" && func->name != "SUM" && func->name != "MIN" && func->name != "AVG")
         {
-          std::cout << "Por hora todas as chamadas de funções precisam ser para funções de agregação. Apenas COUNT, MAX e MIN são suportados." << std::endl;
+          std::cout << "Por hora todas as chamadas de funções precisam ser para funções de agregação. Apenas COUNT, MAX, MIN e AVG são suportados." << std::endl;
           return false;
         }
       }
