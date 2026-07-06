@@ -122,6 +122,19 @@ std::string Function_Call_Expression_Resolver::resolve(Tabular_Data_Row &data_ro
     std::transform(value.begin(), value.end(), value.begin(), [](unsigned char c) { return std::toupper(c); });
     return value;
   }
+  else if (this->call_expr->name == "SUBSTRING")
+  {
+    auto expr = this->call_expr->argument_list.at(0);
+    auto arg0 = this->call_expr->argument_list.at(1);
+    auto arg1 = this->call_expr->argument_list.at(2);
+    
+    Expression_Resolver resolver = Expression_Resolver(this->header, expr);
+    
+    std::string value = resolver.resolve(data_row);
+
+    // @todo João, fixo por hora
+    return value.substr(0, 10);
+  }
 
   assert(false);
   return "[FUNCTION CALL RETURN]";
@@ -158,6 +171,13 @@ bool known_function_name_and_argument_list(Function_Call_Expression_Ast_Node* ca
   else if (call_expr->name == "UPPER")
   {
     return call_expr->argument_list.size() == 1 && call_expr->argument_list.at(0)->inferred_type == Inferred_Type::String;
+  }
+  else if (call_expr->name == "SUBSTRING")
+  {
+    return call_expr->argument_list.size() == 3
+      && call_expr->argument_list.at(0)->inferred_type == Inferred_Type::String
+      && call_expr->argument_list.at(1)->inferred_type == Inferred_Type::Number
+      && call_expr->argument_list.at(2)->inferred_type == Inferred_Type::Number;
   }
   else if (call_expr->name == "MAX")
   {

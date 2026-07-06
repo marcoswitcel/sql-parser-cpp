@@ -196,6 +196,10 @@ struct Function_Call_Expression_Ast_Node: Expression_Ast_Node
       {
         this->inferred_type = Inferred_Type::String;
       }
+      else if (this->name == "SUBSTRING")
+      {
+        this->inferred_type = Inferred_Type::String;
+      }
       else if (this->name == "MAX")
       {
         this->inferred_type = Inferred_Type::Number;
@@ -299,6 +303,7 @@ struct Number_Literal_Expression_Ast_Node: Expression_Ast_Node
   Number_Literal_Expression_Ast_Node()
   {
     this->type = Ast_Node_Type::Number_Literal_Expression_Ast_Node;
+    this->inferred_type = Inferred_Type::Number;
   }
 
   std::string to_string() override

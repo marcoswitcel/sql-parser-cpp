@@ -144,6 +144,8 @@ static Builtin_Function_Definition functions_builtin[] = {
   { .name = "LOWER", .is_aggregation_needed = false, },
   // Converte a string para uppercase
   { .name = "UPPER", .is_aggregation_needed = false, },
+  // Corta uma string
+  { .name = "SUBSTRING", .is_aggregation_needed = false, },
   
   // Funções de agregação
   // Retorna o maior valor numérico do grupo para a data coluna
