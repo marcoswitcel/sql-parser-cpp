@@ -124,16 +124,52 @@ std::string Function_Call_Expression_Resolver::resolve(Tabular_Data_Row &data_ro
   }
   else if (this->call_expr->name == "SUBSTRING")
   {
-    auto expr = this->call_expr->argument_list.at(0);
-    auto arg0 = this->call_expr->argument_list.at(1);
-    auto arg1 = this->call_expr->argument_list.at(2);
+    auto arg0_text = this->call_expr->argument_list.at(0);
+    auto arg1_start = this->call_expr->argument_list.at(1);
     
-    Expression_Resolver resolver = Expression_Resolver(this->header, expr);
+    Expression_Resolver resolver_arg0 = Expression_Resolver(this->header, arg0_text);
+    Expression_Resolver resolver_arg1 = Expression_Resolver(this->header, arg1_start);
     
-    std::string value = resolver.resolve(data_row);
+    std::string text_value = resolver_arg0.resolve(data_row);
+    std::string start_value = resolver_arg1.resolve(data_row);
+    size_t start, end;
 
-    // @todo João, fixo por hora
-    return value.substr(0, 10);
+    try 
+    {
+      start = std::stoi(start_value);
+
+      if (this->call_expr->argument_list.size() == 3)
+      {
+        auto arg2_end = this->call_expr->argument_list.at(2);
+        Expression_Resolver resolver_arg2 = Expression_Resolver(this->header, arg2_end);
+        std::string end_value = resolver_arg2.resolve(data_row);
+        
+        end = std::stoi(end_value);
+      }
+      else
+      {
+        end = text_value.size();
+      }
+
+      if (start > text_value.size())
+      {
+        start = text_value.size();
+      }
+
+      return text_value.substr(start, end);
+    }
+    catch (std::invalid_argument& ex)
+    {
+      // @note João, não deve aconceter
+      assert(false);
+    }
+    catch (std::out_of_range& ex)
+    {
+      // @note João, pode acontecer, avaliar o que fazer...
+      assert(false);
+    }
+    
+    return "[FUNCTION CALL RETURN]";
   }
 
   assert(false);
@@ -174,10 +210,19 @@ bool known_function_name_and_argument_list(Function_Call_Expression_Ast_Node* ca
   }
   else if (call_expr->name == "SUBSTRING")
   {
-    return call_expr->argument_list.size() == 3
-      && call_expr->argument_list.at(0)->inferred_type == Inferred_Type::String
-      && call_expr->argument_list.at(1)->inferred_type == Inferred_Type::Number
-      && call_expr->argument_list.at(2)->inferred_type == Inferred_Type::Number;
+    if (call_expr->argument_list.size() == 3)
+    {
+      return call_expr->argument_list.at(0)->inferred_type == Inferred_Type::String
+        && call_expr->argument_list.at(1)->inferred_type == Inferred_Type::Number
+        && call_expr->argument_list.at(2)->inferred_type == Inferred_Type::Number;
+    }
+    if (call_expr->argument_list.size() == 2)
+    {
+      return call_expr->argument_list.at(0)->inferred_type == Inferred_Type::String
+        && call_expr->argument_list.at(1)->inferred_type == Inferred_Type::Number;
+    }
+
+    return false;
   }
   else if (call_expr->name == "MAX")
   {
