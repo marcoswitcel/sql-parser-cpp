@@ -220,6 +220,11 @@ struct Function_Call_Expression_Ast_Node: Expression_Ast_Node
       {
         this->inferred_type = Inferred_Type::Number;
       }
+      else if (this->name == "FIRST_VALUE")
+      {
+        // @todo João, avaliar se deve retornar tipos diferentes
+        this->inferred_type = Inferred_Type::String;
+      }
     }
 
     // @note João, não é o melhor, mas por hora é isso...

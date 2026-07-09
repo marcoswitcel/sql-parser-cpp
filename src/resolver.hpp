@@ -148,14 +148,16 @@ static Builtin_Function_Definition functions_builtin[] = {
   { .name = "SUBSTRING", .is_aggregation_needed = false, },
   
   // Funções de agregação
-  // Retorna o maior valor numérico do grupo para a data coluna
+  // Retorna o maior valor numérico do grupo para a dada coluna
   { .name = "MAX", .is_aggregation_needed = true, },
-  // Retorna o menor valor numérico do grupo para a data coluna
+  // Retorna o menor valor numérico do grupo para a dada coluna
   { .name = "MIN", .is_aggregation_needed = true, },
-  // Retorna a quantidade de registros do grupo para a data coluna
+  // Retorna a quantidade de registros do grupo para a dada coluna
   { .name = "COUNT", .is_aggregation_needed = true, },
-  // Retorna a soma dos valores do grupo para a data coluna
+  // Retorna a soma dos valores do grupo para a dada coluna
   { .name = "SUM", .is_aggregation_needed = true, },
-  // Retorna a média dos valores do grupo para a data coluna
+  // Retorna a média dos valores do grupo para a dada coluna
   { .name = "AVG", .is_aggregation_needed = true, },
+  // Retorna o valor da primeira linha encontrada para a data coluna
+  { .name = "FIRST_VALUE", .is_aggregation_needed = true, },
 };

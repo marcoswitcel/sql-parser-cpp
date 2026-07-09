@@ -251,6 +251,10 @@ bool known_function_name_and_argument_list(Function_Call_Expression_Ast_Node* ca
   {
     return call_expr->argument_list.size() == 1 && call_expr->argument_list.at(0)->type == Ast_Node_Type::Ident_Expression_Ast_Node;
   }
+  else if (call_expr->name == "FIRST_VALUE")
+  {
+    return call_expr->argument_list.size() == 1 && call_expr->argument_list.at(0)->type == Ast_Node_Type::Ident_Expression_Ast_Node;
+  }
 
   return false;
 }
@@ -407,7 +411,17 @@ std::string Function_Call_Expression_Aggregation_Resolver::resolve([[maybe_unuse
 
     return std::to_string(sum_value / rows.size());
   }
-
+  else if (this->call_expr->name == "FIRST_VALUE")
+  {
+    auto expr = this->call_expr->argument_list.at(0);
+    
+    Expression_Resolver resolver = Expression_Resolver(this->header_data, expr);
+    
+    if (rows.size() > 0)
+    {
+      return resolver.resolve(*rows[0]); 
+    } 
+  }
 
   assert(false);
   return "[AGGREGATION FUNCTION CALL RETURN]";
