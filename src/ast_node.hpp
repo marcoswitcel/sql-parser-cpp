@@ -200,6 +200,11 @@ struct Function_Call_Expression_Ast_Node: Expression_Ast_Node
       {
         this->inferred_type = Inferred_Type::String;
       }
+      else if (this->name == "COALESCE")
+      {
+        // @note João, avaliar se deve retornar tipos diferentes (quando tivermos suporte)
+        this->inferred_type = Inferred_Type::String;
+      }
       else if (this->name == "MAX")
       {
         this->inferred_type = Inferred_Type::Number;

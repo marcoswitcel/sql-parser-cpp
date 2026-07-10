@@ -146,6 +146,8 @@ static Builtin_Function_Definition functions_builtin[] = {
   { .name = "UPPER", .is_aggregation_needed = false, },
   // Corta uma string
   { .name = "SUBSTRING", .is_aggregation_needed = false, },
+  // Retorna primeiro valor não "vazio"
+  { .name = "COALESCE", .is_aggregation_needed = false, },
   
   // Funções de agregação
   // Retorna o maior valor numérico do grupo para a dada coluna

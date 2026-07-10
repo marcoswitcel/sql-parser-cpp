@@ -171,6 +171,23 @@ std::string Function_Call_Expression_Resolver::resolve(Tabular_Data_Row &data_ro
     
     return "[FUNCTION CALL RETURN]";
   }
+  else if (this->call_expr->name == "COALESCE")
+  {
+    std::string first_value = "";
+    
+    for (auto &arg : this->call_expr->argument_list)
+    {  
+      Expression_Resolver resolver_arg = Expression_Resolver(this->header, arg);
+      
+      first_value = resolver_arg.resolve(data_row);
+      if (!first_value.empty())
+      {
+        return first_value;
+      }
+    }
+
+    return first_value;
+  }
 
   assert(false);
   return "[FUNCTION CALL RETURN]";
@@ -223,6 +240,24 @@ bool known_function_name_and_argument_list(Function_Call_Expression_Ast_Node* ca
     }
 
     return false;
+  }
+  else if (call_expr->name == "COALESCE")
+  {
+    auto size = call_expr->argument_list.size();
+
+    if (size == 0) return false;
+    if (size == 1)
+    {
+      return call_expr->argument_list.at(0)->inferred_type == Inferred_Type::String;
+    }
+
+    for (auto &arg : call_expr->argument_list)
+    {
+      // @note Considerei forçar o último elemento a ser uma string literal, porém achei desnecessário
+      if (arg->inferred_type != Inferred_Type::String) return false;
+    }
+
+    return true;
   }
   else if (call_expr->name == "MAX")
   {
