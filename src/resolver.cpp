@@ -10,8 +10,6 @@
 #include "./ast_node.hpp"
 #include "./resolver.hpp"
 
-#include "../lib/csv/src/csv.hpp"
-
 
 Field_By_Name_Resolver::Field_By_Name_Resolver(Tabular_Data_Header &header, std::string field_name)
 {
@@ -20,7 +18,7 @@ Field_By_Name_Resolver::Field_By_Name_Resolver(Tabular_Data_Header &header, std:
   if (it == header.end())
   {
     assert(false);
-    std::cout << "Error: field_name: " << field_name << " não existe no csv." << std::endl;
+    std::cout << "Error: field_name: " << field_name << " não existe na tabela." << std::endl;
   }
   
   this->index_of_field = std::distance(header.begin(), it);
@@ -321,7 +319,7 @@ Field_By_Name_Aggregation_Resolver::Field_By_Name_Aggregation_Resolver(Tabular_D
   if (it == header.end())
   {
     assert(false);
-    std::cout << "Error: field_name: " << field_name << " não existe no csv." << std::endl;
+    std::cout << "Error: field_name: " << field_name << " não existe na tabela." << std::endl;
   }
   
   this->index_of_field = std::distance(header.begin(), it);
