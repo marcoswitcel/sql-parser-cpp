@@ -92,7 +92,7 @@ int main(int argc, const char* argv[])
         else
         {
           //  checa campos do select
-          run_select_on_csv(*select, csv);
+          run_select_on_csv(*select, csv, true);
         }
       }
       else

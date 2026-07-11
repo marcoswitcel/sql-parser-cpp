@@ -194,7 +194,7 @@ bool does_field_exist(CSVData &csv, std::string field_name)
   return it != csv.header.end();
 }
 
-bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
+bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_as_table)
 {
 
   Collector_Ast_Node_Visitor collector;
@@ -547,11 +547,16 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
     }
   }
 
+  // @todo João, essa ideia de alterar o csv de entrada é estranha, vou usar isso nos testes, porém
+  // seria interessante pensar em algo melhor para o futuro. E.x: Copia ou receber um csv para gravar as linhas
   csv.header = new_header;
   csv.dataset = new_dataset;
 
-  print_as_table(csv, Columns_Print_Mode::All_Columns, NULL, 30);
-
+  if (is_printing_as_table)
+  {
+    print_as_table(csv, Columns_Print_Mode::All_Columns, NULL, 30);
+  }
+  
   for (Field_Resolver* it : field_resolver) delete it;
 
   return true;

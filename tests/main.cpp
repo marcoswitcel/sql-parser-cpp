@@ -409,6 +409,98 @@ void test_subgrouping_aggregator_03()
   assert(group05.get() == nullptr);
 }
 
+void test_run_sql_on_csv01()
+{
+  CSVData dummy_csv = make_dummy_csv();
+  
+  assert(dummy_csv.header.size() == 3);
+  assert(dummy_csv.dataset.size() == 4);
+
+  SQL_Parse_Context parser("SELECT id, number, texto, SUBSTRING(texto, 0, 5) as \"texto cortado\" FROM dummy ");
+
+  Ast_Node* node = parser.eat_node();
+  assert(node && node->type == Ast_Node_Type::Select_Ast_Node);
+
+  auto select = dynamic_cast<Select_Ast_Node*>(node);
+  /**
+   * A função `run_select_on_csv` tem diversos asserts e logs para o console, se
+   * ela não emitiu nenhum log e não disparou o assert, num geral entendesse que
+   * a operação executou corretamente.
+   * 
+   * @note evoluir esses testes no futuro
+   * 
+   */
+  assert(run_select_on_csv(*select, dummy_csv, false));
+
+
+  assert(dummy_csv.header.size() == 4);
+  assert(dummy_csv.header.at(0) == "id");
+  assert(dummy_csv.header.at(1) == "number");
+  assert(dummy_csv.header.at(2) == "texto");
+  assert(dummy_csv.header.at(3) == "texto cortado");
+  assert(dummy_csv.dataset.size() == 4);
+  for (auto &row: dummy_csv.dataset)
+  {
+    assert(row.size() == 4);
+    assert(row.at(3).size() < 6);
+  }
+}
+
+void test_run_sql_on_csv02()
+{
+  CSVData dummy_csv = make_dummy_csv();
+
+  SQL_Parse_Context parser("SELECT number, COUNT(*) FROM dummy Group By number");
+
+  Ast_Node* node = parser.eat_node();
+  assert(node && node->type == Ast_Node_Type::Select_Ast_Node);
+
+  auto select = dynamic_cast<Select_Ast_Node*>(node);
+  /**
+   * A função `run_select_on_csv` tem diversos asserts e logs para o console, se
+   * ela não emitiu nenhum log e não disparou o assert, num geral entendesse que
+   * a operação executou corretamente.
+   * 
+   * @note evoluir esses testes no futuro
+   * 
+   */
+  assert(run_select_on_csv(*select, dummy_csv, false));
+
+  assert(dummy_csv.header.size() == 2);
+  assert(dummy_csv.dataset.size() == 3);
+}
+
+void test_run_sql_on_csv03()
+{
+  CSVData dummy_csv = make_dummy_csv();
+
+  SQL_Parse_Context parser("SELECT number, COUNT(*) FROM dummy Where id = 1 Group By number");
+
+  Ast_Node* node = parser.eat_node();
+  assert(node && node->type == Ast_Node_Type::Select_Ast_Node);
+
+  auto select = dynamic_cast<Select_Ast_Node*>(node);
+  /**
+   * A função `run_select_on_csv` tem diversos asserts e logs para o console, se
+   * ela não emitiu nenhum log e não disparou o assert, num geral entendesse que
+   * a operação executou corretamente.
+   * 
+   * @note evoluir esses testes no futuro
+   * 
+   */
+  assert(run_select_on_csv(*select, dummy_csv, false));
+
+  assert(dummy_csv.header.size() == 2);
+  assert(dummy_csv.dataset.size() == 1);
+  assert(dummy_csv.dataset.at(0).at(0) == "05");
+  assert(dummy_csv.dataset.at(0).at(1) == "1");
+}
+
+/**
+ * @brief todos os testes são cadastrados aqui
+ * 
+ * @return int 
+ */
 int main()
 {
   std::cout << "Iniciando testes" << std::endl << std::endl;
@@ -437,6 +529,13 @@ int main()
   std::cout << "test_subgrouping_aggregator_02..........................OK" << std::endl;
   test_subgrouping_aggregator_03();
   std::cout << "test_subgrouping_aggregator_03..........................OK" << std::endl;
+  test_run_sql_on_csv01();
+  std::cout << "test_run_sql_on_csv01...................................OK" << std::endl;
+  test_run_sql_on_csv02();
+  std::cout << "test_run_sql_on_csv02...................................OK" << std::endl;
+  test_run_sql_on_csv03();
+  std::cout << "test_run_sql_on_csv03...................................OK" << std::endl;
+  
 
   std::cout << std::endl << "Fim testes" << std::endl;
 

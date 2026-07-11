@@ -1,6 +1,11 @@
 
 #include "../lib/csv/src/csv.hpp"
 
+/**
+ * @brief Retorna uma instância de CSVData com as seguintes colunas: "id", "number" e "texto"; com 4 linhas de conteúdo
+ * 
+ * @return CSVData 
+ */
 CSVData make_dummy_csv()
 {
   CSVData csv;
