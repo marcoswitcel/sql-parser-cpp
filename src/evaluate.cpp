@@ -319,14 +319,28 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
     return false;
   }
 
-
+  bool hasAggregationFunction = false;
+  
+  for (auto &field : select.fields)
+  {
+    if (auto func = Cast_If(Function_Call_Expression_Ast_Node, *field))
+    {
+      if (func->name == "COUNT")
+      {
+        // @todo João, falta outras funções
+        hasAggregationFunction = true;
+      }
+    }
+  }
+  
   const auto hasWhere = select.where && select.where->conditions.get();
-  const auto hasGroupBy = select.group_by && select.group_by->groups.size() > 0;
+  const auto hasGroupBy = (select.group_by && select.group_by->groups.size() > 0);
   vector<CSV_Data_Row> new_dataset;
   std::unique_ptr<Aggregator> root_aggregator;
-
-  if (hasGroupBy)
+  
+  if (hasGroupBy || hasAggregationFunction)
   {
+    // @todo João, em caso de group by pode identificadores mas no caso de apenas o COUNT ou funções de agregação não pode...
     for (auto &field : select.fields)
     {
       if (auto ident = Cast_If(Ident_Expression_Ast_Node, *field))
@@ -371,71 +385,139 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
       }
     }
     
-    // montando estrutura de agregadores
-    for (size_t i = select.group_by->groups.size(); i > 0; i--)
+    // montando estrutura de agregadores, no caso de ter group by
+    if (hasGroupBy)
     {
-      std::unique_ptr<Expression_Ast_Node> &grouping_field = select.group_by->groups.at(i - 1);
-
-      if (auto ident = Cast_If(Ident_Expression_Ast_Node, *grouping_field))
+      for (size_t i = select.group_by->groups.size(); i > 0; i--)
       {
-        auto &field_name = ident->ident_name;
-        auto field_resolver = std::make_unique<Field_By_Name_Resolver>(csv.header, field_name);
-        
-        if (root_aggregator)
+        std::unique_ptr<Expression_Ast_Node> &grouping_field = select.group_by->groups.at(i - 1);
+  
+        if (auto ident = Cast_If(Ident_Expression_Ast_Node, *grouping_field))
         {
-          auto aggregator = std::make_unique<Subgrouping_Aggregator>(field_resolver, root_aggregator);
-          root_aggregator = std::move(aggregator);
+          auto &field_name = ident->ident_name;
+          auto field_resolver = std::make_unique<Field_By_Name_Resolver>(csv.header, field_name);
+          
+          if (root_aggregator)
+          {
+            auto aggregator = std::make_unique<Subgrouping_Aggregator>(field_resolver, root_aggregator);
+            root_aggregator = std::move(aggregator);
+          }
+          else
+          {
+            auto aggregator = std::make_unique<Value_Aggregator>(field_resolver);
+            root_aggregator = std::move(aggregator);
+          }
         }
         else
         {
-          auto aggregator = std::make_unique<Value_Aggregator>(field_resolver);
-          root_aggregator = std::move(aggregator);
+          std::cout << "A expressão a seguir não pode ser aplicada no Group By: " << std::endl << grouping_field->to_expression() << std::endl;
+          return false;
         }
-      }
-      else
-      {
-        std::cout << "A expressão a seguir não pode ser aplicada no Group By: " << std::endl << grouping_field->to_expression() << std::endl;
-        return false;
       }
     }
     
-    // executando processo de agregação
-    for (CSV_Data_Row &data_row: csv.dataset)
+    if (hasGroupBy)
     {
-      if (hasWhere)
+      // executando processo de agregação
+      for (CSV_Data_Row &data_row: csv.dataset)
       {
-        if (!evaluate_relational_binary_ast_node(select.where->conditions.get(), csv, data_row))
+        if (hasWhere)
         {
-          continue;
+          if (!evaluate_relational_binary_ast_node(select.where->conditions.get(), csv, data_row))
+          {
+            continue;
+          }
+        }
+        
+        root_aggregator->aggregate(&data_row);
+      }
+      
+      auto grouping_header = root_aggregator->get_header();
+      vector<std::unique_ptr<Aggregation_Field_Resolver>> field_aggregation_resolvers;
+      
+      for (auto &field : select.fields)
+      {
+        if (auto ident = Cast_If(Ident_Expression_Ast_Node, *field))
+        {
+          field_aggregation_resolvers.push_back(std::make_unique<Field_By_Name_Aggregation_Resolver>(*grouping_header, ident->ident_name));
+        }
+        else if (auto func = Cast_If(Function_Call_Expression_Ast_Node, *field))
+        {
+          field_aggregation_resolvers.push_back(std::make_unique<Function_Call_Expression_Aggregation_Resolver>(grouping_header.get(), &csv.header, func));
         }
       }
       
-      root_aggregator->aggregate(&data_row);
+      // @todo João, @wip terminar aqui... a ideia é começar implementando o count(*), select species From Iris Group By Species
+      while (auto value = root_aggregator->get_next_group_value())
+      {
+        std::vector<std::string> new_data_row;
+  
+        for (auto &resolver : field_aggregation_resolvers)
+        {
+          new_data_row.push_back(resolver->resolve(value->first, value->second));
+        }
+    
+        new_dataset.push_back(new_data_row);
+      }
     }
+    else // se apenas tem funções de agregação
+    {
+      
+      for (auto &field : select.fields)
+      {
+        if (auto func = Cast_If(Function_Call_Expression_Ast_Node, *field))
+        {
+          if (func->name != "COUNT")
+          {
+            std::cout << "Por hora apenas COUNT é suportado." << std::endl;
+            return false;  
+          }
+        }
+        else
+        {
+          std::cout << "Por hora todos os campos do select precisam ser compostos apenas por funções agregadoras quando houver função agregadora." << std::endl;
+          return false;
+        }
+      }
 
-    auto grouping_header = root_aggregator->get_header();
-    vector<std::unique_ptr<Aggregation_Field_Resolver>> field_aggregation_resolvers;
-    
-    for (auto &field : select.fields)
-    {
-      if (auto ident = Cast_If(Ident_Expression_Ast_Node, *field))
+      vector<CSV_Data_Row*> subset_dataset;
+
+      // executando processo de agregação
+      for (CSV_Data_Row &data_row: csv.dataset)
       {
-        field_aggregation_resolvers.push_back(std::make_unique<Field_By_Name_Aggregation_Resolver>(*grouping_header, ident->ident_name));
+        if (hasWhere)
+        {
+          if (!evaluate_relational_binary_ast_node(select.where->conditions.get(), csv, data_row))
+          {
+            continue;
+          }
+        }
+        
+        subset_dataset.push_back(&data_row);
       }
-      else if (auto func = Cast_If(Function_Call_Expression_Ast_Node, *field))
+
+      std::unique_ptr<Tabular_Data_Header> grouping_header;
+      vector<std::unique_ptr<Aggregation_Field_Resolver>> field_aggregation_resolvers;
+      
+      for (auto &field : select.fields)
       {
-        field_aggregation_resolvers.push_back(std::make_unique<Function_Call_Expression_Aggregation_Resolver>(grouping_header.get(), &csv.header, func));
+        if (auto func = Cast_If(Function_Call_Expression_Ast_Node, *field))
+        {
+          field_aggregation_resolvers.push_back(std::make_unique<Function_Call_Expression_Aggregation_Resolver>(grouping_header.get(), &csv.header, func));
+        }
+        else
+        {
+          // @todo João, avaliar se apenas funções mesmo
+          assert(false);
+        }
       }
-    }
-    
-    // @todo João, @wip terminar aqui... a ideia é começar implementando o count(*), select species From Iris Group By Species
-    while (auto value = root_aggregator->get_next_group_value())
-    {
+
+      // montando linha única
       std::vector<std::string> new_data_row;
-
+  
       for (auto &resolver : field_aggregation_resolvers)
       {
-        new_data_row.push_back(resolver->resolve(value->first, value->second));
+        new_data_row.push_back(resolver->resolve(*grouping_header, subset_dataset));
       }
   
       new_dataset.push_back(new_data_row);
