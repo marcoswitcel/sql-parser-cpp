@@ -294,6 +294,26 @@ bool known_function_name_and_argument_list(Function_Call_Expression_Ast_Node* ca
   return false;
 }
 
+/**
+ * @brief Identifica se o nome de uma função de agregação conhecida 
+ * 
+ * @param func_name 
+ * @return true 
+ * @return false 
+ */
+bool is_an_aggregation_funcion(std::string &func_name)
+{
+  for (auto i = start_index_of_aggregation_functions; i < functions_builtin_length; i++)
+  {
+    auto function = functions_builtin[i];
+
+    assert(function.is_aggregation_needed);
+    if (function.name == func_name) return true;
+  }
+
+  return false;
+}
+
 Field_By_Name_Aggregation_Resolver::Field_By_Name_Aggregation_Resolver(Tabular_Data_Header &header, std::string field_name)
 {
   auto it = std::find(header.begin(), header.end(), field_name);

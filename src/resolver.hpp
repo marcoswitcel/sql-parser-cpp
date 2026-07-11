@@ -163,3 +163,10 @@ static Builtin_Function_Definition functions_builtin[] = {
   // Retorna o valor da primeira linha encontrada para a data coluna
   { .name = "FIRST_VALUE", .is_aggregation_needed = true, },
 };
+
+/**
+ * @brief identifica onde começa a sessão de funções de aggregação dentro do array `function_builtin`
+ * 
+ */
+constexpr size_t start_index_of_aggregation_functions = 5;
+constexpr size_t functions_builtin_length = sizeof(functions_builtin) / sizeof(functions_builtin[0]);

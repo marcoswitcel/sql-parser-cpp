@@ -325,9 +325,8 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
   {
     if (auto func = Cast_If(Function_Call_Expression_Ast_Node, *field))
     {
-      if (func->name == "COUNT")
+      if (is_an_aggregation_funcion(func->name))
       {
-        // @todo João, falta outras funções
         hasAggregationFunction = true;
       }
     }
@@ -372,9 +371,9 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
       }
       else if (auto func = Cast_If(Function_Call_Expression_Ast_Node, *field))
       {
-        if (func->name != "COUNT" && func->name != "MAX" && func->name != "SUM" && func->name != "MIN" && func->name != "AVG" && func->name != "FIRST_VALUE")
+        if (!is_an_aggregation_funcion(func->name))
         {
-          std::cout << "Por hora todas as chamadas de funções precisam ser para funções de agregação. Apenas COUNT, MAX, MIN e AVG são suportados." << std::endl;
+          std::cout << "Por hora todas as chamadas de funções precisam ser para funções de agregação. Apenas COUNT, MAX, MIN e etc... são suportados." << std::endl;
           return false;
         }
       }
@@ -467,9 +466,9 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv)
       {
         if (auto func = Cast_If(Function_Call_Expression_Ast_Node, *field))
         {
-          if (func->name != "COUNT")
+          if (!is_an_aggregation_funcion(func->name))
           {
-            std::cout << "Por hora apenas COUNT é suportado." << std::endl;
+            std::cout << "Por hora apenas funções de agregação são suportadas." << std::endl;
             return false;  
           }
         }
