@@ -190,17 +190,50 @@ Ast_Node* SQL_Parse_Context::eat_node()
 
               if (token.type == Token_Type::By)
               {
-                // @todo João, pendente concluir aqui... @wip
+                select->order_by = std::unique_ptr<Order_By_Ast_Node>(new Order_By_Ast_Node());
+                
+                bool expect_comma = false;
+                while (!this->is_finished())
+                {
+                  token = this->eat_token();
+
+                  if (token.type == Token_Type::Number && !expect_comma)
+                  {
+                    auto number = new Number_Literal_Expression_Ast_Node();
+                    number->value =  static_cast<Number_Token*>(token.data)->value;
+
+                    select->order_by->orders.push_back(std::unique_ptr<Expression_Ast_Node>(number));
+
+                    expect_comma = true;
+                  }
+                  else if (token.type == Token_Type::Comma && expect_comma)
+                  {
+                    expect_comma = false;
+                  }
+                  else
+                  {
+                    this->report_error("Token inválido depois no Order By: " + get_description(token.type));
+                    return NULL;
+                  }
+
+                  this->skip_whitespace();
+                }
+
+                if (!expect_comma)
+                {
+                  this->report_error("Vírgula sobrando");
+                  return NULL;
+                }
               }
               else
               {
                 this->report_error("Token inválido depois de Order: " + get_description(token.type));
                 return NULL;
               }
-
-              this->skip_whitespace();
             }
             
+            this->skip_whitespace();
+
             if (this->is_finished())
             {
               return select;

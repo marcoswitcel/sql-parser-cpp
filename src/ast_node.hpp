@@ -478,6 +478,11 @@ struct Select_Ast_Node: Ast_Node
    * Campo opcional
    */
   std::unique_ptr<Group_By_Ast_Node> group_by;
+  /**
+   * @brief define se o select possuía uma regra de ordenação associada
+   * Campo opcional
+   */
+  std::unique_ptr<Order_By_Ast_Node> order_by;
 
   Select_Ast_Node()
   {
