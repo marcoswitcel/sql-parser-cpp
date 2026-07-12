@@ -51,6 +51,14 @@ struct Collector_Ast_Node_Visitor : Ast_Node_Visitor
     }
   }
 
+  void visit(Order_By_Ast_Node &node)
+  {
+    for (auto &field : node.orders)
+    {
+      this->visit(*field);
+    }
+  }
+
   void visit(Expression_Ast_Node &node)
   {
     if (auto ident = Cast_If(Ident_Expression_Ast_Node, node))

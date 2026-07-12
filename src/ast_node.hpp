@@ -25,6 +25,7 @@ enum class Ast_Node_Type
   From_Ast_Node     = 1 << 1,
   Where_Ast_Node    = 1 << 2,
   Group_By_Ast_Node = 1 << 3,
+  Order_By_Ast_Node = 1 << 3,
   Describe_Ast_Node = 1 << 4,
   Expression_Ast_Node   = 1 << 5, // categoria
   String_Literal_Expression_Ast_Node = Expression_Ast_Node | (1 << 6),
@@ -428,6 +429,30 @@ struct Group_By_Ast_Node: Ast_Node
     std::string desc = "Group_By_Ast_Node { serial: ";
     desc += std::to_string(this->serial_number);
     desc += ", groups: [] }"; // @todo João, terminar aqui...
+
+    return desc;
+  }
+
+  void accept(Ast_Node_Visitor &visitor) override
+  {
+    visitor.visit(*this);
+  }
+};
+
+struct Order_By_Ast_Node: Ast_Node
+{
+  std::vector<std::unique_ptr<Expression_Ast_Node>> orders;
+  
+  Order_By_Ast_Node()
+  {
+    this->type = Ast_Node_Type::Order_By_Ast_Node;
+  }
+
+  std::string to_string() override
+  {
+    std::string desc = "Order_By_Ast_Node { serial: ";
+    desc += std::to_string(this->serial_number);
+    desc += ", orders: [] }"; // @todo João, terminar aqui...
 
     return desc;
   }

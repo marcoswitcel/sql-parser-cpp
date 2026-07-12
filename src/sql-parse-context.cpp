@@ -569,6 +569,9 @@ Parse_Function terminals[] = {
   try_parse_concat,
   try_parse_group,
   try_parse_by,
+  try_parse_order,
+  try_parse_asc,
+  try_parse_desc,
   // non-terminals
   try_parse_number,
   try_parse_string,
@@ -739,6 +742,51 @@ void try_parse_by(SQL_Parse_Context* parser, Token *token, bool *success)
   if (is_consumed)
   {
     token->type = Token_Type::By;
+    *success = true;
+    return;
+  }
+  
+  token->type = Token_Type::None;
+  *success = false;
+}
+
+void try_parse_order(SQL_Parse_Context* parser, Token *token, bool *success)
+{
+  bool is_consumed = try_consume_keyword(parser, "order");
+  
+  if (is_consumed)
+  {
+    token->type = Token_Type::Order;
+    *success = true;
+    return;
+  }
+  
+  token->type = Token_Type::None;
+  *success = false;
+}
+
+void try_parse_asc(SQL_Parse_Context* parser, Token *token, bool *success)
+{
+  bool is_consumed = try_consume_keyword(parser, "asc");
+  
+  if (is_consumed)
+  {
+    token->type = Token_Type::Asc;
+    *success = true;
+    return;
+  }
+  
+  token->type = Token_Type::None;
+  *success = false;
+}
+
+void try_parse_desc(SQL_Parse_Context* parser, Token *token, bool *success)
+{
+  bool is_consumed = try_consume_keyword(parser, "desc");
+  
+  if (is_consumed)
+  {
+    token->type = Token_Type::Desc;
     *success = true;
     return;
   }

@@ -30,6 +30,9 @@ std::string get_description(Token_Type &token_type)
     case Token_Type::Concat: return "Concat";
     case Token_Type::Group: return "Group";
     case Token_Type::By: return "By";
+    case Token_Type::Order: return "Order";
+    case Token_Type::Asc: return "Asc";
+    case Token_Type::Desc: return "Desc";
     case Token_Type::String: return "String";
     case Token_Type::Number: return "Number";
     case Token_Type::Ident: return "Ident";
