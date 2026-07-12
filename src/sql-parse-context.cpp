@@ -175,8 +175,7 @@ Ast_Node* SQL_Parse_Context::eat_node()
                   this->report_error("Vírgula sobrando");
                   return NULL;
                 }
-
-                return select;
+                
               }
               else
               {
@@ -184,7 +183,25 @@ Ast_Node* SQL_Parse_Context::eat_node()
                 return NULL;
               }
             }
-            else if (this->is_finished())
+
+            if (token.type == Token_Type::Order || this->last_eaten_token.type == Token_Type::Order)
+            {
+              token = this->eat_token();
+
+              if (token.type == Token_Type::By)
+              {
+                // @todo João, pendente concluir aqui... @wip
+              }
+              else
+              {
+                this->report_error("Token inválido depois de Order: " + get_description(token.type));
+                return NULL;
+              }
+
+              this->skip_whitespace();
+            }
+            
+            if (this->is_finished())
             {
               return select;
             }
