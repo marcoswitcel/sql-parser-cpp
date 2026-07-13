@@ -334,6 +334,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
   
   const auto hasWhere = select.where && select.where->conditions.get();
   const auto hasGroupBy = (select.group_by && select.group_by->groups.size() > 0);
+  const auto hasOrderBy = (select.order_by && select.order_by->orders.size() > 0);
   vector<CSV_Data_Row> new_dataset;
   std::unique_ptr<Aggregator> root_aggregator;
   
@@ -551,6 +552,27 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
   // seria interessante pensar em algo melhor para o futuro. E.x: Copia ou receber um csv para gravar as linhas
   csv.header = new_header;
   csv.dataset = new_dataset;
+
+  if (hasOrderBy)
+  {
+    auto &expr0 = select.order_by->orders.at(0);
+
+    assert(expr0->type == Ast_Node_Type::Number_Literal_Expression_Ast_Node);
+  
+    auto number = static_cast<Number_Literal_Expression_Ast_Node*>(expr0.get());
+    auto column_index = number->value;
+    
+    assert(column_index > 0);
+    // decremente porque recebemos 1 para primeira coluna
+    column_index--;
+    assert(column_index < csv.header.size());
+
+    // @todo joão, falta DESC and ASC
+
+    std::sort(csv.dataset.begin(), csv.dataset.end(), [column_index](const CSV_Data_Row &a, const CSV_Data_Row &b) {
+      return a.at(column_index) > b.at(column_index);
+    });
+  }
 
   if (is_printing_as_table)
   {
