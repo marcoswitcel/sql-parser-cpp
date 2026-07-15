@@ -19,6 +19,7 @@ struct Ast_Node_Visitor
   virtual void visit(Where_Ast_Node &node) = 0;
   virtual void visit(Group_By_Ast_Node &node) = 0;
   virtual void visit(Order_By_Ast_Node &node) = 0;
+  // @todo João, adicionar Ordering_Expression_Ast_node ou implementar no visit abaixo
   virtual void visit(Expression_Ast_Node &node) = 0;
   virtual void visit(Describe_Ast_Node &node) = 0;
 };
