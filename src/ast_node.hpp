@@ -20,19 +20,20 @@ enum class Inferred_Type
 
 enum class Ast_Node_Type
 {
-  None              = 0,
-  Select_Ast_Node   = 1 << 0,
-  From_Ast_Node     = 1 << 1,
-  Where_Ast_Node    = 1 << 2,
-  Group_By_Ast_Node = 1 << 3,
-  Order_By_Ast_Node = 1 << 3,
-  Describe_Ast_Node = 1 << 4,
-  Expression_Ast_Node   = 1 << 5, // categoria
-  String_Literal_Expression_Ast_Node = Expression_Ast_Node | (1 << 6),
-  Number_Literal_Expression_Ast_Node = Expression_Ast_Node | (1 << 7),
-  Ident_Expression_Ast_Node          = Expression_Ast_Node | (1 << 8),
-  Function_Call_Expression_Ast_Node  = Expression_Ast_Node | (1 << 9),
-  Binary_Expression_Ast_Node         = Expression_Ast_Node | (1 << 10), // sub-categoria
+  None                = 0,
+  Select_Ast_Node     = 1 << 0,
+  From_Ast_Node       = 1 << 1,
+  Where_Ast_Node      = 1 << 2,
+  Group_By_Ast_Node   = 1 << 3,
+  Order_By_Ast_Node   = 1 << 4,
+  Describe_Ast_Node   = 1 << 5,
+  Expression_Ast_Node = 1 << 6, // categoria
+  Ordering_Expression_Ast_Node       = Expression_Ast_Node | (1 << 7),
+  String_Literal_Expression_Ast_Node = Expression_Ast_Node | (1 << 8),
+  Number_Literal_Expression_Ast_Node = Expression_Ast_Node | (1 << 9),
+  Ident_Expression_Ast_Node          = Expression_Ast_Node | (1 << 10),
+  Function_Call_Expression_Ast_Node  = Expression_Ast_Node | (1 << 11),
+  Binary_Expression_Ast_Node         = Expression_Ast_Node | (1 << 12), // sub-categoria
 };
 
 Ast_Node_Type operator&(Ast_Node_Type a, Ast_Node_Type b)
@@ -382,6 +383,31 @@ struct Binary_Expression_Ast_Node: Expression_Ast_Node
   }
 };
 
+struct Ordering_Expression_Ast_Node: Expression_Ast_Node
+{
+  std::unique_ptr<Expression_Ast_Node> expr;
+ 
+  Ordering_Expression_Ast_Node()
+  {
+    this->type = Ast_Node_Type::Ordering_Expression_Ast_Node;
+  }
+
+  std::string to_string() override
+  {
+    std::string desc = "Ordering_Expression_Ast_Node { serial: ";
+    desc += std::to_string(this->serial_number);
+    desc += ", expr: " + ((this->expr.get()) ? this->expr->to_string() : "NULL");
+    desc += " }";
+
+    return desc;
+  }
+
+  void accept(Ast_Node_Visitor &visitor) override
+  {
+    visitor.visit(*this);
+  }
+};
+
 struct Where_Ast_Node: Ast_Node
 {
   std::unique_ptr<Binary_Expression_Ast_Node> conditions;
@@ -441,7 +467,7 @@ struct Group_By_Ast_Node: Ast_Node
 
 struct Order_By_Ast_Node: Ast_Node
 {
-  std::vector<std::unique_ptr<Expression_Ast_Node>> orders;
+  std::vector<std::unique_ptr<Ordering_Expression_Ast_Node>> orders;
   
   Order_By_Ast_Node()
   {

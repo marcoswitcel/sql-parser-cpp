@@ -202,7 +202,10 @@ Ast_Node* SQL_Parse_Context::eat_node()
                     auto number = new Number_Literal_Expression_Ast_Node();
                     number->value =  static_cast<Number_Token*>(token.data)->value;
 
-                    select->order_by->orders.push_back(std::unique_ptr<Expression_Ast_Node>(number));
+                    auto ordering = std::make_unique<Ordering_Expression_Ast_Node>();
+                    ordering->expr = std::unique_ptr<Expression_Ast_Node>(number);
+
+                    select->order_by->orders.push_back(std::move(ordering));
 
                     expect_comma = true;
                   }

@@ -555,11 +555,11 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
 
   if (hasOrderBy)
   {
-    auto &expr0 = select.order_by->orders.at(0);
+    auto &order_expr = select.order_by->orders.at(0);
 
-    assert(expr0->type == Ast_Node_Type::Number_Literal_Expression_Ast_Node);
+    assert(order_expr->expr->type == Ast_Node_Type::Number_Literal_Expression_Ast_Node);
   
-    auto number = static_cast<Number_Literal_Expression_Ast_Node*>(expr0.get());
+    auto number = static_cast<Number_Literal_Expression_Ast_Node*>(order_expr->expr.get());
     auto column_index = number->value;
     
     assert(column_index > 0);
