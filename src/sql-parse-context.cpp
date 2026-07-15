@@ -204,7 +204,14 @@ Ast_Node* SQL_Parse_Context::eat_node()
 
                     auto ordering = std::make_unique<Ordering_Expression_Ast_Node>();
                     ordering->expr = std::unique_ptr<Expression_Ast_Node>(number);
-
+                    
+                    Token peak_token = this->peek_token();
+                    if (peak_token.type == Token_Type::Asc || peak_token.type == Token_Type::Desc)
+                    {
+                      token = this->eat_token();
+                      ordering->dir = peak_token.type;
+                    }
+                    
                     select->order_by->orders.push_back(std::move(ordering));
 
                     expect_comma = true;
@@ -697,6 +704,7 @@ static inline bool try_consume_keyword(SQL_Parse_Context *parser, std::string to
     }
   }
 
+  // @note João, avaliar, parece que não aceita terminar a keyword com o final do arquivo, tem que ter um espaço ou enter...
   if (equal &&
     parser->peek_n_char(index_after_last_char) != END_OF_SOURCE &&
     parser->is_whitespace(parser->peek_n_char(index_after_last_char)))

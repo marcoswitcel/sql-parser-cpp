@@ -567,11 +567,18 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
     column_index--;
     assert(column_index < csv.header.size());
 
-    // @todo joão, falta DESC and ASC
-
-    std::sort(csv.dataset.begin(), csv.dataset.end(), [column_index](const CSV_Data_Row &a, const CSV_Data_Row &b) {
-      return a.at(column_index) > b.at(column_index);
-    });
+    if (order_expr->dir == Token_Type::Asc)
+    {
+      std::sort(csv.dataset.begin(), csv.dataset.end(), [column_index](const CSV_Data_Row &a, const CSV_Data_Row &b) {
+        return a.at(column_index) < b.at(column_index);
+      });
+    }
+    else
+    {
+      std::sort(csv.dataset.begin(), csv.dataset.end(), [column_index](const CSV_Data_Row &a, const CSV_Data_Row &b) {
+        return a.at(column_index) > b.at(column_index);
+      });
+    }
   }
 
   if (is_printing_as_table)

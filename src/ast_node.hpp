@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "./ast_node_visitor.hpp"
+#include "./token.hpp"
 #include "./utils.cpp"
 #include "./trace.hpp"
 
@@ -386,6 +387,7 @@ struct Binary_Expression_Ast_Node: Expression_Ast_Node
 struct Ordering_Expression_Ast_Node: Expression_Ast_Node
 {
   std::unique_ptr<Expression_Ast_Node> expr;
+  Token_Type dir = Token_Type::None;
  
   Ordering_Expression_Ast_Node()
   {
