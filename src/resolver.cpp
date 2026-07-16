@@ -454,7 +454,8 @@ std::string Function_Call_Expression_Aggregation_Resolver::resolve([[maybe_unuse
         }
         else
         {
-          // @todo João, deveria somar NaNs?
+          // @note João, poderia incluir um if pra caso encontrar um NaN retornar NaN logo de cara
+          // mas não sei se não afetaria a performance mais que deixar somar...
           sum_value += value;
         }
       }

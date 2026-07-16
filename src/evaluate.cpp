@@ -447,7 +447,6 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
         }
       }
       
-      // @todo João, @wip terminar aqui... a ideia é começar implementando o count(*), select species From Iris Group By Species
       while (auto value = root_aggregator->get_next_group_value())
       {
         std::vector<std::string> new_data_row;
