@@ -330,6 +330,7 @@ bool known_function_name_and_argument_list(Function_Call_Expression_Ast_Node* ca
   }
   else if (call_expr->name == "SUM")
   {
+    // @todo João, implementar suporte a expressões aqui... e nos outros...
     return call_expr->argument_list.size() == 1 && call_expr->argument_list.at(0)->type == Ast_Node_Type::Ident_Expression_Ast_Node;
   }
   else if (call_expr->name == "AVG")
@@ -416,8 +417,16 @@ std::string Function_Call_Expression_Aggregation_Resolver::resolve([[maybe_unuse
           max_value = value;
         }
       }
-      catch (std::invalid_argument& ex) {}
-      catch (std::out_of_range& ex) {}
+      catch (std::invalid_argument& ex)
+      {
+        max_value = std::numeric_limits<double>::quiet_NaN();
+        break;
+      }
+      catch (std::out_of_range& ex)
+      {
+        max_value = std::numeric_limits<double>::quiet_NaN();
+        break;
+      }
     }
 
     return std::to_string(max_value);
@@ -430,7 +439,7 @@ std::string Function_Call_Expression_Aggregation_Resolver::resolve([[maybe_unuse
     
     // @note Não é possível ter 0 linhas, porém, é possível que todas as linhas falhem
     // no processo de parse, por isso usamos NaN
-    double max_value = std::numeric_limits<double>::quiet_NaN();
+    double min_value = std::numeric_limits<double>::quiet_NaN();
 
     for (auto data_row : rows)
     {
@@ -440,16 +449,22 @@ std::string Function_Call_Expression_Aggregation_Resolver::resolve([[maybe_unuse
       {
         auto value = std::stod(raw_value);
 
-        if (value < max_value || std::isnan(max_value))
+        if (value < min_value || std::isnan(min_value))
         {
-          max_value = value;
+          min_value = value;
         }
       }
-      catch (std::invalid_argument& ex) {}
-      catch (std::out_of_range& ex) {}
+      catch (std::invalid_argument& ex) {
+        min_value = std::numeric_limits<double>::quiet_NaN();
+        break;
+      }
+      catch (std::out_of_range& ex) {
+        min_value = std::numeric_limits<double>::quiet_NaN();
+        break;
+      }
     }
 
-    return std::to_string(max_value);
+    return std::to_string(min_value);
   }
   else if (this->call_expr->name == "SUM")
   {
@@ -478,8 +493,16 @@ std::string Function_Call_Expression_Aggregation_Resolver::resolve([[maybe_unuse
           sum_value += value;
         }
       }
-      catch (std::invalid_argument& ex) {} // @todo JOão, deveria retornar nan?
-      catch (std::out_of_range& ex) {}
+      catch (std::invalid_argument& ex)
+      {
+        sum_value = std::numeric_limits<double>::quiet_NaN();
+        break;
+      }
+      catch (std::out_of_range& ex)
+      {
+        sum_value = std::numeric_limits<double>::quiet_NaN();
+        break;
+      }
     }
 
     return std::to_string(sum_value);
@@ -513,10 +536,19 @@ std::string Function_Call_Expression_Aggregation_Resolver::resolve([[maybe_unuse
           sum_value += value;
         }
       }
-      catch (std::invalid_argument& ex) {}
-      catch (std::out_of_range& ex) {}
+      catch (std::invalid_argument& ex)
+      {
+        sum_value = std::numeric_limits<double>::quiet_NaN();
+        break;
+      }
+      catch (std::out_of_range& ex)
+      {
+        sum_value = std::numeric_limits<double>::quiet_NaN();
+        break;
+      }
     }
 
+    // calcula a média
     return std::to_string(sum_value / rows.size());
   }
   else if (this->call_expr->name == "FIRST_VALUE")
