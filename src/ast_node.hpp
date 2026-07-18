@@ -208,6 +208,10 @@ struct Function_Call_Expression_Ast_Node: Expression_Ast_Node
         // @note João, avaliar se deve retornar tipos diferentes (quando tivermos suporte)
         this->inferred_type = Inferred_Type::String;
       }
+      else if (this->name == "TO_NUMBER")
+      {
+        this->inferred_type = Inferred_Type::Number;
+      }
       else if (this->name == "MAX")
       {
         this->inferred_type = Inferred_Type::Number;

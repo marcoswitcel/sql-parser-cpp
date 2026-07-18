@@ -158,7 +158,7 @@ std::string Function_Call_Expression_Resolver::resolve(Tabular_Data_Row &data_ro
     }
     catch (std::invalid_argument& ex)
     {
-      // @note João, não deve aconceter
+      // @note João, não deve acontecer
       assert(false);
     }
     catch (std::out_of_range& ex)
@@ -185,6 +185,44 @@ std::string Function_Call_Expression_Resolver::resolve(Tabular_Data_Row &data_ro
     }
 
     return first_value;
+  }
+  else if (this->call_expr->name == "TO_NUMBER")
+  {
+    auto arg0 = this->call_expr->argument_list.at(0);
+    Expression_Resolver resolver_arg0 = Expression_Resolver(this->header, arg0);
+    
+    std::string raw_value = resolver_arg0.resolve(data_row);
+    double value = std::numeric_limits<double>::quiet_NaN();
+
+    // @todo João, é necessário bloquear NaN e Infinity no parse de números,
+    // senão vai passar essas strings. Acredito que vai parsear, porém pode causar
+    // problemas no futuro.
+    
+    try 
+    {
+      value = std::stod(raw_value);
+    }
+    catch (std::invalid_argument& ex) {}
+    catch (std::out_of_range& ex) {}
+
+    
+    // @note se o valor da variável `raw_value` era a string "NaN"
+    if (std::isnan(value) && this->call_expr->argument_list.size() == 2)
+    {
+      auto arg1 = this->call_expr->argument_list.at(1);
+      Expression_Resolver resolver_arg1 = Expression_Resolver(this->header, arg1);
+      std::string default_value = resolver_arg1.resolve(data_row);
+      
+      try 
+      {
+        value = std::stod(default_value);
+      }
+      catch (std::invalid_argument& ex) {}
+      catch (std::out_of_range& ex) {}
+    }
+
+    
+    return std::to_string(value);
   }
 
   assert(false);
@@ -257,6 +295,20 @@ bool known_function_name_and_argument_list(Function_Call_Expression_Ast_Node* ca
 
     return true;
   }
+  else if (call_expr->name == "TO_NUMBER")
+  {
+    if (call_expr->argument_list.size() == 1)
+    {
+      return call_expr->argument_list.at(0)->inferred_type == Inferred_Type::String;
+    }
+    if (call_expr->argument_list.size() == 2)
+    {
+      return call_expr->argument_list.at(0)->inferred_type == Inferred_Type::String
+        && call_expr->argument_list.at(1)->inferred_type == Inferred_Type::Number;
+    }
+
+    return false;
+  }
   else if (call_expr->name == "MAX")
   {
     return call_expr->argument_list.size() == 1 && call_expr->argument_list.at(0)->type == Ast_Node_Type::Ident_Expression_Ast_Node;
@@ -301,6 +353,8 @@ bool known_function_name_and_argument_list(Function_Call_Expression_Ast_Node* ca
  */
 bool is_an_aggregation_funcion(std::string &func_name)
 {
+  // @todo João, incluir um "loop estático" para checar se está correto o valor de`start_index_of_aggregation_functions`
+
   for (auto i = start_index_of_aggregation_functions; i < functions_builtin_length; i++)
   {
     auto function = functions_builtin[i];
@@ -424,7 +478,7 @@ std::string Function_Call_Expression_Aggregation_Resolver::resolve([[maybe_unuse
           sum_value += value;
         }
       }
-      catch (std::invalid_argument& ex) {}
+      catch (std::invalid_argument& ex) {} // @todo JOão, deveria retornar nan?
       catch (std::out_of_range& ex) {}
     }
 

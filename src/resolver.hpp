@@ -148,6 +148,10 @@ static Builtin_Function_Definition functions_builtin[] = {
   { .name = "SUBSTRING", .is_aggregation_needed = false, },
   // Retorna primeiro valor não "vazio"
   { .name = "COALESCE", .is_aggregation_needed = false, },
+  // Recebe uma expressão e retonar o valor numérico que ela representa,
+  // ou NaN em caso de erros de parsing ou valor vazio. Se possuir um valor default
+  // retorna o default
+  { .name = "TO_NUMBER", .is_aggregation_needed = false, },
   
   // Funções de agregação
   // Retorna o maior valor numérico do grupo para a dada coluna
@@ -168,5 +172,5 @@ static Builtin_Function_Definition functions_builtin[] = {
  * @brief identifica onde começa a sessão de funções de aggregação dentro do array `function_builtin`
  * 
  */
-constexpr size_t start_index_of_aggregation_functions = 5;
+constexpr size_t start_index_of_aggregation_functions = 6;
 constexpr size_t functions_builtin_length = sizeof(functions_builtin) / sizeof(functions_builtin[0]);
