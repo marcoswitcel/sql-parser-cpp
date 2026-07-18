@@ -705,6 +705,7 @@ static inline bool try_consume_keyword(SQL_Parse_Context *parser, std::string to
   }
 
   // @note João, avaliar, parece que não aceita terminar a keyword com o final do arquivo, tem que ter um espaço ou enter...
+  // @note João, não aceita as expressões terminadores num geral... acho que pode incluir aqui... Não lembro porque não podia END_OF_SOURCE também...
   if (equal &&
     parser->peek_n_char(index_after_last_char) != END_OF_SOURCE &&
     parser->is_whitespace(parser->peek_n_char(index_after_last_char)))
