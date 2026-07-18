@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "./ast_node.hpp"
@@ -128,6 +129,44 @@ struct Builtin_Function_Definition
   std::string name;
   bool is_aggregation_needed;
 };
+
+// @todo João, trocar o nome das funções por instâncias do enum para facilitar as comparações
+enum class Builtin_Function_Names
+{
+  CURRENT_DATE,
+  LOWER,
+  UPPER,
+  SUBSTRING,
+  COALESCE,
+  TO_NUMBER,
+  MAX,
+  MIN,
+  COUNT,
+  SUM,
+  AVG,
+  FIRST_VALUE,
+};
+
+constexpr std::string_view to_string(Builtin_Function_Names name)
+{
+  switch (name)
+  {
+    case Builtin_Function_Names::CURRENT_DATE: return "CURRENT_DATE";
+    case Builtin_Function_Names::LOWER: return "LOWER";
+    case Builtin_Function_Names::UPPER: return "UPPER";
+    case Builtin_Function_Names::SUBSTRING: return "SUBSTRING";
+    case Builtin_Function_Names::COALESCE: return "COALESCE";
+    case Builtin_Function_Names::TO_NUMBER: return "TO_NUMBER";
+    case Builtin_Function_Names::MAX: return "MAX";
+    case Builtin_Function_Names::MIN: return "MIN";
+    case Builtin_Function_Names::COUNT: return "COUNT";
+    case Builtin_Function_Names::SUM: return "SUM";
+    case Builtin_Function_Names::AVG: return "AVG";
+    case Builtin_Function_Names::FIRST_VALUE: return "FIRST_VALUE";
+  }
+
+  return "[UNKNOWN]";
+}
 
 /**
  * @brief Existe apenas para listar as funções e expectativas 
