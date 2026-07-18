@@ -300,8 +300,20 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
       {
         new_header.push_back(call_expr->as);
       }
+
       // @todo joão, falta validar idents...
-      field_resolver.push_back(new Function_Call_Expression_Resolver(&csv.header, call_expr));
+      auto function_call_resolver = new Function_Call_Expression_Resolver(&csv.header, call_expr);
+
+      if (function_call_resolver->is_arguments_valid())
+      {
+        field_resolver.push_back(function_call_resolver);
+      }
+      else
+      {
+        delete function_call_resolver;
+        std::cout << "A expressão a seguir não pode ser interpretada: " << std::endl << field->to_expression() << std::endl;
+        return false;
+      }
     }
     else
     {

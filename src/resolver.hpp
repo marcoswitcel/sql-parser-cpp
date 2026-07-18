@@ -39,6 +39,8 @@ struct Function_Call_Expression_Resolver : Field_Resolver
   }
 
   std::string resolve(Tabular_Data_Row &data_row);
+
+  bool is_arguments_valid();
 };
 
 // @note provavelmente deveria chamar esse resolver de 'Ident_Resolver', se fosse pra ser um 'field resolver' provavelmente

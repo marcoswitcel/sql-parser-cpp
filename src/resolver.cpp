@@ -231,6 +231,29 @@ std::string Function_Call_Expression_Resolver::resolve(Tabular_Data_Row &data_ro
   return "[FUNCTION CALL RETURN]";
 }
 
+bool Function_Call_Expression_Resolver::is_arguments_valid()
+{
+  for (auto argument : this->call_expr->argument_list)
+  {
+    if (auto function_call = Cast_If(Function_Call_Expression_Ast_Node, *argument))
+    {
+      // @note mover essas funções pra outra
+      bool known_function_name_and_argument_list(Function_Call_Expression_Ast_Node*);
+
+      if (!known_function_name_and_argument_list(function_call)) return false;
+
+      Function_Call_Expression_Resolver resolver = Function_Call_Expression_Resolver(this->header, function_call);
+
+      if (!resolver.is_arguments_valid()) return false;
+    }
+
+    // @todo João, confirmar que não precisa mesmo validar mais nada aqui... definir onde vai ser validado cada coisa...
+  }
+
+  return true;
+}
+
+
 struct Binary_Expression_Resolver : Field_Resolver
 {
   Binary_Expression_Ast_Node* bin_expr;
