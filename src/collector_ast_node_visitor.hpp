@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <cstdint>
+#include <assert.h>
 
 #include "./ast_node.hpp"
 #include "./ast_node_visitor.hpp"
@@ -30,6 +31,7 @@ struct Collector_Ast_Node_Visitor : Ast_Node_Visitor
     // campos opcionais
     if (node.where) this->visit(*node.where);
     if (node.group_by) this->visit(*node.group_by);
+    if (node.order_by) this->visit(*node.order_by);
   }
 
   void visit(From_Ast_Node &node)
@@ -85,6 +87,15 @@ struct Collector_Ast_Node_Visitor : Ast_Node_Visitor
       {
         this->visit(*argument);
       }
+    }
+    else if (auto ordering = Cast_If(Ordering_Expression_Ast_Node, node))
+    {
+      this->visit(*ordering->expr);
+    }
+    else
+    {
+      // @note se cair aqui é porque foi esquecido de lidar com alguma sub-expressão
+      assert(false);
     }
   }
 
