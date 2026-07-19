@@ -516,6 +516,31 @@ void test_collector_ast_node_visitor()
   assert(collector.strings.size() == 1);
 }
 
+void test_builtin_function_definition()
+{
+  size_t first_aggregation = 0;
+  for (size_t i = 0; i < functions_builtin_length; i++)
+  {
+    if (functions_builtin[i].is_aggregation_needed)
+    {
+      first_aggregation = i;
+      break;
+    }
+  }
+
+  assert(first_aggregation == start_index_of_aggregation_functions);
+
+  for (size_t i = 0; i < start_index_of_aggregation_functions; i++)
+  {
+    assert(!functions_builtin[i].is_aggregation_needed);
+  }
+
+  for (size_t i = start_index_of_aggregation_functions; i < functions_builtin_length; i++)
+  {
+    assert(functions_builtin[i].is_aggregation_needed);
+  }
+}
+
 /**
  * @brief todos os testes são cadastrados aqui
  * 
@@ -557,6 +582,8 @@ int main()
   std::cout << "test_run_sql_on_csv03...................................OK" << std::endl;
   test_collector_ast_node_visitor();
   std::cout << "test_collector_ast_node_visitor.........................OK" << std::endl;
+  test_builtin_function_definition();
+  std::cout << "test_builtin_function_definition........................OK" << std::endl;
   
 
   std::cout << std::endl << "Fim testes" << std::endl;

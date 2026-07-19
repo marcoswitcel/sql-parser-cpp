@@ -379,8 +379,6 @@ bool known_function_name_and_argument_list(Function_Call_Expression_Ast_Node* ca
  */
 bool is_an_aggregation_funcion(std::string &func_name)
 {
-  // @todo João, incluir um "loop estático" para checar se está correto o valor de`start_index_of_aggregation_functions`
-
   for (auto i = start_index_of_aggregation_functions; i < functions_builtin_length; i++)
   {
     auto function = functions_builtin[i];
