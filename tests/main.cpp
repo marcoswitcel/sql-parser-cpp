@@ -9,6 +9,7 @@
 #include "../src/ast_node.hpp"
 #include "../src/sql-parse-context.cpp"
 #include "../src/evaluate.cpp"
+#include "../src/collector_ast_node_visitor.hpp"
 #include "./csv_data_set.cpp"
 
 void test_run_like_pattern_on()
@@ -496,6 +497,25 @@ void test_run_sql_on_csv03()
   assert(dummy_csv.dataset.at(0).at(1) == "1");
 }
 
+void test_collector_ast_node_visitor()
+{
+  SQL_Parse_Context parser("SELECT Id, Name, 'valor fixo' As \"Ident With Spaces\"  FROM Dummy Where Id > 50");
+  
+  Ast_Node* node = parser.eat_node();
+  
+  assert(node && node->type == Ast_Node_Type::Select_Ast_Node);
+  auto select = static_cast<Select_Ast_Node*>(node);
+
+  Collector_Ast_Node_Visitor collector;
+
+  select->accept(collector);
+
+  assert(collector.froms.size() == 1);
+  assert(collector.idents.size() == 3);
+  assert(collector.numbers.size() == 1);
+  assert(collector.strings.size() == 1);
+}
+
 /**
  * @brief todos os testes são cadastrados aqui
  * 
@@ -535,6 +555,8 @@ int main()
   std::cout << "test_run_sql_on_csv02...................................OK" << std::endl;
   test_run_sql_on_csv03();
   std::cout << "test_run_sql_on_csv03...................................OK" << std::endl;
+  test_collector_ast_node_visitor();
+  std::cout << "test_collector_ast_node_visitor.........................OK" << std::endl;
   
 
   std::cout << std::endl << "Fim testes" << std::endl;

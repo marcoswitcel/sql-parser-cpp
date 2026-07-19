@@ -97,6 +97,8 @@ struct Collector_Ast_Node_Visitor : Ast_Node_Visitor
       // @note se cair aqui é porque foi esquecido de lidar com alguma sub-expressão
       assert(false);
     }
+
+    // @todo João, considerar como incluir o renome de campos como idents aqui.. no futuro vou precisar deles...
   }
 
   void visit(Describe_Ast_Node &node)
