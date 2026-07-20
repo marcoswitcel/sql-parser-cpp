@@ -12,6 +12,8 @@ struct Builtin_Function_Definition
 // @todo João, trocar o nome das funções por instâncias do enum para facilitar as comparações
 enum class Builtin_Function_Names
 {
+  UNKNOWN,
+  // nomes válidos
   CURRENT_DATE,
   LOWER,
   UPPER,
@@ -45,6 +47,24 @@ constexpr std::string_view to_string(Builtin_Function_Names name)
   }
 
   return "[UNKNOWN]";
+}
+
+inline Builtin_Function_Names lookup(const std::string &name)
+{
+  if (name == "CURRENT_DATE") return Builtin_Function_Names::CURRENT_DATE;
+  else if (name == "LOWER") return Builtin_Function_Names::LOWER;
+  else if (name == "UPPER") return Builtin_Function_Names::UPPER;
+  else if (name == "SUBSTRING") return Builtin_Function_Names::SUBSTRING;
+  else if (name == "COALESCE") return Builtin_Function_Names::COALESCE;
+  else if (name == "TO_NUMBER") return Builtin_Function_Names::TO_NUMBER;
+  else if (name == "MAX") return Builtin_Function_Names::MAX;
+  else if (name == "MIN") return Builtin_Function_Names::MIN;
+  else if (name == "COUNT") return Builtin_Function_Names::COUNT;
+  else if (name == "SUM") return Builtin_Function_Names::SUM;
+  else if (name == "AVG") return Builtin_Function_Names::AVG;
+  else if (name == "FIRST_VALUE") return Builtin_Function_Names::FIRST_VALUE;
+ 
+  return Builtin_Function_Names::UNKNOWN;
 }
 
 /**

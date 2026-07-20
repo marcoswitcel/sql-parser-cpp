@@ -356,6 +356,7 @@ Expression_Ast_Node* SQL_Parse_Context::eat_ident_or_function_call(Token &token)
 
     auto call = new Function_Call_Expression_Ast_Node();
     call->name = static_cast<Ident_Token*>(token.data)->ident;
+    call->tagged_name = lookup(call->name);
     call->argument_list = argument_list;
     expression = call;
   }

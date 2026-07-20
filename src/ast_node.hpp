@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "./ast_node_visitor.hpp"
+#include "./builtin-function-definition.hpp"
 #include "./token.hpp"
 #include "./utils.cpp"
 #include "./trace.hpp"
@@ -152,6 +153,7 @@ struct Ident_Expression_Ast_Node: Expression_Ast_Node
 struct Function_Call_Expression_Ast_Node: Expression_Ast_Node
 {
   std::string name;
+  Builtin_Function_Names tagged_name;
   std::vector<Expression_Ast_Node*> argument_list;
   
   Function_Call_Expression_Ast_Node()
