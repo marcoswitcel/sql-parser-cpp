@@ -337,7 +337,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
   {
     if (auto func = Cast_If(Function_Call_Expression_Ast_Node, *field))
     {
-      if (is_an_aggregation_funcion(func->name))
+      if (is_an_aggregation_funcion(func->tagged_name))
       {
         hasAggregationFunction = true;
       }
@@ -384,7 +384,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
       }
       else if (auto func = Cast_If(Function_Call_Expression_Ast_Node, *field))
       {
-        if (!is_an_aggregation_funcion(func->name))
+        if (!is_an_aggregation_funcion(func->tagged_name))
         {
           std::cout << "Por hora todas as chamadas de funções precisam ser para funções de agregação. Apenas COUNT, MAX, MIN e etc... são suportados." << std::endl;
           return false;
@@ -478,7 +478,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
       {
         if (auto func = Cast_If(Function_Call_Expression_Ast_Node, *field))
         {
-          if (!is_an_aggregation_funcion(func->name))
+          if (!is_an_aggregation_funcion(func->tagged_name))
           {
             std::cout << "Por hora apenas funções de agregação são suportadas." << std::endl;
             return false;  

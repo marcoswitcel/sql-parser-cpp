@@ -3,13 +3,7 @@
 #include <string>
 #include <string_view>
 
-struct Builtin_Function_Definition
-{
-  std::string name;
-  bool is_aggregation_needed;
-};
 
-// @todo João, trocar o nome das funções por instâncias do enum para facilitar as comparações
 enum class Builtin_Function_Names
 {
   UNKNOWN,
@@ -28,6 +22,12 @@ enum class Builtin_Function_Names
   FIRST_VALUE,
 };
 
+struct Builtin_Function_Definition
+{
+  Builtin_Function_Names name;
+  bool is_aggregation_needed;
+};
+
 constexpr std::string_view to_string(Builtin_Function_Names name)
 {
   switch (name)
@@ -44,6 +44,8 @@ constexpr std::string_view to_string(Builtin_Function_Names name)
     case Builtin_Function_Names::SUM: return "SUM";
     case Builtin_Function_Names::AVG: return "AVG";
     case Builtin_Function_Names::FIRST_VALUE: return "FIRST_VALUE";
+    // default
+    case Builtin_Function_Names::UNKNOWN: return "[UNKNOWN]";
   }
 
   return "[UNKNOWN]";
@@ -77,33 +79,33 @@ inline Builtin_Function_Names lookup(const std::string &name)
 static Builtin_Function_Definition functions_builtin[] = {
   // Funções
   // Retorna a data atual
-  { .name = "CURRENT_DATE", .is_aggregation_needed = false, },
+  { .name = Builtin_Function_Names::CURRENT_DATE, .is_aggregation_needed = false, },
   // Converte a string para lowercase
-  { .name = "LOWER", .is_aggregation_needed = false, },
+  { .name = Builtin_Function_Names::LOWER, .is_aggregation_needed = false, },
   // Converte a string para uppercase
-  { .name = "UPPER", .is_aggregation_needed = false, },
+  { .name = Builtin_Function_Names::UPPER, .is_aggregation_needed = false, },
   // Corta uma string
-  { .name = "SUBSTRING", .is_aggregation_needed = false, },
+  { .name = Builtin_Function_Names::SUBSTRING, .is_aggregation_needed = false, },
   // Retorna primeiro valor não "vazio"
-  { .name = "COALESCE", .is_aggregation_needed = false, },
+  { .name = Builtin_Function_Names::COALESCE, .is_aggregation_needed = false, },
   // Recebe uma expressão e retonar o valor numérico que ela representa,
   // ou NaN em caso de erros de parsing ou valor vazio. Se possuir um valor default
   // retorna o default
-  { .name = "TO_NUMBER", .is_aggregation_needed = false, },
+  { .name = Builtin_Function_Names::TO_NUMBER, .is_aggregation_needed = false, },
   
   // Funções de agregação
   // Retorna o maior valor numérico do grupo para a dada coluna
-  { .name = "MAX", .is_aggregation_needed = true, },
+  { .name = Builtin_Function_Names::MAX, .is_aggregation_needed = true, },
   // Retorna o menor valor numérico do grupo para a dada coluna
-  { .name = "MIN", .is_aggregation_needed = true, },
+  { .name = Builtin_Function_Names::MIN, .is_aggregation_needed = true, },
   // Retorna a quantidade de registros do grupo para a dada coluna
-  { .name = "COUNT", .is_aggregation_needed = true, },
+  { .name = Builtin_Function_Names::COUNT, .is_aggregation_needed = true, },
   // Retorna a soma dos valores do grupo para a dada coluna
-  { .name = "SUM", .is_aggregation_needed = true, },
+  { .name = Builtin_Function_Names::SUM, .is_aggregation_needed = true, },
   // Retorna a média dos valores do grupo para a dada coluna
-  { .name = "AVG", .is_aggregation_needed = true, },
+  { .name = Builtin_Function_Names::AVG, .is_aggregation_needed = true, },
   // Retorna o valor da primeira linha encontrada para a data coluna
-  { .name = "FIRST_VALUE", .is_aggregation_needed = true, },
+  { .name = Builtin_Function_Names::FIRST_VALUE, .is_aggregation_needed = true, },
 };
 
 /**

@@ -377,7 +377,7 @@ bool known_function_name_and_argument_list(Function_Call_Expression_Ast_Node* ca
  * @return true 
  * @return false 
  */
-bool is_an_aggregation_funcion(std::string func_name)
+bool is_an_aggregation_funcion(Builtin_Function_Names func_name)
 {
   for (auto i = start_index_of_aggregation_functions; i < functions_builtin_length; i++)
   {
