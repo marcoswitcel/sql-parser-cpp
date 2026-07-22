@@ -189,52 +189,52 @@ struct Function_Call_Expression_Ast_Node: Expression_Ast_Node
   {
     if (this->inferred_type == Inferred_Type::Not_Inferred)
     {
-      if (this->name == "CURRENT_DATE")
+      if (this->tagged_name == Builtin_Function_Names::CURRENT_DATE)
       {
         this->inferred_type = Inferred_Type::String;
       }
-      else if (this->name == "LOWER")
+      else if (this->tagged_name == Builtin_Function_Names::LOWER)
       {
         this->inferred_type = Inferred_Type::String;
       }
-      else if (this->name == "UPPER")
+      else if (this->tagged_name == Builtin_Function_Names::UPPER)
       {
         this->inferred_type = Inferred_Type::String;
       }
-      else if (this->name == "SUBSTRING")
+      else if (this->tagged_name == Builtin_Function_Names::SUBSTRING)
       {
         this->inferred_type = Inferred_Type::String;
       }
-      else if (this->name == "COALESCE")
+      else if (this->tagged_name == Builtin_Function_Names::COALESCE)
       {
         // @note João, avaliar se deve retornar tipos diferentes (quando tivermos suporte)
         this->inferred_type = Inferred_Type::String;
       }
-      else if (this->name == "TO_NUMBER")
+      else if (this->tagged_name == Builtin_Function_Names::TO_NUMBER)
       {
         this->inferred_type = Inferred_Type::Number;
       }
-      else if (this->name == "MAX")
+      else if (this->tagged_name == Builtin_Function_Names::MAX)
       {
         this->inferred_type = Inferred_Type::Number;
       }
-      else if (this->name == "MIN")
+      else if (this->tagged_name == Builtin_Function_Names::MIN)
       {
         this->inferred_type = Inferred_Type::Number;
       }
-      else if (this->name == "COUNT")
+      else if (this->tagged_name == Builtin_Function_Names::COUNT)
       {
         this->inferred_type = Inferred_Type::Number;
       }
-      else if (this->name == "SUM")
+      else if (this->tagged_name == Builtin_Function_Names::SUM)
       {
         this->inferred_type = Inferred_Type::Number;
       }
-      else if (this->name == "AVG")
+      else if (this->tagged_name == Builtin_Function_Names::AVG)
       {
         this->inferred_type = Inferred_Type::Number;
       }
-      else if (this->name == "FIRST_VALUE")
+      else if (this->tagged_name == Builtin_Function_Names::FIRST_VALUE)
       {
         // @todo João, avaliar se deve retornar tipos diferentes
         this->inferred_type = Inferred_Type::String;

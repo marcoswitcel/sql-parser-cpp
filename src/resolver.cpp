@@ -91,7 +91,7 @@ std::string Expression_Resolver::resolve(Tabular_Data_Row &data_row)
 
 std::string Function_Call_Expression_Resolver::resolve(Tabular_Data_Row &data_row)
 {
-  if (this->call_expr->name == "CURRENT_DATE")
+  if (this->call_expr->tagged_name == Builtin_Function_Names::CURRENT_DATE)
   {
     std::time_t current_date = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     auto local_time = std::localtime(&current_date);
@@ -100,7 +100,7 @@ std::string Function_Call_Expression_Resolver::resolve(Tabular_Data_Row &data_ro
 
     return ss.str();
   }
-  else if (this->call_expr->name == "LOWER")
+  else if (this->call_expr->tagged_name == Builtin_Function_Names::LOWER)
   {
     auto expr = this->call_expr->argument_list.at(0);
     
@@ -110,7 +110,7 @@ std::string Function_Call_Expression_Resolver::resolve(Tabular_Data_Row &data_ro
     std::transform(value.begin(), value.end(), value.begin(), [](unsigned char c) { return std::tolower(c); });
     return value;
   }
-  else if (this->call_expr->name == "UPPER")
+  else if (this->call_expr->tagged_name == Builtin_Function_Names::UPPER)
   {
     auto expr = this->call_expr->argument_list.at(0);
     
@@ -120,7 +120,7 @@ std::string Function_Call_Expression_Resolver::resolve(Tabular_Data_Row &data_ro
     std::transform(value.begin(), value.end(), value.begin(), [](unsigned char c) { return std::toupper(c); });
     return value;
   }
-  else if (this->call_expr->name == "SUBSTRING")
+  else if (this->call_expr->tagged_name == Builtin_Function_Names::SUBSTRING)
   {
     auto arg0_text = this->call_expr->argument_list.at(0);
     auto arg1_start = this->call_expr->argument_list.at(1);
@@ -169,7 +169,7 @@ std::string Function_Call_Expression_Resolver::resolve(Tabular_Data_Row &data_ro
     
     return "[FUNCTION CALL RETURN]";
   }
-  else if (this->call_expr->name == "COALESCE")
+  else if (this->call_expr->tagged_name == Builtin_Function_Names::COALESCE)
   {
     std::string first_value = "";
     
@@ -186,7 +186,7 @@ std::string Function_Call_Expression_Resolver::resolve(Tabular_Data_Row &data_ro
 
     return first_value;
   }
-  else if (this->call_expr->name == "TO_NUMBER")
+  else if (this->call_expr->tagged_name == Builtin_Function_Names::TO_NUMBER)
   {
     assert(this->call_expr->argument_list.size() <= 2);
     
@@ -274,19 +274,19 @@ struct Binary_Expression_Resolver : Field_Resolver
 
 bool known_function_name_and_argument_list(Function_Call_Expression_Ast_Node* call_expr)
 {
-  if (call_expr->name == "CURRENT_DATE")
+  if (call_expr->tagged_name == Builtin_Function_Names::CURRENT_DATE)
   {
     return call_expr->argument_list.size() == 0;
   }
-  else if (call_expr->name == "LOWER")
+  else if (call_expr->tagged_name == Builtin_Function_Names::LOWER)
   {
     return call_expr->argument_list.size() == 1 && call_expr->argument_list.at(0)->inferred_type == Inferred_Type::String;
   }
-  else if (call_expr->name == "UPPER")
+  else if (call_expr->tagged_name == Builtin_Function_Names::UPPER)
   {
     return call_expr->argument_list.size() == 1 && call_expr->argument_list.at(0)->inferred_type == Inferred_Type::String;
   }
-  else if (call_expr->name == "SUBSTRING")
+  else if (call_expr->tagged_name == Builtin_Function_Names::SUBSTRING)
   {
     if (call_expr->argument_list.size() == 3)
     {
@@ -302,7 +302,7 @@ bool known_function_name_and_argument_list(Function_Call_Expression_Ast_Node* ca
 
     return false;
   }
-  else if (call_expr->name == "COALESCE")
+  else if (call_expr->tagged_name == Builtin_Function_Names::COALESCE)
   {
     auto size = call_expr->argument_list.size();
 
@@ -320,7 +320,7 @@ bool known_function_name_and_argument_list(Function_Call_Expression_Ast_Node* ca
 
     return true;
   }
-  else if (call_expr->name == "TO_NUMBER")
+  else if (call_expr->tagged_name == Builtin_Function_Names::TO_NUMBER)
   {
     if (call_expr->argument_list.size() == 1)
     {
@@ -334,15 +334,15 @@ bool known_function_name_and_argument_list(Function_Call_Expression_Ast_Node* ca
 
     return false;
   }
-  else if (call_expr->name == "MAX")
+  else if (call_expr->tagged_name == Builtin_Function_Names::MAX)
   {
     return call_expr->argument_list.size() == 1 && ast_sub_type_of(call_expr->argument_list.at(0)->type, Ast_Node_Type::Expression_Ast_Node);
   }
-  else if (call_expr->name == "MIN")
+  else if (call_expr->tagged_name == Builtin_Function_Names::MIN)
   {
     return call_expr->argument_list.size() == 1 && ast_sub_type_of(call_expr->argument_list.at(0)->type, Ast_Node_Type::Expression_Ast_Node);
   }
-  else if (call_expr->name == "COUNT")
+  else if (call_expr->tagged_name == Builtin_Function_Names::COUNT)
   {
     if (call_expr->argument_list.size() != 1) return false;
     
@@ -353,16 +353,16 @@ bool known_function_name_and_argument_list(Function_Call_Expression_Ast_Node* ca
       if (ident->ident_name == "*") return true;
     }
   }
-  else if (call_expr->name == "SUM")
+  else if (call_expr->tagged_name == Builtin_Function_Names::SUM)
   {
     // @todo João, implementar suporte a expressões aqui... e nos outros...
     return call_expr->argument_list.size() == 1 && ast_sub_type_of(call_expr->argument_list.at(0)->type, Ast_Node_Type::Expression_Ast_Node);
   }
-  else if (call_expr->name == "AVG")
+  else if (call_expr->tagged_name == Builtin_Function_Names::AVG)
   {
     return call_expr->argument_list.size() == 1 && ast_sub_type_of(call_expr->argument_list.at(0)->type, Ast_Node_Type::Expression_Ast_Node);
   }
-  else if (call_expr->name == "FIRST_VALUE")
+  else if (call_expr->tagged_name == Builtin_Function_Names::FIRST_VALUE)
   {
     return call_expr->argument_list.size() == 1 && call_expr->argument_list.at(0)->type == Ast_Node_Type::Ident_Expression_Ast_Node;
   }
@@ -377,7 +377,7 @@ bool known_function_name_and_argument_list(Function_Call_Expression_Ast_Node* ca
  * @return true 
  * @return false 
  */
-bool is_an_aggregation_funcion(std::string &func_name)
+bool is_an_aggregation_funcion(std::string func_name)
 {
   for (auto i = start_index_of_aggregation_functions; i < functions_builtin_length; i++)
   {
@@ -413,11 +413,11 @@ std::string Field_By_Name_Aggregation_Resolver::resolve(Tabular_Data_Row &groupe
 
 std::string Function_Call_Expression_Aggregation_Resolver::resolve([[maybe_unused]] Tabular_Data_Row &grouped_data, vector<Tabular_Data_Row*> &rows)
 {
-  if (this->call_expr->name == "COUNT")
+  if (this->call_expr->tagged_name == Builtin_Function_Names::COUNT)
   {
     return std::to_string(rows.size());
   }
-  else if (this->call_expr->name == "MAX")
+  else if (this->call_expr->tagged_name == Builtin_Function_Names::MAX)
   {
     auto expr = this->call_expr->argument_list.at(0);
     
@@ -460,7 +460,7 @@ std::string Function_Call_Expression_Aggregation_Resolver::resolve([[maybe_unuse
 
     return std::to_string(max_value);
   }
-  else if (this->call_expr->name == "MIN")
+  else if (this->call_expr->tagged_name == Builtin_Function_Names::MIN)
   {
     auto expr = this->call_expr->argument_list.at(0);
     
@@ -501,7 +501,7 @@ std::string Function_Call_Expression_Aggregation_Resolver::resolve([[maybe_unuse
 
     return std::to_string(min_value);
   }
-  else if (this->call_expr->name == "SUM")
+  else if (this->call_expr->tagged_name == Builtin_Function_Names::SUM)
   {
     auto expr = this->call_expr->argument_list.at(0);
     
@@ -548,7 +548,7 @@ std::string Function_Call_Expression_Aggregation_Resolver::resolve([[maybe_unuse
 
     return std::to_string(sum_value);
   }
-  else if (this->call_expr->name == "AVG")
+  else if (this->call_expr->tagged_name == Builtin_Function_Names::AVG)
   {
     auto expr = this->call_expr->argument_list.at(0);
     
@@ -598,7 +598,7 @@ std::string Function_Call_Expression_Aggregation_Resolver::resolve([[maybe_unuse
     // calcula a média
     return std::to_string(sum_value / rows.size());
   }
-  else if (this->call_expr->name == "FIRST_VALUE")
+  else if (this->call_expr->tagged_name == Builtin_Function_Names::FIRST_VALUE)
   {
     auto expr = this->call_expr->argument_list.at(0);
     
