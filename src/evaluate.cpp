@@ -576,7 +576,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
     assert(column_index > 0);
     // decremente porque recebemos 1 para primeira coluna
     column_index--;
-    assert(column_index < csv.header.size());
+    assert(static_cast<size_t>(column_index)  < csv.header.size());
 
     if (order_expr->dir == Token_Type::Asc)
     {
