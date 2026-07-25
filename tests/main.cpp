@@ -153,6 +153,24 @@ void test_string_tokenizer()
   assert(!parser.error);
 }
 
+void test_keyword_desc_tokenizer()
+{
+  Token token;
+  SQL_Parse_Context parser(" desc ");
+
+  token = parser.eat_token();
+  assert(token.type == Token_Type::Desc);
+  assert(!parser.error);
+
+  parser.set_new_source(" desc ,");
+
+  token = parser.eat_token();
+  assert(token.type == Token_Type::Desc);
+  assert(!parser.error);
+
+  // @todo João, faltam testes com " desc", " desc, " e pode avaliar se não falta mais algo...
+}
+
 void test_parse_describe_01()
 {
   std::string sql = "Describe Iris";
@@ -566,6 +584,8 @@ int main()
   std::cout << "test_replace_char_with..................................OK" << std::endl;
   test_string_tokenizer();
   std::cout << "test_string_tokenizer...................................OK" << std::endl;
+  test_keyword_desc_tokenizer();
+  std::cout << "test_keyword_desc_tokenizer.............................OK" << std::endl;
   test_parse_describe_01();
   std::cout << "test_parse_describe_01..................................OK" << std::endl;
   test_parse_describe_02();

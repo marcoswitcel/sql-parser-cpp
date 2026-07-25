@@ -22,6 +22,8 @@ struct SQL_Parse_Context
 
   SQL_Parse_Context(std::string source);
 
+  void set_new_source(std::string source);
+
   int32_t peek_char();
   int32_t peek_n_char(size_t n);
 

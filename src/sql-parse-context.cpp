@@ -15,6 +15,12 @@ SQL_Parse_Context::SQL_Parse_Context(std::string source)
   this->index = 0;
 }
 
+void SQL_Parse_Context::set_new_source(std::string source)
+{
+  this->source = source;
+  this->index = 0;
+}
+
 int32_t SQL_Parse_Context::peek_char()
 {
   if (this->is_finished()) return END_OF_SOURCE;
