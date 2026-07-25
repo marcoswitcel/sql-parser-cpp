@@ -135,7 +135,7 @@ void test_tokenizer()
 
 void test_string_tokenizer()
 {
-  std::string sql = " 'teste string' ";
+  std::string sql = " 'teste string' 'teste 2', ";
   SQL_Parse_Context parser(sql);
 
   Token token;
@@ -144,7 +144,13 @@ void test_string_tokenizer()
   assert(token.type == Token_Type::String);
   assert(!parser.error);
 
-  // @todo João, continuar testando casos previsos no `try_parse_string`
+  token = parser.eat_token();
+  assert(token.type == Token_Type::String);
+  assert(!parser.error);
+
+  token = parser.eat_token();
+  assert(token.type == Token_Type::Comma);
+  assert(!parser.error);
 }
 
 void test_parse_describe_01()
