@@ -171,6 +171,26 @@ void test_keyword_desc_tokenizer()
   // @todo João, faltam testes com " desc", " desc, " e pode avaliar se não falta mais algo...
 }
 
+void test_try_consume_keyword()
+{
+  std::string identifier = "teste";
+  SQL_Parse_Context parser("");
+  bool success;
+
+  parser.set_new_source(" teste ");
+  parser.skip_whitespace();
+  success = try_consume_keyword(&parser, identifier);
+  assert(success);
+  assert(!parser.error);
+
+  
+  parser.set_new_source(" teste");
+  parser.skip_whitespace();
+  success = try_consume_keyword(&parser, identifier);
+  assert(success);
+  assert(!parser.error);
+}
+
 void test_parse_describe_01()
 {
   std::string sql = "Describe Iris";
@@ -586,6 +606,8 @@ int main()
   std::cout << "test_string_tokenizer...................................OK" << std::endl;
   test_keyword_desc_tokenizer();
   std::cout << "test_keyword_desc_tokenizer.............................OK" << std::endl;
+  test_try_consume_keyword();
+  std::cout << "test_try_consume_keyword................................OK" << std::endl;
   test_parse_describe_01();
   std::cout << "test_parse_describe_01..................................OK" << std::endl;
   test_parse_describe_02();
