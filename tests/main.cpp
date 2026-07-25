@@ -156,19 +156,25 @@ void test_string_tokenizer()
 void test_keyword_desc_tokenizer()
 {
   Token token;
-  SQL_Parse_Context parser(" desc ");
+  SQL_Parse_Context parser("");
 
+
+  parser.set_new_source(" desc ");
   token = parser.eat_token();
   assert(token.type == Token_Type::Desc);
   assert(!parser.error);
 
-  parser.set_new_source(" desc ,");
 
+  parser.set_new_source(" desc");
   token = parser.eat_token();
   assert(token.type == Token_Type::Desc);
   assert(!parser.error);
 
-  // @todo João, faltam testes com " desc", " desc, " e pode avaliar se não falta mais algo...
+  
+  parser.set_new_source(" desc, ");
+  token = parser.eat_token();
+  assert(token.type == Token_Type::Desc);
+  assert(!parser.error);
 }
 
 void test_try_consume_keyword()
