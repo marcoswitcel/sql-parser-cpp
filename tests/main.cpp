@@ -189,6 +189,13 @@ void test_try_consume_keyword()
   success = try_consume_keyword(&parser, identifier);
   assert(success);
   assert(!parser.error);
+
+  
+  parser.set_new_source(" teste,");
+  parser.skip_whitespace();
+  success = try_consume_keyword(&parser, identifier);
+  assert(success);
+  assert(!parser.error);
 }
 
 void test_parse_describe_01()
