@@ -11,7 +11,7 @@
 
 struct Collector_Ast_Node_Visitor : Ast_Node_Visitor
 {
-  // @todo João, provavelmente vou precisar armazenar o ident taggeado com a informação de onde ele veio,
+  // @note João, provavelmente vou precisar armazenar o ident taggeado com a informação de onde ele veio,
   // vou ter que considerar duplicidades, mas acho que num geral só preciso saber de cada ident uma vez por categoria
   // então pode ter o mesmo ident em categorias diferentes, mas não dentro da mesma categoria...
   // Não vi necessidade de fazer o mesmo pro resto, por hora não tem caso de uso, e se tiver, posso fazer com calma...
@@ -98,7 +98,7 @@ struct Collector_Ast_Node_Visitor : Ast_Node_Visitor
       assert(false);
     }
 
-    // @todo João, considerar como incluir o renome de campos como idents aqui.. no futuro vou precisar deles...
+    // @note João, considerar como incluir o renome de campos como idents aqui.. no futuro vou precisar deles...
   }
 
   void visit(Describe_Ast_Node &node)

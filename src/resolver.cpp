@@ -355,7 +355,6 @@ bool known_function_name_and_argument_list(Function_Call_Expression_Ast_Node* ca
   }
   else if (call_expr->tagged_name == Builtin_Function_Names::SUM)
   {
-    // @todo João, implementar suporte a expressões aqui... e nos outros...
     return call_expr->argument_list.size() == 1 && ast_sub_type_of(call_expr->argument_list.at(0)->type, Ast_Node_Type::Expression_Ast_Node);
   }
   else if (call_expr->tagged_name == Builtin_Function_Names::AVG)

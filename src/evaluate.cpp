@@ -539,7 +539,6 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
     // caminho rápido quando não há agregador
     for (CSV_Data_Row &data_row: csv.dataset)
     {
-      // @todo João, é necessário validar se o 'comando' faz sentido de acordo com a estrutura da tabela
       if (hasWhere)
       {
         if (!evaluate_relational_binary_ast_node(select.where->conditions.get(), csv, data_row))
@@ -559,7 +558,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
     }
   }
 
-  // @todo João, essa ideia de alterar o csv de entrada é estranha, vou usar isso nos testes, porém
+  // @note João, essa ideia de alterar o csv de entrada é estranha, vou usar isso nos testes, porém
   // seria interessante pensar em algo melhor para o futuro. E.x: Copia ou receber um csv para gravar as linhas
   csv.header = new_header;
   csv.dataset = new_dataset;

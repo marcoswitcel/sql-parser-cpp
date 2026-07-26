@@ -236,7 +236,7 @@ struct Function_Call_Expression_Ast_Node: Expression_Ast_Node
       }
       else if (this->tagged_name == Builtin_Function_Names::FIRST_VALUE)
       {
-        // @todo João, avaliar se deve retornar tipos diferentes
+        // @note João, avaliar se deve retornar tipos diferentes
         this->inferred_type = Inferred_Type::String;
       }
     }

@@ -54,7 +54,6 @@ struct Ordered_Map
     this->map.clear();
   }
 
-  // @todo João, implementar métodos "remove"
-  // @todo João, melhorar iteração, ocultar a lista...
+  // @note João, melhorar iteração, ocultar a lista... talvez implementar um acessador
 
 };

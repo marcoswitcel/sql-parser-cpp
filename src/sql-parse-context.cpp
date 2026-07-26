@@ -100,13 +100,7 @@ Ast_Node* SQL_Parse_Context::eat_node()
       }
 
       Expression_Ast_Node* expression_node = this->eat_expression_ast_node();
-
-      // @todo joão, pra parsear uma "Expression_Ast_Node" aqui vou precisar implementar um comando peek_token e
-      // refatorar o método `eat_binary_expression_ast_node` para usar o peek_token ao invés de tentar consumir os tokens
-      // @note atualizado: avaliar usar o método peek_token implemetando e talvez não precise refatorar o método `eat_binary_expression_ast_node` ainda
-      // @note atualizado: talvez fosse melhor só fazer o eat_token e reverter se der erro? um mecanismo de revert automático seria melhor que um método peek_n_token?
-      // Pergunto isso porque um peek_n_token apresenta várias complexidades, como, parsear token a token e armazenar num buffer? e se der erro? armazenar em alguma
-      // estrutura? 
+ 
       if (expression_node && (expression_node->type == Ast_Node_Type::Ident_Expression_Ast_Node || expression_node->type == Ast_Node_Type::String_Literal_Expression_Ast_Node || expression_node->type == Ast_Node_Type::Number_Literal_Expression_Ast_Node || expression_node->type == Ast_Node_Type::Binary_Expression_Ast_Node || expression_node->type == Ast_Node_Type::Function_Call_Expression_Ast_Node))
       {
         select->fields.push_back(std::shared_ptr<Expression_Ast_Node>(expression_node));
@@ -1201,7 +1195,6 @@ void try_parse_number(SQL_Parse_Context* parser, Token *token, bool *success)
   *success = true;
 }
 
-// @note João, acho que copiar a `try_parse_string` e trocar o tipo de àspas já resolveria...
 void try_parse_ident(SQL_Parse_Context* parser, Token *token, bool *success)
 {
   const char double_quote = '"';
