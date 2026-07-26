@@ -204,6 +204,58 @@ void test_try_consume_keyword()
   assert(!parser.error);
 }
 
+void test_try_parse_ident()
+{
+  SQL_Parse_Context parser("");
+  Token token;
+  bool success;
+
+  parser.set_new_source(" teste ");
+  parser.skip_whitespace();
+  try_parse_ident(&parser, &token, &success);
+  assert(success);
+  assert(token.type == Token_Type::Ident);
+  assert(!parser.error);
+
+
+  parser.set_new_source(" teste, ");
+  parser.skip_whitespace();
+  try_parse_ident(&parser, &token, &success);
+  assert(success);
+  assert(token.type == Token_Type::Ident);
+  assert(!parser.error);
+
+
+  parser.set_new_source(" teste");
+  parser.skip_whitespace();
+  try_parse_ident(&parser, &token, &success);
+  assert(success);
+  assert(token.type == Token_Type::Ident);
+  assert(!parser.error);
+
+
+  parser.set_new_source(" \"teste\" ");
+  parser.skip_whitespace();
+  try_parse_ident(&parser, &token, &success);
+  assert(success);
+  assert(token.type == Token_Type::Ident);
+  assert(!parser.error);
+
+  parser.set_new_source(" \"teste\", ");
+  parser.skip_whitespace();
+  try_parse_ident(&parser, &token, &success);
+  assert(success);
+  assert(token.type == Token_Type::Ident);
+  assert(!parser.error);
+
+  parser.set_new_source(" \"teste\"");
+  parser.skip_whitespace();
+  try_parse_ident(&parser, &token, &success);
+  assert(success);
+  assert(token.type == Token_Type::Ident);
+  assert(!parser.error);
+}
+
 void test_parse_describe_01()
 {
   std::string sql = "Describe Iris";
@@ -621,6 +673,8 @@ int main()
   std::cout << "test_keyword_desc_tokenizer.............................OK" << std::endl;
   test_try_consume_keyword();
   std::cout << "test_try_consume_keyword................................OK" << std::endl;
+  test_try_parse_ident();
+  std::cout << "test_try_parse_ident....................................OK" << std::endl;
   test_parse_describe_01();
   std::cout << "test_parse_describe_01..................................OK" << std::endl;
   test_parse_describe_02();
