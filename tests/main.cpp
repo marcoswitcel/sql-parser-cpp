@@ -336,6 +336,26 @@ void test_parse_select_01()
   assert(right->right.get()->type == Ast_Node_Type::String_Literal_Expression_Ast_Node);
 }
 
+void test_parse_select_02()
+{
+  SQL_Parse_Context parser("");
+  Ast_Node* node;
+
+  parser.set_new_source("SELECT Series_Title from imdb_top_1000 Where Series_Title like '%Man%' or Series_Title like '%man%' ");
+  node = parser.eat_node();
+  assert(node != NULL);
+  assert(node->type == Ast_Node_Type::Select_Ast_Node);
+
+  // @todo João, implementar a correção pra essa situação e incluir um teste com `run_select_on_csv`
+  parser.set_new_source("SELECT Series_Title from imdb_top_1000 Where like Series_Title '%Man%' or Series_Title like '%man%' ");
+  node = parser.eat_node();
+  assert(node == NULL);
+
+  parser.set_new_source("SELECT Series_Title from imdb_top_1000 Where  Series_Title '%Man%' like or Series_Title like '%man%' ");
+  node = parser.eat_node();
+  assert(node == NULL);
+}
+
 void test_ordered_map_01()
 {
   Ordered_Map<std::string, size_t> map;
@@ -681,6 +701,8 @@ int main()
   std::cout << "test_parse_describe_02..................................OK" << std::endl;
   test_parse_select_01();
   std::cout << "test_parse_select_01....................................OK" << std::endl;
+  test_parse_select_02();
+  std::cout << "test_parse_select_02....................................OK" << std::endl;
   test_ordered_map_01();
   std::cout << "test_ordered_map_01.....................................OK" << std::endl;
   test_value_aggregator_01();
