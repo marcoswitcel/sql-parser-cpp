@@ -19,6 +19,8 @@ void SQL_Parse_Context::set_new_source(std::string source)
 {
   this->source = source;
   this->index = 0;
+  this->error = false;
+  this->error_message = "";
 }
 
 int32_t SQL_Parse_Context::peek_char()
@@ -454,7 +456,7 @@ Expression_Ast_Node* SQL_Parse_Context::eat_expression_ast_node()
 
 /**
  * @brief 
- * @todo joão, a função atual não garante a ordem correta... "a > 2" e "> a 2" funcionam...
+ * @todo joão, a função atual não garante a ordem previne " Series_Title like like like '%Man%' "
  * @return Binary_Expression_Ast_Node* 
  */
 Binary_Expression_Ast_Node* SQL_Parse_Context::eat_binary_expression_ast_node()
@@ -468,6 +470,12 @@ Binary_Expression_Ast_Node* SQL_Parse_Context::eat_binary_expression_ast_node()
     Token token = this->eat_token();
 
     if (found_and_not_consumed_not_keyword && token.type != Token_Type::Like)
+    {
+      this->error = true;
+      return NULL;
+    }
+
+    if ((node->op.size() > 0 && !node->left) || (node->op.size() == 0 && node->right))
     {
       this->error = true;
       return NULL;

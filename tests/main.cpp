@@ -363,11 +363,12 @@ void test_parse_select_02()
   assert(dummy_csv.header.size() == 3);
   assert(dummy_csv.dataset.size() == 2);
 
-  // @todo João, implementar a correção pra essa situação e incluir um teste com `run_select_on_csv`
+  
   parser.set_new_source("SELECT Series_Title from imdb_top_1000 Where like Series_Title '%Man%' or Series_Title like '%man%' ");
   node = parser.eat_node();
   assert(node == NULL);
 
+  
   parser.set_new_source("SELECT Series_Title from imdb_top_1000 Where  Series_Title '%Man%' like or Series_Title like '%man%' ");
   node = parser.eat_node();
   assert(node == NULL);
