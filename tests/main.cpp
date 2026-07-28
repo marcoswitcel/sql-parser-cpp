@@ -341,10 +341,27 @@ void test_parse_select_02()
   SQL_Parse_Context parser("");
   Ast_Node* node;
 
-  parser.set_new_source("SELECT Series_Title from imdb_top_1000 Where Series_Title like '%Man%' or Series_Title like '%man%' ");
+  parser.set_new_source("SELECT * from dummy Where number like '%05%' or number like '%01%' ");
   node = parser.eat_node();
   assert(node != NULL);
   assert(node->type == Ast_Node_Type::Select_Ast_Node);
+
+  CSVData dummy_csv = make_dummy_csv();
+
+  auto select = dynamic_cast<Select_Ast_Node*>(node);
+
+  /**
+   * A função `run_select_on_csv` tem diversos asserts e logs para o console, se
+   * ela não emitiu nenhum log e não disparou o assert, num geral entendesse que
+   * a operação executou corretamente.
+   * 
+   * @note evoluir esses testes no futuro
+   * 
+   */
+  assert(run_select_on_csv(*select, dummy_csv, false));
+
+  assert(dummy_csv.header.size() == 3);
+  assert(dummy_csv.dataset.size() == 2);
 
   // @todo João, implementar a correção pra essa situação e incluir um teste com `run_select_on_csv`
   parser.set_new_source("SELECT Series_Title from imdb_top_1000 Where like Series_Title '%Man%' or Series_Title like '%man%' ");
