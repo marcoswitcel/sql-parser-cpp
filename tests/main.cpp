@@ -616,6 +616,12 @@ void test_run_sql_on_csv02()
 
   assert(dummy_csv.header.size() == 2);
   assert(dummy_csv.dataset.size() == 3);
+  assert(dummy_csv.dataset.at(0).at(0) == "05");
+  assert(dummy_csv.dataset.at(0).at(1) == "1");
+  assert(dummy_csv.dataset.at(1).at(0) == "03");
+  assert(dummy_csv.dataset.at(1).at(1) == "2");
+  assert(dummy_csv.dataset.at(2).at(0) == "01");
+  assert(dummy_csv.dataset.at(2).at(1) == "1");
 }
 
 void test_run_sql_on_csv03()
