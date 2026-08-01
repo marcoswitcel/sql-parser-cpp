@@ -125,3 +125,5 @@ struct Function_Call_Expression_Aggregation_Resolver : Aggregation_Field_Resolve
 
   std::string resolve(Tabular_Data_Row &grouped_data, vector<Tabular_Data_Row*> &rows);
 };
+
+bool known_function_name_and_argument_list(Function_Call_Expression_Ast_Node*);

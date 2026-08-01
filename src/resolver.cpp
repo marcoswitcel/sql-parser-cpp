@@ -237,9 +237,6 @@ bool Function_Call_Expression_Resolver::is_arguments_valid()
   {
     if (auto function_call = Cast_If(Function_Call_Expression_Ast_Node, *argument))
     {
-      // @note mover essas funções pra outra
-      bool known_function_name_and_argument_list(Function_Call_Expression_Ast_Node*);
-
       if (!known_function_name_and_argument_list(function_call)) return false;
 
       Function_Call_Expression_Resolver resolver = Function_Call_Expression_Resolver(this->header, function_call);
