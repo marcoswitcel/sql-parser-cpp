@@ -708,14 +708,14 @@ void test_ast_node_to_string()
 
 void test_ast_node_to_expression()
 {
-  SQL_Parse_Context parser(" SELECT        *  FROM Dummy ");
+  SQL_Parse_Context parser(" SELECT        *  FROM Dummy Order By 1 Asc , 2 Desc, 3 Desc ");
   
   Ast_Node* node = parser.eat_node();
   
   auto select = Cast_If(Select_Ast_Node, *node);
   assert(select);
 
-  assert(select->to_expression() == "Select * From Dummy");
+  assert(select->to_expression() == "Select * From Dummy Order By 1 Asc, 2 Desc, 3 Desc");
 }
 
 /**

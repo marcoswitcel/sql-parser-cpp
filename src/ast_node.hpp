@@ -434,6 +434,18 @@ struct Ordering_Expression_Ast_Node: Expression_Ast_Node
   {
     visitor.visit(*this);
   }
+
+  virtual std::string to_expression()
+  {
+    std::string result = this->expr->to_expression();
+    
+    if (this->dir != Token_Type::None)
+    {
+      result += " " + get_description(this->dir);
+    }
+
+    return result;
+  }
 };
 
 struct Where_Ast_Node: Ast_Node
@@ -515,6 +527,23 @@ struct Order_By_Ast_Node: Ast_Node
   {
     visitor.visit(*this);
   }
+
+  virtual std::string to_expression()
+  {
+    std::string result = "Order By";
+
+    for (size_t i = 0; i < this->orders.size(); i++)
+    {
+      auto &order = this->orders.at(i);
+      result += " " + order->to_expression();
+      if (i + 1 != this->orders.size())
+      {
+        result += ",";
+      }
+    }
+
+    return result;
+  }
 };
 
 
@@ -582,6 +611,12 @@ struct Select_Ast_Node: Ast_Node
     }
     result += " From ";
     result += this->from->to_expression();
+
+    if (this->order_by)
+    {
+      result += " ";
+      result += this->order_by->to_expression();
+    }
 
     return result;
   }  
