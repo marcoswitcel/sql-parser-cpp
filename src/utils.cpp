@@ -100,3 +100,20 @@ std::string replace_char_with(const std::string &original_text, char character, 
 
   return new_string;
 }
+
+/**
+ * @brief retorna o símbolo representado como expressão
+ * @todo João, precisa ser validado se deve considerar outros símbolos além do "espaço"
+ * 
+ * @param symbol_name 
+ * @return std::string 
+ */
+std::string symbol_as_expression(const std::string &symbol_name)
+{
+  if (contains(symbol_name, ' '))
+  {
+    return "\"" + symbol_name + "\"";
+  }
+
+  return symbol_name;
+}

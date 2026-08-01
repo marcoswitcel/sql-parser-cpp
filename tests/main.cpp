@@ -708,15 +708,14 @@ void test_ast_node_to_string()
 
 void test_ast_node_to_expression()
 {
-  SQL_Parse_Context parser("SELECT *  FROM Dummy ");
+  SQL_Parse_Context parser(" SELECT        *  FROM Dummy ");
   
   Ast_Node* node = parser.eat_node();
   
   auto select = Cast_If(Select_Ast_Node, *node);
   assert(select);
 
-  // @todo João, achar uma forma de testar o to_expression
-  // @todo João, a parte "Dummy" está sendo apresentada como "[expression]"
+  assert(select->to_expression() == "Select * From Dummy");
 }
 
 /**

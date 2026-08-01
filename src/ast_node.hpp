@@ -148,9 +148,7 @@ struct Ident_Expression_Ast_Node: Expression_Ast_Node
 
   std::string to_expression() override
   {
-    std::string result = (contains(this->ident_name, ' '))
-      ? "\"" + this->ident_name + "\""
-      : this->ident_name;
+    std::string result = symbol_as_expression(this->ident_name);
     
     if (this->as.size() > 0)
     {
@@ -295,6 +293,11 @@ struct From_Ast_Node: Ast_Node
   {
     visitor.visit(*this);
   }
+
+  std::string to_expression() override
+  {
+    return symbol_as_expression(this->ident_name);
+  }    
 };
 
 struct Literal_Expression_Ast_Node: Expression_Ast_Node
