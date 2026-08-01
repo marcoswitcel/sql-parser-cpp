@@ -694,6 +694,31 @@ void test_builtin_function_definition()
   }
 }
 
+void test_ast_node_to_string()
+{
+  SQL_Parse_Context parser("SELECT *  FROM Dummy ");
+  
+  Ast_Node* node = parser.eat_node();
+  
+  auto select = Cast_If(Select_Ast_Node, *node);
+  assert(select);
+
+  // @todo João, achar uma forma de testar o to_string, tem o `serial_number` que muda
+}
+
+void test_ast_node_to_expression()
+{
+  SQL_Parse_Context parser("SELECT *  FROM Dummy ");
+  
+  Ast_Node* node = parser.eat_node();
+  
+  auto select = Cast_If(Select_Ast_Node, *node);
+  assert(select);
+
+  // @todo João, achar uma forma de testar o to_expression
+  // @todo João, a parte "Dummy" está sendo apresentada como "[expression]"
+}
+
 /**
  * @brief todos os testes são cadastrados aqui
  * 
@@ -745,6 +770,10 @@ int main()
   std::cout << "test_collector_ast_node_visitor.........................OK" << std::endl;
   test_builtin_function_definition();
   std::cout << "test_builtin_function_definition........................OK" << std::endl;
+  test_ast_node_to_string();
+  std::cout << "test_ast_node_to_string.................................OK" << std::endl;
+  test_ast_node_to_expression();
+  std::cout << "test_ast_node_to_expression.............................OK" << std::endl;
   
 
   std::cout << std::endl << "Fim testes" << std::endl;

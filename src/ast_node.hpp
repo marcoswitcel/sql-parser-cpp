@@ -76,9 +76,26 @@ struct Ast_Node
     // std::cout << "destruído" << this->serial_number << std::endl;
   }
 
+  /**
+   * @brief retorna um representação textual útil para logs e depuração em geral
+   * @note João, considerar implementar alguma função por template ou macro para auxiliar no print de depuração padronizado
+   * 
+   * @return std::string 
+   */
   virtual std::string to_string() = 0;
+
+  /**
+   * @brief permite o uso de uma instância de `Ast_Node_Visitor`
+   * 
+   * @param visitor 
+   */
   virtual void accept(Ast_Node_Visitor &visitor) = 0;
 
+  /**
+   * @brief retorna a representação textual SQL canônica
+   * 
+   * @return std::string 
+   */
   virtual std::string to_expression()
   {
     return "[expression]";
