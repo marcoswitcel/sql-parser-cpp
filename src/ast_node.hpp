@@ -153,7 +153,7 @@ struct Ident_Expression_Ast_Node: Expression_Ast_Node
     if (this->as.size() > 0)
     {
       // @note João, mover isso pra dentro da classe Expression_Ast_Node
-      result += " as " + this->as;
+      result += " As " + this->as;
     }
 
     return result;

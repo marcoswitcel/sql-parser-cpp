@@ -708,14 +708,28 @@ void test_ast_node_to_string()
 
 void test_ast_node_to_expression()
 {
-  SQL_Parse_Context parser(" SELECT        *  FROM Dummy Order By 1 Asc , 2 Desc, 3 Desc ");
+  SQL_Parse_Context parser("");
+  Ast_Node* node = NULL;
+  Select_Ast_Node *select = NULL;
   
-  Ast_Node* node = parser.eat_node();
+  parser.set_new_source("SELECT        *  FROM Dummy Order By 1 Asc , 2 Desc, 3 Desc ");
+  node = parser.eat_node();
   
-  auto select = Cast_If(Select_Ast_Node, *node);
+  select = Cast_If(Select_Ast_Node, *node);
   assert(select);
 
   assert(select->to_expression() == "Select * From Dummy Order By 1 Asc, 2 Desc, 3 Desc");
+
+  parser.set_new_source("SELECT  Field_1 AS \"First_Field\", COALESCE( UPPER( SUBSTRING(Field_2, 0)), 'Default' )  FROM Dummy Order By 1 Asc , 2 Desc, 3 Desc ");
+  node = parser.eat_node();
+  
+  select = Cast_If(Select_Ast_Node, *node);
+  assert(select);
+
+  // std::cout << select->to_expression() << std::endl;
+  assert(select->to_expression() == "Select Field_1 As First_Field, COALESCE(UPPER(SUBSTRING(Field_2, 0)), 'Default') From Dummy Order By 1 Asc, 2 Desc, 3 Desc");
+
+  // @todo joão, incluir where
 }
 
 /**
