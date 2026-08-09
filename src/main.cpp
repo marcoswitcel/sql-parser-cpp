@@ -5,7 +5,7 @@
 
 #include "./command-line-utils.cpp"
 #include "./utils.cpp"
-#include "./sql-parse-context.cpp"
+#include "./sql_parse_context.cpp"
 #include "./ast_node.hpp"
 #include "./evaluate.cpp"
 

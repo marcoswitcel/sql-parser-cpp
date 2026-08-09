@@ -7,7 +7,7 @@
 #include "../src/aggregator.cpp"
 #include "../src/utils.cpp"
 #include "../src/ast_node.hpp"
-#include "../src/sql-parse-context.cpp"
+#include "../src/sql_parse_context.cpp"
 #include "../src/evaluate.cpp"
 #include "../src/collector_ast_node_visitor.hpp"
 #include "./csv_data_set.cpp"
