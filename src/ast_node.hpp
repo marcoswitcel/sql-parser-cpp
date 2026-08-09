@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "./ast_node_visitor.hpp"
-#include "./builtin-function-definition.hpp"
+#include "./builtin_function_definition.hpp"
 #include "./token.hpp"
 #include "./utils.cpp"
 #include "./trace.hpp"
