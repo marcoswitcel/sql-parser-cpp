@@ -3,7 +3,7 @@
 #include <vector>
 #include <unordered_map>
 
-#include "./command-line-utils.cpp"
+#include "./command_line_utils.cpp"
 #include "./utils.cpp"
 #include "./sql_parse_context.cpp"
 #include "./ast_node.hpp"
