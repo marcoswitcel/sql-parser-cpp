@@ -367,7 +367,7 @@ struct Number_Literal_Expression_Ast_Node: Expression_Ast_Node
 
 struct Binary_Expression_Ast_Node: Expression_Ast_Node
 {
-  // @note João, por hora string mas pode ser um enum no futuro?
+  // @todo João, por hora é uma string mas deveria ser um enum no futuro
   std::string op;
   std::unique_ptr<Expression_Ast_Node> left;
   std::unique_ptr<Expression_Ast_Node> right;
@@ -391,7 +391,14 @@ struct Binary_Expression_Ast_Node: Expression_Ast_Node
 
   std::string to_expression() override
   {
-    return this->left->to_expression() + " || " + this->right->to_expression();
+    std::string op = this->op;
+
+    if (!op.empty())
+    {
+      op[0] = std::toupper(op[0]);
+    }
+
+    return this->left->to_expression() + " " + op + " " + this->right->to_expression();
   }
 
   Inferred_Type infer_type() override
@@ -478,6 +485,15 @@ struct Where_Ast_Node: Ast_Node
   void accept(Ast_Node_Visitor &visitor) override
   {
     visitor.visit(*this);
+  }
+
+  virtual std::string to_expression()
+  {
+    std::string result = "Where ";
+
+    result += this->conditions->to_expression();
+
+    return result;
   }
 };
 
@@ -611,6 +627,12 @@ struct Select_Ast_Node: Ast_Node
     }
     result += " From ";
     result += this->from->to_expression();
+
+    if (this->where)
+    {
+      result += " ";
+      result += this->where->to_expression();
+    }
 
     if (this->order_by)
     {

@@ -726,10 +726,18 @@ void test_ast_node_to_expression()
   select = Cast_If(Select_Ast_Node, *node);
   assert(select);
 
-  // std::cout << select->to_expression() << std::endl;
   assert(select->to_expression() == "Select Field_1 As First_Field, COALESCE(UPPER(SUBSTRING(Field_2, 0)), 'Default') From Dummy Order By 1 Asc, 2 Desc, 3 Desc");
-
-  // @todo joão, incluir where
+  
+  parser.set_new_source("SELECT  Field_1  FROM Dummy Where Field_1 = Field_2 AND Field_1 = Field_2  Order By 1 Asc , 2 Desc, 3 Desc ");
+  node = parser.eat_node();
+  
+  select = Cast_If(Select_Ast_Node, *node);
+  assert(select);
+  
+  assert(select->to_expression() == "Select Field_1 From Dummy Where Field_1 = Field_2 And Field_1 = Field_2 Order By 1 Asc, 2 Desc, 3 Desc");
+  
+  // @todo joão, incluir group by
+  // std::cout << select->to_expression() << std::endl;
 }
 
 /**
