@@ -519,6 +519,23 @@ struct Group_By_Ast_Node: Ast_Node
   {
     visitor.visit(*this);
   }
+
+  virtual std::string to_expression()
+  {
+    std::string result = "Group By";
+
+    for (size_t i = 0; i < this->groups.size(); i++)
+    {
+      auto &group = this->groups.at(i);
+      result += " " + group->to_expression();
+      if (i + 1 != this->groups.size())
+      {
+        result += ",";
+      }
+    }
+
+    return result;
+  }
 };
 
 struct Order_By_Ast_Node: Ast_Node
@@ -632,6 +649,12 @@ struct Select_Ast_Node: Ast_Node
     {
       result += " ";
       result += this->where->to_expression();
+    }
+
+    if (this->group_by)
+    {
+      result += " ";
+      result += this->group_by->to_expression();
     }
 
     if (this->order_by)

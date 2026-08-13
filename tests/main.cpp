@@ -736,8 +736,15 @@ void test_ast_node_to_expression()
   
   assert(select->to_expression() == "Select Field_1 From Dummy Where Field_1 = Field_2 And Field_1 = Field_2 Order By 1 Asc, 2 Desc, 3 Desc");
   
-  // @todo joão, incluir group by
-  // std::cout << select->to_expression() << std::endl;
+  parser.set_new_source("Select Field_1 ,   Field_2 , COUNT( * ) From Dummy Group By Field_1 , Field_2 ");
+  node = parser.eat_node();
+  
+  select = Cast_If(Select_Ast_Node, *node);
+  assert(select);
+  
+  assert(select->to_expression() == "Select Field_1, Field_2, COUNT(*) From Dummy Group By Field_1, Field_2");
+
+  // @todo João, está dando segfault se remove a vírgula após Field_2, deveria só retornar null... outra coisa, o group by não está funcionando em conjunto com o order by
 }
 
 /**
