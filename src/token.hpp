@@ -21,6 +21,7 @@ enum class Token_Type {
   Open_Parenthesis,
   Close_Parenthesis,
   Where,
+  Having,
   Greater_Than,
   Lower_Than,
   And,

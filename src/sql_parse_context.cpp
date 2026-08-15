@@ -621,6 +621,7 @@ Parse_Function terminals[] = {
   try_parse_select,
   try_parse_from,
   try_parse_where,
+  try_parse_having,
   try_parse_asterisk,
   try_parse_equals,
   try_parse_not_equals,
@@ -906,6 +907,21 @@ void try_parse_where(SQL_Parse_Context* parser, Token *token, bool *success)
   if (is_consumed)
   {
     token->type = Token_Type::Where;
+    *success = true;
+    return;
+  }
+  
+  token->type = Token_Type::None;
+  *success = false;
+}
+
+void try_parse_having(SQL_Parse_Context* parser, Token *token, bool *success)
+{
+  bool is_consumed = try_consume_keyword(parser, "having"); 
+  
+  if (is_consumed)
+  {
+    token->type = Token_Type::Having;
     *success = true;
     return;
   }

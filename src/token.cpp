@@ -37,6 +37,7 @@ std::string get_description(Token_Type &token_type)
     case Token_Type::Number: return "Number";
     case Token_Type::Ident: return "Ident";
     case Token_Type::Where: return "Where";
+    case Token_Type::Having: return "Having";
   }
 
   assert(false);
