@@ -150,8 +150,14 @@ Ast_Node* SQL_Parse_Context::eat_node()
                 {
                   token = this->eat_token();
 
-                  if (token.type == Token_Type::Ident && !expect_comma)
+                  if (token.type == Token_Type::Ident)
                   {
+                    if (expect_comma)
+                    {
+                      this->report_error("Token inválido depois no Group By: " + get_description(token.type));
+                      return NULL;  
+                    }
+
                     auto ident_name = new Ident_Expression_Ast_Node();
                     ident_name->ident_name =  static_cast<Ident_Token*>(token.data)->ident;
 
@@ -163,10 +169,15 @@ Ast_Node* SQL_Parse_Context::eat_node()
                   {
                     expect_comma = false;
                   }
-                  else
+                  else if (!expect_comma)
                   {
                     this->report_error("Token inválido depois no Group By: " + get_description(token.type));
                     return NULL;
+                  }
+                  else // expect_comma = true
+                  {
+                    this->skip_whitespace();
+                    break;
                   }
 
                   this->skip_whitespace();

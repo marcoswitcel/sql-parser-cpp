@@ -650,6 +650,8 @@ void test_run_sql_on_csv03()
   assert(dummy_csv.dataset.at(0).at(1) == "1");
 }
 
+// @todo joão, falta checar group by com order by e num geral o order by não foi testado, avaliar se faço um teste só pra ele...
+
 void test_collector_ast_node_visitor()
 {
   SQL_Parse_Context parser("SELECT Id, Name, 'valor fixo' As \"Ident With Spaces\"  FROM Dummy Where Id > 50");
@@ -747,7 +749,14 @@ void test_ast_node_to_expression()
   
   assert(select->to_expression() == "Select Field_1, Field_2, COUNT(*) From Dummy Group By Field_1, Field_2");
 
-  // @todo João o group by não está funcionando em conjunto com o order by
+  parser.set_new_source("Select Field_1 ,   Field_2 , COUNT( * ) From Dummy Group By Field_1 , Field_2   Order By 1 Asc , 2 Desc, 3 Desc ");
+  node = parser.eat_node();
+  
+  assert(node);
+  select = Cast_If(Select_Ast_Node, *node);
+  assert(select);
+  
+  assert(select->to_expression() == "Select Field_1, Field_2, COUNT(*) From Dummy Group By Field_1, Field_2 Order By 1 Asc, 2 Desc, 3 Desc");
 }
 
 /**
