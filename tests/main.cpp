@@ -757,6 +757,15 @@ void test_ast_node_to_expression()
   assert(select);
   
   assert(select->to_expression() == "Select Field_1, Field_2, COUNT(*) From Dummy Group By Field_1, Field_2 Order By 1 Asc, 2 Desc, 3 Desc");
+
+  parser.set_new_source("Select Field_1 ,   Field_2 , COUNT( * ) From Dummy Where Field_1 = 1  and Field_2    =    'teste' Group By Field_1 , Field_2    Order By 1 Asc , 2 Desc, 3 Desc ");
+  node = parser.eat_node();
+  
+  assert(node);
+  select = Cast_If(Select_Ast_Node, *node);
+  assert(select);
+  
+  assert(select->to_expression() == "Select Field_1, Field_2, COUNT(*) From Dummy Where Field_1 = 1 And Field_2 = 'teste' Group By Field_1, Field_2 Order By 1 Asc, 2 Desc, 3 Desc");
 }
 
 /**
