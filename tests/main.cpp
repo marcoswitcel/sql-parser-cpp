@@ -654,7 +654,7 @@ void test_run_sql_on_csv03()
 
 void test_collector_ast_node_visitor()
 {
-  SQL_Parse_Context parser("SELECT Id, Name, 'valor fixo' As \"Ident With Spaces\"  FROM Dummy Where Id > 50 Group By Id Order By Id Asc ");
+  SQL_Parse_Context parser("SELECT \"Id\", Name, 'valor fixo' As \"Ident With Spaces\"  FROM Dummy Where Id > 50 Group By Id Order By 1 Asc, 2 Asc ");
   
   Ast_Node* node = parser.eat_node();
   
@@ -667,8 +667,8 @@ void test_collector_ast_node_visitor()
 
   assert(collector.froms.size() == 1);
   // @note João, por hora os símbolos são contados por menção, e o comando "as" não gera símbolo... ambas as situações podem precisar ser revisadas
-  assert(collector.idents.size() == 5);
-  assert(collector.numbers.size() == 1);
+  assert(collector.idents.size() == 4);
+  assert(collector.numbers.size() == 3);
   assert(collector.strings.size() == 1);
 }
 
