@@ -707,7 +707,10 @@ void test_ast_node_to_string()
   auto select = Cast_If(Select_Ast_Node, *node);
   assert(select);
 
-  // @todo João, achar uma forma de testar o to_string, tem o `serial_number` que muda
+  // @todo João, achar uma forma de testar o to_string, tem o `serial_number` que muda.
+  // Rescrever o to_string de todos os nós de um forma mais legível e completa... pensei em usar macros e 
+  // incluir opção de formatar e printar serial fixo... ou fazer o serial resetar em cada teste... o que é mais simples...
+  //std::cout << select->to_string() << std::endl;
 }
 
 void test_ast_node_to_expression()
