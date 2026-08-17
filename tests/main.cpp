@@ -666,7 +666,8 @@ void test_collector_ast_node_visitor()
   select->accept(collector);
 
   assert(collector.froms.size() == 1);
-  // @note João, por hora os símbolos são contados por menção, e o comando "as" não gera símbolo... ambas as situações podem precisar ser revisadas
+  // @note João, por hora os símbolos são contados por menção, e o comando "as" não gera símbolo... ambas as situações podem precisar ser revisadas.
+  // O from também poderia gerar um ident, embora num geral não seja muito útil, tecnicamente é um ident... Hoje fica separado no froms
   assert(collector.idents.size() == 4);
   assert(collector.numbers.size() == 3);
   assert(collector.strings.size() == 1);
