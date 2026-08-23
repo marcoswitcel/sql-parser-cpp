@@ -700,17 +700,30 @@ void test_builtin_function_definition()
 
 void test_ast_node_to_string()
 {
-  SQL_Parse_Context parser("SELECT *  FROM Dummy ");
+  Ast_Node::serial_counter = 0;
+
+  SQL_Parse_Context parser("");
+  Ast_Node* node = NULL;
+
+  parser.set_new_source("SELECT *  FROM Dummy ");
   
-  Ast_Node* node = parser.eat_node();
+  node = parser.eat_node();
   
   auto select = Cast_If(Select_Ast_Node, *node);
   assert(select);
 
+
+  parser.set_new_source("Describe Dummy ");
+  
+  node = parser.eat_node();
+  
+  auto describe = Cast_If(Describe_Ast_Node, *node);
+  assert(describe);
+
   // @todo João, achar uma forma de testar o to_string, tem o `serial_number` que muda.
   // Rescrever o to_string de todos os nós de um forma mais legível e completa... pensei em usar macros e 
   // incluir opção de formatar e printar serial fixo... ou fazer o serial resetar em cada teste... o que é mais simples...
-  //std::cout << select->to_string() << std::endl;
+  assert(describe->to_string() == "Describe_Ast_Node { serial: 4, ident_name: \"Dummy\" }");
 }
 
 void test_ast_node_to_expression()
