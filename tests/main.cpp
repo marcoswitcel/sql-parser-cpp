@@ -713,6 +713,8 @@ void test_ast_node_to_string()
   assert(select);
 
 
+  Ast_Node::serial_counter = 0;
+
   parser.set_new_source("Describe Dummy ");
   
   node = parser.eat_node();
@@ -723,7 +725,7 @@ void test_ast_node_to_string()
   // @todo João, achar uma forma de testar o to_string, tem o `serial_number` que muda.
   // Rescrever o to_string de todos os nós de um forma mais legível e completa... pensei em usar macros e 
   // incluir opção de formatar e printar serial fixo... ou fazer o serial resetar em cada teste... o que é mais simples...
-  assert(describe->to_string() == "Describe_Ast_Node { serial: 4, ident_name: \"Dummy\" }");
+  assert(describe->to_string() == "Describe_Ast_Node { serial: 1, ident_name: \"Dummy\" }");
 }
 
 void test_ast_node_to_expression()
