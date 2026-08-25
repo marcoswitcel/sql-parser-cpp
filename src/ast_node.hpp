@@ -13,6 +13,11 @@
 #include "./utils.cpp"
 #include "./trace.hpp"
 
+#define Ast_Node_To_String_Start(TYPE) std::string ast_node_to_string_builder = std::string(#TYPE) + " { serial: " + std::to_string(this->serial_number);
+#define Ast_Node_To_String_Add_String_Field(FIELD_NAME, VALUE) ast_node_to_string_builder += std::string(", ") + #FIELD_NAME + ": \"" + VALUE + "\"";
+#define Ast_Node_To_String_End() ast_node_to_string_builder += " }";
+#define Ast_Node_To_String_Get_Result() (ast_node_to_string_builder);
+
 enum class Inferred_Type
 {
   Not_Inferred,
@@ -683,11 +688,11 @@ struct Describe_Ast_Node: Ast_Node
 
   std::string to_string() override
   {
-    std::string desc = "Describe_Ast_Node { serial: ";
-    desc += std::to_string(this->serial_number);
-    desc += ", ident_name: \"" + this->ident_name->ident_name +  "\" }";
+    Ast_Node_To_String_Start(Describe_Ast_Node);
+    Ast_Node_To_String_Add_String_Field(ident_name, this->ident_name->ident_name);
+    Ast_Node_To_String_End();
 
-    return desc;
+    return  Ast_Node_To_String_Get_Result();
   }
 
   std::string to_expression() override
