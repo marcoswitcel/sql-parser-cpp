@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <sstream>
 #include <vector>
 #include <cstdint>
 #include <assert.h>
@@ -13,10 +14,11 @@
 #include "./utils.cpp"
 #include "./trace.hpp"
 
-#define Ast_Node_To_String_Start(TYPE) std::string ast_node_to_string_builder = std::string(#TYPE) + " { serial: " + std::to_string(this->serial_number);
-#define Ast_Node_To_String_Add_String_Field(FIELD_NAME, VALUE) ast_node_to_string_builder += std::string(", ") + #FIELD_NAME + ": \"" + VALUE + "\"";
-#define Ast_Node_To_String_End() ast_node_to_string_builder += " }";
-#define Ast_Node_To_String_Get_Result() (ast_node_to_string_builder);
+#define Ast_Node_To_String_Start(TYPE) std::ostringstream private_builder; private_builder << #TYPE " { serial: " << this->serial_number;
+#define Ast_Node_To_String_Add_String_Field(FIELD_NAME, VALUE) private_builder << ", " #FIELD_NAME ": \"" << (VALUE) << "\"";
+#define Ast_Node_To_String_Add_Field(FIELD_NAME, VALUE) private_builder << ", " #FIELD_NAME ": " << (VALUE);
+#define Ast_Node_To_String_End() private_builder << " }";
+#define Ast_Node_To_String_Get_Result() (private_builder.str());
 
 enum class Inferred_Type
 {
@@ -287,11 +289,11 @@ struct From_Ast_Node: Ast_Node
 
   std::string to_string() override
   {
-    std::string desc = "From_Ast_Node { serial: ";
-    desc += std::to_string(this->serial_number);
-    desc += ", ident_name: \"" + this->ident_name +  "\" }";
+    Ast_Node_To_String_Start(From_Ast_Node);
+    Ast_Node_To_String_Add_String_Field(ident_name, this->ident_name);
+    Ast_Node_To_String_End();
 
-    return desc;
+    return Ast_Node_To_String_Get_Result();
   }
 
   void accept(Ast_Node_Visitor &visitor) override
@@ -322,11 +324,11 @@ struct String_Literal_Expression_Ast_Node: Expression_Ast_Node
 
   std::string to_string() override
   {
-    std::string desc = "String_Literal_Expression_Ast_Node { serial: ";
-    desc += std::to_string(this->serial_number);
-    desc += ", value: \"" + this->value +  "\" }";
+    Ast_Node_To_String_Start(String_Literal_Expression_Ast_Node);
+    Ast_Node_To_String_Add_String_Field(value, this->value);
+    Ast_Node_To_String_End();
 
-    return desc;
+    return Ast_Node_To_String_Get_Result();
   }
 
   std::string to_expression() override
@@ -352,11 +354,11 @@ struct Number_Literal_Expression_Ast_Node: Expression_Ast_Node
 
   std::string to_string() override
   {
-    std::string desc = "Number_Literal_Expression_Ast_Node { serial: ";
-    desc += std::to_string(this->serial_number);
-    desc += ", value: " + std::to_string(this->value) +  " }";
+    Ast_Node_To_String_Start(Number_Literal_Expression_Ast_Node);
+    Ast_Node_To_String_Add_Field(value, this->value);
+    Ast_Node_To_String_End();
 
-    return desc;
+    return Ast_Node_To_String_Get_Result();
   }
 
   std::string to_expression() override
@@ -692,7 +694,7 @@ struct Describe_Ast_Node: Ast_Node
     Ast_Node_To_String_Add_String_Field(ident_name, this->ident_name->ident_name);
     Ast_Node_To_String_End();
 
-    return  Ast_Node_To_String_Get_Result();
+    return Ast_Node_To_String_Get_Result();
   }
 
   std::string to_expression() override

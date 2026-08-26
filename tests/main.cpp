@@ -726,6 +726,20 @@ void test_ast_node_to_string()
   // Rescrever o to_string de todos os nós de um forma mais legível e completa... pensei em usar macros e 
   // incluir opção de formatar e printar serial fixo... ou fazer o serial resetar em cada teste... o que é mais simples...
   assert(describe->to_string() == "Describe_Ast_Node { serial: 1, ident_name: \"Dummy\" }");
+
+  Ast_Node::serial_counter = 0;
+
+  String_Literal_Expression_Ast_Node string_literal = String_Literal_Expression_Ast_Node();
+  string_literal.value = "teste";
+
+  assert(string_literal.to_string() == "String_Literal_Expression_Ast_Node { serial: 1, value: \"teste\" }");
+
+  Ast_Node::serial_counter = 0;
+
+  Number_Literal_Expression_Ast_Node number_literal = Number_Literal_Expression_Ast_Node();
+  number_literal.value = 60;
+
+  assert(number_literal.to_string() == "Number_Literal_Expression_Ast_Node { serial: 1, value: 60 }");
 }
 
 void test_ast_node_to_expression()
