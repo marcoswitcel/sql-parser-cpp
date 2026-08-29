@@ -15,6 +15,7 @@
 #include "./trace.hpp"
 
 #define Ast_Node_To_String_Start(TYPE) std::ostringstream private_builder; private_builder << #TYPE " { serial: " << this->serial_number;
+#define Ast_Node_To_String_As_Field() if (!this->as.empty()) private_builder << ", as: \"" << this->as <<  "\"";
 #define Ast_Node_To_String_Add_String_Field(FIELD_NAME, VALUE) private_builder << ", " #FIELD_NAME ": \"" << (VALUE) << "\"";
 #define Ast_Node_To_String_Add_Field(FIELD_NAME, VALUE) private_builder << ", " #FIELD_NAME ": " << (VALUE);
 #define Ast_Node_To_String_End() private_builder << " }";
@@ -184,13 +185,12 @@ struct Function_Call_Expression_Ast_Node: Expression_Ast_Node
   std::string to_string() override
   {
     // @todo João, falta por a lista de argumentos aqui
-    std::string desc = "Function_Call_Expression_Ast_Node { serial: ";
-    desc += std::to_string(this->serial_number);
-    desc += ", name: \"" + this->name + "\"";
-    if (!this->as.empty()) desc += ", as: \"" + this->as +  "\"";
-    desc += " }";
+    Ast_Node_To_String_Start(Function_Call_Expression_Ast_Node);
+    Ast_Node_To_String_As_Field();
+    Ast_Node_To_String_Add_String_Field(name, this->name);
+    Ast_Node_To_String_End();
 
-    return desc;
+    return Ast_Node_To_String_Get_Result();
   }
 
   std::string to_expression() override
