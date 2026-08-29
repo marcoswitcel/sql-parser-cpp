@@ -18,6 +18,20 @@
 #define Ast_Node_To_String_As_Field() if (!this->as.empty()) private_builder << ", as: \"" << this->as <<  "\"";
 #define Ast_Node_To_String_Add_String_Field(FIELD_NAME, VALUE) private_builder << ", " #FIELD_NAME ": \"" << (VALUE) << "\"";
 #define Ast_Node_To_String_Add_Field(FIELD_NAME, VALUE) private_builder << ", " #FIELD_NAME ": " << (VALUE);
+
+#define Ast_Node_To_String_List_Field(FIELD_NAME, EXPRESSION) \
+  private_builder << ", " #FIELD_NAME ": [";                  \
+  for (size_t i = 0; i < (this->FIELD_NAME).size(); i++)      \
+  {                                                           \
+    if (i > 0)                                                \
+    {                                                         \
+      private_builder << ", ";                                \
+    }                                                         \
+    auto &it = (this->FIELD_NAME).at(i);                      \
+    private_builder << (EXPRESSION);                          \
+  }                                                           \
+  private_builder << "]";
+
 #define Ast_Node_To_String_End() private_builder << " }";
 #define Ast_Node_To_String_Get_Result() (private_builder.str());
 
@@ -189,6 +203,7 @@ struct Function_Call_Expression_Ast_Node: Expression_Ast_Node
     Ast_Node_To_String_As_Field();
     Ast_Node_To_String_Add_String_Field(name, this->name);
     Ast_Node_To_String_Add_Field(tagged_name, ::to_string(this->tagged_name));
+    Ast_Node_To_String_List_Field(argument_list, it->to_string());
     Ast_Node_To_String_End();
 
     return Ast_Node_To_String_Get_Result();
