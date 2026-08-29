@@ -18,6 +18,7 @@
 #define Ast_Node_To_String_As_Field() if (!this->as.empty()) private_builder << ", as: \"" << this->as <<  "\"";
 #define Ast_Node_To_String_Add_String_Field(FIELD_NAME, VALUE) private_builder << ", " #FIELD_NAME ": \"" << (VALUE) << "\"";
 #define Ast_Node_To_String_Add_Field(FIELD_NAME, VALUE) private_builder << ", " #FIELD_NAME ": " << (VALUE);
+#define Ast_Node_To_String_Add_Nullable_Field(FIELD_NAME, EXPRESSION) private_builder << ", " #FIELD_NAME ": " << ((this->FIELD_NAME) ? (EXPRESSION) : "Null");
 
 #define Ast_Node_To_String_List_Field(FIELD_NAME, EXPRESSION) \
   private_builder << ", " #FIELD_NAME ": [";                  \
@@ -198,7 +199,6 @@ struct Function_Call_Expression_Ast_Node: Expression_Ast_Node
 
   std::string to_string() override
   {
-    // @todo João, falta por a lista de argumentos aqui
     Ast_Node_To_String_Start(Function_Call_Expression_Ast_Node);
     Ast_Node_To_String_As_Field();
     Ast_Node_To_String_Add_String_Field(name, this->name);
@@ -400,14 +400,14 @@ struct Binary_Expression_Ast_Node: Expression_Ast_Node
 
   std::string to_string() override
   {
-    std::string desc = "Binary_Expression_Ast_Node { serial: ";
-    desc += std::to_string(this->serial_number);
-    desc += ", op: '" + this->op + "'";
-    desc += ", left: " + ((this->left.get()) ? this->left->to_string() : "NULL");
-    desc += ", right: " + ((this->right.get()) ? this->right->to_string() : "NULL");
-    desc += " }";
+    Ast_Node_To_String_Start(Binary_Expression_Ast_Node);
+    Ast_Node_To_String_As_Field();
+    Ast_Node_To_String_Add_String_Field(op, this->op);
+    Ast_Node_To_String_Add_Nullable_Field(left, this->left->to_string());
+    Ast_Node_To_String_Add_Nullable_Field(right, this->right->to_string());
+    Ast_Node_To_String_End();
 
-    return desc;
+    return Ast_Node_To_String_Get_Result();
   }
 
   std::string to_expression() override
@@ -488,19 +488,11 @@ struct Where_Ast_Node: Ast_Node
 
   std::string to_string() override
   {
-    std::string desc = "Where_Ast_Node { serial: ";
-    desc += std::to_string(this->serial_number);
+    Ast_Node_To_String_Start(Where_Ast_Node);
+    Ast_Node_To_String_Add_Nullable_Field(conditions, this->conditions->to_string());
+    Ast_Node_To_String_End();
 
-    desc += ", conditions: ";
-    {
-      if (this->conditions.get())
-      {
-        desc += this->conditions->to_string();
-      }
-    }
-    desc += " }";
-
-    return desc;
+    return Ast_Node_To_String_Get_Result();
   }
 
   void accept(Ast_Node_Visitor &visitor) override
@@ -529,11 +521,11 @@ struct Group_By_Ast_Node: Ast_Node
 
   std::string to_string() override
   {
-    std::string desc = "Group_By_Ast_Node { serial: ";
-    desc += std::to_string(this->serial_number);
-    desc += ", groups: [] }"; // @todo João, terminar aqui...
+    Ast_Node_To_String_Start(Group_By_Ast_Node);
+    Ast_Node_To_String_List_Field(groups, it->to_string());
+    Ast_Node_To_String_End();
 
-    return desc;
+    return Ast_Node_To_String_Get_Result();
   }
 
   void accept(Ast_Node_Visitor &visitor) override
@@ -570,11 +562,11 @@ struct Order_By_Ast_Node: Ast_Node
 
   std::string to_string() override
   {
-    std::string desc = "Order_By_Ast_Node { serial: ";
-    desc += std::to_string(this->serial_number);
-    desc += ", orders: [] }"; // @todo João, terminar aqui...
+    Ast_Node_To_String_Start(Order_By_Ast_Node);
+    Ast_Node_To_String_List_Field(orders, it->to_string());
+    Ast_Node_To_String_End();
 
-    return desc;
+    return Ast_Node_To_String_Get_Result();
   }
 
   void accept(Ast_Node_Visitor &visitor) override
