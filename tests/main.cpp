@@ -755,7 +755,7 @@ void test_ast_node_to_string()
   func_call.as = "upper";
   func_call.tagged_name = Builtin_Function_Names::UPPER;
 
-  assert(func_call.to_string() == "Function_Call_Expression_Ast_Node { serial: 1, as: \"upper\", name: \"UPPER\" }");
+  assert(func_call.to_string() == "Function_Call_Expression_Ast_Node { serial: 1, as: \"upper\", name: \"UPPER\", tagged_name: UPPER }");
 }
 
 void test_ast_node_to_expression()

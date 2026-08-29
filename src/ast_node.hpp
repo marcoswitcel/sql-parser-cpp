@@ -188,6 +188,7 @@ struct Function_Call_Expression_Ast_Node: Expression_Ast_Node
     Ast_Node_To_String_Start(Function_Call_Expression_Ast_Node);
     Ast_Node_To_String_As_Field();
     Ast_Node_To_String_Add_String_Field(name, this->name);
+    Ast_Node_To_String_Add_Field(tagged_name, ::to_string(this->tagged_name));
     Ast_Node_To_String_End();
 
     return Ast_Node_To_String_Get_Result();
