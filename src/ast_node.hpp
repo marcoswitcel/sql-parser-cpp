@@ -144,13 +144,11 @@ struct Ident_Expression_Ast_Node: Expression_Ast_Node
 
   std::string to_string() override
   {
-    std::string desc = "Ident_Expression_Ast_Node { serial: ";
-    desc += std::to_string(this->serial_number);
-    desc += ", ident_name: \"" + this->ident_name + "\"";
-    if (!this->as.empty()) desc += ", as: \"" + this->as +  "\"";
-    desc += " }";
+    Ast_Node_To_String_Start(Ident_Expression_Ast_Node);
+    Ast_Node_To_String_Add_String_Field(ident_name, this->ident_name);
+    Ast_Node_To_String_End();
 
-    return desc;
+    return Ast_Node_To_String_Get_Result();
   }
 
   std::string to_expression() override

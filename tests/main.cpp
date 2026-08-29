@@ -740,6 +740,13 @@ void test_ast_node_to_string()
   number_literal.value = 60;
 
   assert(number_literal.to_string() == "Number_Literal_Expression_Ast_Node { serial: 1, value: 60 }");
+
+  Ast_Node::serial_counter = 0;
+
+  Ident_Expression_Ast_Node ident_name = Ident_Expression_Ast_Node();
+  ident_name.ident_name = "teste";
+
+  assert(ident_name.to_string() == "Ident_Expression_Ast_Node { serial: 1, ident_name: \"teste\" }");
 }
 
 void test_ast_node_to_expression()
