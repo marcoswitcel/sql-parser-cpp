@@ -450,12 +450,12 @@ struct Ordering_Expression_Ast_Node: Expression_Ast_Node
 
   std::string to_string() override
   {
-    std::string desc = "Ordering_Expression_Ast_Node { serial: ";
-    desc += std::to_string(this->serial_number);
-    desc += ", expr: " + ((this->expr.get()) ? this->expr->to_string() : "NULL");
-    desc += " }";
+    Ast_Node_To_String_Start(Ordering_Expression_Ast_Node);
+    Ast_Node_To_String_As_Field();
+    Ast_Node_To_String_Add_Nullable_Field(expr, this->expr->to_string());
+    Ast_Node_To_String_End();
 
-    return desc;
+    return Ast_Node_To_String_Get_Result();
   }
 
   void accept(Ast_Node_Visitor &visitor) override
@@ -620,26 +620,15 @@ struct Select_Ast_Node: Ast_Node
 
   std::string to_string() override
   {
-    std::string desc = "Select_Ast_Node { serial: ";
-    desc += std::to_string(this->serial_number);
-    desc += ", fields: [ ";
-    for (size_t i = 0; i < fields.size(); i++)
-    {
-      if (i > 0)
-      {
-        desc += " , ";
-      }
-      auto &field = fields.at(i);
-      desc += field.get()->to_string();
-    }
-    desc += " ], ";
-    desc += "from: ";
-    desc += from.get()->to_string();
-    desc += ", where: ";
-    desc += (this->where.get()) ? this->where->to_string() : "{}";
-    desc += " }";
+    Ast_Node_To_String_Start(Select_Ast_Node);
+    Ast_Node_To_String_List_Field(fields, it->to_string());
+    Ast_Node_To_String_Add_Nullable_Field(from, this->from->to_string());
+    Ast_Node_To_String_Add_Nullable_Field(where, this->where->to_string());
+    Ast_Node_To_String_Add_Nullable_Field(group_by, this->group_by->to_string());
+    Ast_Node_To_String_Add_Nullable_Field(order_by, this->order_by->to_string());
+    Ast_Node_To_String_End();
 
-    return desc;
+    return Ast_Node_To_String_Get_Result();
   }
 
   std::string to_expression() override
