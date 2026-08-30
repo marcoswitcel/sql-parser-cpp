@@ -161,6 +161,7 @@ struct Ident_Expression_Ast_Node: Expression_Ast_Node
   std::string to_string() override
   {
     Ast_Node_To_String_Start(Ident_Expression_Ast_Node);
+    Ast_Node_To_String_As_Field();
     Ast_Node_To_String_Add_String_Field(ident_name, this->ident_name);
     Ast_Node_To_String_End();
 

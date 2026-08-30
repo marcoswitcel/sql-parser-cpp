@@ -705,13 +705,23 @@ void test_ast_node_to_string()
   SQL_Parse_Context parser("");
   Ast_Node* node = NULL;
 
-  parser.set_new_source("SELECT *  FROM Dummy ");
+  parser.set_new_source("SELECT Name as Nome FROM Dummy Where Id = 2 Group By Name Order By 1 ");
   
   node = parser.eat_node();
   
   auto select = Cast_If(Select_Ast_Node, *node);
   assert(select);
 
+  assert(select->to_string() == "Select_Ast_Node { serial: 1,"
+    " fields: [Ident_Expression_Ast_Node { serial: 2, as: \"Nome\", ident_name: \"Name\" }],"
+    " from: From_Ast_Node { serial: 3, ident_name: \"Dummy\" },"
+    " where: Where_Ast_Node { serial: 4, conditions: Binary_Expression_Ast_Node { serial: 5,"
+      " op: \"=\","
+      " left: Ident_Expression_Ast_Node { serial: 6, ident_name: \"Id\" },"
+      " right: Number_Literal_Expression_Ast_Node { serial: 7, value: 2 } } },"
+    " group_by: Group_By_Ast_Node { serial: 8, groups: [Ident_Expression_Ast_Node { serial: 9, ident_name: \"Name\" }] },"
+    " order_by: Order_By_Ast_Node { serial: 10,"
+      " orders: [Ordering_Expression_Ast_Node { serial: 12, expr: Number_Literal_Expression_Ast_Node { serial: 11, value: 1 } }] } }");
 
   Ast_Node::serial_counter = 0;
 
