@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <string_view>
 #include <sstream>
 #include <vector>
 #include <cstdint>
@@ -387,10 +388,46 @@ struct Number_Literal_Expression_Ast_Node: Expression_Ast_Node
   }
 };
 
+enum class Binary_Operation
+{
+  UNKNOWN,
+  EQUAL,
+  DIFERENT,
+  AND,
+  OR,
+  LOWER_THAN,
+  /**
+   * Symbol: >
+   */
+  GREATE_THAN,
+  LIKE,
+  NOT_LIKE,
+  CONCAT,
+};
+
+constexpr std::string_view to_symbol(Binary_Operation operation)
+{
+  switch (operation)
+  {
+    case Binary_Operation::EQUAL: return "=";
+    case Binary_Operation::DIFERENT: return "<>";
+    case Binary_Operation::AND: return "And";
+    case Binary_Operation::OR: return "Or";
+    case Binary_Operation::LOWER_THAN: return "<";
+    case Binary_Operation::GREATE_THAN: return ">";
+    case Binary_Operation::LIKE: return "Like";
+    case Binary_Operation::NOT_LIKE: return "Not Like";
+    case Binary_Operation::CONCAT: return "||";
+    // default
+    case Binary_Operation::UNKNOWN: return "[UNKNOWN]";
+  }
+
+  return "[UNKNOWN]";
+}
+
 struct Binary_Expression_Ast_Node: Expression_Ast_Node
 {
-  // @todo João, por hora é uma string mas deveria ser um enum no futuro
-  std::string op;
+  Binary_Operation op = Binary_Operation::UNKNOWN;
   std::unique_ptr<Expression_Ast_Node> left;
   std::unique_ptr<Expression_Ast_Node> right;
 
@@ -403,7 +440,7 @@ struct Binary_Expression_Ast_Node: Expression_Ast_Node
   {
     Ast_Node_To_String_Start(Binary_Expression_Ast_Node);
     Ast_Node_To_String_As_Field();
-    Ast_Node_To_String_Add_String_Field(op, this->op);
+    Ast_Node_To_String_Add_String_Field(op, to_symbol(this->op));
     Ast_Node_To_String_Add_Nullable_Field(left, this->left->to_string());
     Ast_Node_To_String_Add_Nullable_Field(right, this->right->to_string());
     Ast_Node_To_String_End();
@@ -413,19 +450,14 @@ struct Binary_Expression_Ast_Node: Expression_Ast_Node
 
   std::string to_expression() override
   {
-    std::string op = this->op;
-
-    if (!op.empty())
-    {
-      op[0] = std::toupper(op[0]);
-    }
+    std::string op{to_symbol(this->op)};
 
     return this->left->to_expression() + " " + op + " " + this->right->to_expression();
   }
 
   Inferred_Type infer_type() override
   {
-    if (this->op == "concat")
+    if (this->op == Binary_Operation::CONCAT)
     {
       this->inferred_type = Inferred_Type::String;
     }

@@ -321,17 +321,16 @@ void test_parse_select_01()
   assert(select->where->conditions.get() != NULL);
 
   auto conditions = static_cast<Binary_Expression_Ast_Node*>(select->where->conditions.get());
-  assert(conditions->op == "and");
+  assert(conditions->op == Binary_Operation::AND);
   assert(conditions->left.get()->type == Ast_Node_Type::Binary_Expression_Ast_Node);
   assert(conditions->right.get()->type == Ast_Node_Type::Binary_Expression_Ast_Node);
 
   auto left = static_cast<Binary_Expression_Ast_Node*>(conditions->left.get());
-  assert(left->op == "=");
-  assert(left->left.get()->type == Ast_Node_Type::Ident_Expression_Ast_Node);
+  assert(left->op == Binary_Operation::EQUAL);  assert(left->left.get()->type == Ast_Node_Type::Ident_Expression_Ast_Node);
   assert(left->right.get()->type == Ast_Node_Type::Number_Literal_Expression_Ast_Node);
 
   auto right = static_cast<Binary_Expression_Ast_Node*>(conditions->right.get());
-  assert(right->op == "like");
+  assert(right->op == Binary_Operation::LIKE);
   assert(right->left.get()->type == Ast_Node_Type::Ident_Expression_Ast_Node);
   assert(right->right.get()->type == Ast_Node_Type::String_Literal_Expression_Ast_Node);
 }
