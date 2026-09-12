@@ -42,6 +42,7 @@ enum class Inferred_Type
   Not_Inferred,
   String,
   Number,
+  Boolean,
 };
 
 enum class Ast_Node_Type
@@ -432,6 +433,26 @@ constexpr std::string_view to_symbol(Binary_Operation operation)
   return "[Unknown]";
 }
 
+Inferred_Type get_operation_type(const Binary_Operation &operation)
+{
+  switch (operation)
+  {
+    case Binary_Operation::Equals: return Inferred_Type::Boolean;
+    case Binary_Operation::Diferent: return Inferred_Type::Boolean;
+    case Binary_Operation::And: return Inferred_Type::Boolean;
+    case Binary_Operation::Or: return Inferred_Type::Boolean;
+    case Binary_Operation::Lower_Than: return Inferred_Type::Boolean;
+    case Binary_Operation::Greater_Than: return Inferred_Type::Boolean;
+    case Binary_Operation::Like: return Inferred_Type::Boolean;
+    case Binary_Operation::Not_Like: return Inferred_Type::Boolean;
+    case Binary_Operation::Concat: return Inferred_Type::String;
+    // default
+    case Binary_Operation::Unknown: return Inferred_Type::Not_Inferred;
+  }
+
+  return Inferred_Type::Not_Inferred;
+}
+
 struct Binary_Expression_Ast_Node: Expression_Ast_Node
 {
   Binary_Operation op = Binary_Operation::Unknown;
@@ -464,9 +485,9 @@ struct Binary_Expression_Ast_Node: Expression_Ast_Node
 
   Inferred_Type infer_type() override
   {
-    if (this->op == Binary_Operation::Concat)
+    if (this->inferred_type == Inferred_Type::Not_Inferred && this->op != Binary_Operation::Unknown)
     {
-      this->inferred_type = Inferred_Type::String;
+      this->inferred_type = get_operation_type(this->op);
     }
 
     return this->inferred_type;
