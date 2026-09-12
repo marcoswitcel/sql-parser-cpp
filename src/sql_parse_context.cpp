@@ -446,7 +446,7 @@ Expression_Ast_Node* SQL_Parse_Context::eat_expression_ast_node()
 
     auto bin_exp = new Binary_Expression_Ast_Node();
     bin_exp->left = std::unique_ptr<Expression_Ast_Node>(expression);
-    bin_exp->op = Binary_Operation::CONCAT;
+    bin_exp->op = Binary_Operation::Concat;
     auto bin_exp_right = this->eat_expression_ast_node();
 
     if (bin_exp_right == NULL) return NULL;
@@ -475,7 +475,7 @@ Binary_Expression_Ast_Node* SQL_Parse_Context::eat_binary_expression_ast_node()
   Binary_Expression_Ast_Node* node = new Binary_Expression_Ast_Node();
   
   bool found_and_not_consumed_not_keyword = false;
-  while (!node->left || !node->right || node->op == Binary_Operation::UNKNOWN)
+  while (!node->left || !node->right || node->op == Binary_Operation::Unknown)
   {
     this->skip_whitespace();
     Token token = this->eat_token();
@@ -486,7 +486,7 @@ Binary_Expression_Ast_Node* SQL_Parse_Context::eat_binary_expression_ast_node()
       return NULL;
     }
 
-    if ((node->op != Binary_Operation::UNKNOWN && !node->left) || (node->op == Binary_Operation::UNKNOWN && node->right))
+    if ((node->op != Binary_Operation::Unknown && !node->left) || (node->op == Binary_Operation::Unknown && node->right))
     {
       this->error = true;
       return NULL;
@@ -515,11 +515,11 @@ Binary_Expression_Ast_Node* SQL_Parse_Context::eat_binary_expression_ast_node()
     }
     else if (token.type == Token_Type::Equals)
     {
-      node->op = Binary_Operation::EQUAL;
+      node->op = Binary_Operation::Equals;
     }
     else if (token.type == Token_Type::Not_Equals)
     {
-      node->op = Binary_Operation::DIFERENT;
+      node->op = Binary_Operation::Diferent;
     }
     else if (token.type == Token_Type::Not)
     {
@@ -533,16 +533,16 @@ Binary_Expression_Ast_Node* SQL_Parse_Context::eat_binary_expression_ast_node()
     }
     else if (token.type == Token_Type::Like)
     {
-      node->op = (found_and_not_consumed_not_keyword) ? Binary_Operation::NOT_LIKE : Binary_Operation::LIKE;
+      node->op = (found_and_not_consumed_not_keyword) ? Binary_Operation::Not_Like : Binary_Operation::Like;
       found_and_not_consumed_not_keyword = false;
     }
     else if (token.type == Token_Type::And)
     {
-      node->op = Binary_Operation::AND;
+      node->op = Binary_Operation::And;
     }
     else if (token.type == Token_Type::Or)
     {
-      node->op = Binary_Operation::OR;
+      node->op = Binary_Operation::Or;
     }
     else if (token.type == Token_Type::String)
     {
@@ -586,11 +586,11 @@ Binary_Expression_Ast_Node* SQL_Parse_Context::eat_binary_expression_ast_node()
     }
     else if (token.type == Token_Type::Lower_Than)
     {
-      node->op = Binary_Operation::LOWER_THAN;
+      node->op = Binary_Operation::Lower_Than;
     }
     else if (token.type == Token_Type::Greater_Than)
     {
-      node->op = Binary_Operation::GREATE_THAN;
+      node->op = Binary_Operation::Greater_Than;
     }
     else
     {
@@ -606,7 +606,7 @@ Binary_Expression_Ast_Node* SQL_Parse_Context::eat_binary_expression_ast_node()
   if (token.type == Token_Type::Or)
   {
     Binary_Expression_Ast_Node* new_root_node = new Binary_Expression_Ast_Node();
-    new_root_node->op = Binary_Operation::OR;
+    new_root_node->op = Binary_Operation::Or;
     new_root_node->left = std::unique_ptr<Binary_Expression_Ast_Node>(node);
 
     new_root_node->right = std::unique_ptr<Binary_Expression_Ast_Node>(this->eat_binary_expression_ast_node());
@@ -616,7 +616,7 @@ Binary_Expression_Ast_Node* SQL_Parse_Context::eat_binary_expression_ast_node()
   else if (token.type == Token_Type::And)
   {
     Binary_Expression_Ast_Node* new_root_node = new Binary_Expression_Ast_Node();
-    new_root_node->op = Binary_Operation::AND;
+    new_root_node->op = Binary_Operation::And;
     new_root_node->left = std::unique_ptr<Binary_Expression_Ast_Node>(node);
 
     new_root_node->right = std::unique_ptr<Binary_Expression_Ast_Node>(this->eat_binary_expression_ast_node());

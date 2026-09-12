@@ -390,44 +390,51 @@ struct Number_Literal_Expression_Ast_Node: Expression_Ast_Node
 
 enum class Binary_Operation
 {
-  UNKNOWN,
-  EQUAL,
-  DIFERENT,
-  AND,
-  OR,
-  LOWER_THAN,
-  /**
-   * Symbol: >
-   */
-  GREATE_THAN,
-  LIKE,
-  NOT_LIKE,
-  CONCAT,
+  Unknown,
+  // operações válidas
+  /** Símbolo: = */
+  Equals,
+  /** Símbolo: <> */
+  Diferent,
+  /** Símbolo: And */
+  And,
+  /** Símbolo: Or */
+  Or,
+  /** Símbolo: < */
+  Lower_Than,
+  /** Símbolo: > */
+  Greater_Than,
+  /** Símbolo: Like */
+  Like,
+  /** Símbolo: Not Like */
+  Not_Like,
+  /** Símbolo: || */
+  Concat,
 };
 
 constexpr std::string_view to_symbol(Binary_Operation operation)
 {
   switch (operation)
   {
-    case Binary_Operation::EQUAL: return "=";
-    case Binary_Operation::DIFERENT: return "<>";
-    case Binary_Operation::AND: return "And";
-    case Binary_Operation::OR: return "Or";
-    case Binary_Operation::LOWER_THAN: return "<";
-    case Binary_Operation::GREATE_THAN: return ">";
-    case Binary_Operation::LIKE: return "Like";
-    case Binary_Operation::NOT_LIKE: return "Not Like";
-    case Binary_Operation::CONCAT: return "||";
+    case Binary_Operation::Equals: return "=";
+    case Binary_Operation::Diferent: return "<>";
+    case Binary_Operation::And: return "And";
+    case Binary_Operation::Or: return "Or";
+    case Binary_Operation::Lower_Than: return "<";
+    case Binary_Operation::Greater_Than: return ">";
+    case Binary_Operation::Like: return "Like";
+    case Binary_Operation::Not_Like: return "Not Like";
+    case Binary_Operation::Concat: return "||";
     // default
-    case Binary_Operation::UNKNOWN: return "[UNKNOWN]";
+    case Binary_Operation::Unknown: return "[Unknown]";
   }
 
-  return "[UNKNOWN]";
+  return "[Unknown]";
 }
 
 struct Binary_Expression_Ast_Node: Expression_Ast_Node
 {
-  Binary_Operation op = Binary_Operation::UNKNOWN;
+  Binary_Operation op = Binary_Operation::Unknown;
   std::unique_ptr<Expression_Ast_Node> left;
   std::unique_ptr<Expression_Ast_Node> right;
 
@@ -457,7 +464,7 @@ struct Binary_Expression_Ast_Node: Expression_Ast_Node
 
   Inferred_Type infer_type() override
   {
-    if (this->op == Binary_Operation::CONCAT)
+    if (this->op == Binary_Operation::Concat)
     {
       this->inferred_type = Inferred_Type::String;
     }

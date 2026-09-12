@@ -96,7 +96,7 @@ bool extract_lhs_and_rhs_expressions(
 
 bool evaluate_equals_binary_ast_node(Binary_Expression_Ast_Node* node, CSVData &csv, std::vector<std::string> &data_row)
 {
-  assert(node->op == Binary_Operation::EQUAL || node->op == Binary_Operation::DIFERENT);
+  assert(node->op == Binary_Operation::Equals || node->op == Binary_Operation::Diferent);
 
   std::string lhs = "";
   std::string rhs = "";
@@ -111,7 +111,7 @@ bool evaluate_equals_binary_ast_node(Binary_Expression_Ast_Node* node, CSVData &
 
 float evaluate_compare_binary_ast_node(Binary_Expression_Ast_Node* node, CSVData &csv, std::vector<std::string> &data_row)
 {
-  assert(node->op == Binary_Operation::GREATE_THAN || node->op == Binary_Operation::LOWER_THAN);
+  assert(node->op == Binary_Operation::Greater_Than || node->op == Binary_Operation::Lower_Than);
 
   std::string lhs = "";
   std::string rhs = "";
@@ -131,7 +131,7 @@ bool evaluate_not_equals_binary_ast_node(Binary_Expression_Ast_Node* node, CSVDa
 
 bool evaluate_like_binary_ast_node(Binary_Expression_Ast_Node* node, CSVData &csv, std::vector<std::string> &data_row)
 {
-  assert(node->op == Binary_Operation::LIKE || node->op == Binary_Operation::NOT_LIKE);
+  assert(node->op == Binary_Operation::Like || node->op == Binary_Operation::Not_Like);
 
   std::string lhs = "";
   std::string rhs = "";
@@ -145,36 +145,36 @@ bool evaluate_like_binary_ast_node(Binary_Expression_Ast_Node* node, CSVData &cs
 
 bool evaluate_relational_binary_ast_node(Binary_Expression_Ast_Node* node, CSVData &csv, std::vector<std::string> &data_row)
 {
-  if (node->op == Binary_Operation::EQUAL)
+  if (node->op == Binary_Operation::Equals)
   {
     return evaluate_equals_binary_ast_node(node, csv, data_row);
   }
-  else if (node->op == Binary_Operation::LOWER_THAN)
+  else if (node->op == Binary_Operation::Lower_Than)
   {
     return evaluate_compare_binary_ast_node(node, csv, data_row) < 0;
   }
-  else if (node->op == Binary_Operation::GREATE_THAN)
+  else if (node->op == Binary_Operation::Greater_Than)
   {
     return evaluate_compare_binary_ast_node(node, csv, data_row) > 0;
   }
-  else if (node->op == Binary_Operation::DIFERENT)
+  else if (node->op == Binary_Operation::Diferent)
   {
     return evaluate_not_equals_binary_ast_node(node, csv, data_row);
   }
-  else if (node->op == Binary_Operation::LIKE)
+  else if (node->op == Binary_Operation::Like)
   {
     return evaluate_like_binary_ast_node(node, csv, data_row);
   }
-  else if (node->op == Binary_Operation::NOT_LIKE)
+  else if (node->op == Binary_Operation::Not_Like)
   {
     return !evaluate_like_binary_ast_node(node, csv, data_row);
   }
-  else if (node->op == Binary_Operation::OR)
+  else if (node->op == Binary_Operation::Or)
   {
     return evaluate_relational_binary_ast_node(static_cast<Binary_Expression_Ast_Node *>(node->left.get()), csv, data_row) ||
       evaluate_relational_binary_ast_node(static_cast<Binary_Expression_Ast_Node *>(node->right.get()), csv, data_row);
   }
-  else if (node->op == Binary_Operation::AND)
+  else if (node->op == Binary_Operation::And)
   {
     return evaluate_relational_binary_ast_node(static_cast<Binary_Expression_Ast_Node *>(node->left.get()), csv, data_row) &&
       evaluate_relational_binary_ast_node(static_cast<Binary_Expression_Ast_Node *>(node->right.get()), csv, data_row);
@@ -276,7 +276,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
       }
       field_resolver.push_back(new Number_Literal_Resolver(number->value));
     }
-    else if (field->type == Ast_Node_Type::Binary_Expression_Ast_Node && static_cast<Binary_Expression_Ast_Node*>(field.get())->op == Binary_Operation::CONCAT)
+    else if (field->type == Ast_Node_Type::Binary_Expression_Ast_Node && static_cast<Binary_Expression_Ast_Node*>(field.get())->op == Binary_Operation::Concat)
     {
       auto bin_expr = static_cast<Binary_Expression_Ast_Node*>(field.get());
       if (bin_expr->as.empty())
