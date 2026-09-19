@@ -649,7 +649,33 @@ void test_run_sql_on_csv03()
   assert(dummy_csv.dataset.at(0).at(1) == "1");
 }
 
-// @todo joão, falta checar group by com order by e num geral o order by não foi testado, avaliar se faço um teste só pra ele...
+void test_run_sql_on_csv04()
+{
+  CSVData dummy_csv = make_dummy_csv();
+
+  SQL_Parse_Context parser("SELECT number, COUNT(*) FROM dummy Where number <> '05' Group By number Order By 1 Asc");
+
+  Ast_Node* node = parser.eat_node();
+  assert(node && node->type == Ast_Node_Type::Select_Ast_Node);
+
+  auto select = dynamic_cast<Select_Ast_Node*>(node);
+  /**
+   * A função `run_select_on_csv` tem diversos asserts e logs para o console, se
+   * ela não emitiu nenhum log e não disparou o assert, num geral entendesse que
+   * a operação executou corretamente.
+   * 
+   * @note evoluir esses testes no futuro
+   * 
+   */
+  assert(run_select_on_csv(*select, dummy_csv, false));
+
+  assert(dummy_csv.header.size() == 2);
+  assert(dummy_csv.dataset.size() == 2);
+  assert(dummy_csv.dataset.at(0).at(0) == "01");
+  assert(dummy_csv.dataset.at(0).at(1) == "1");
+  assert(dummy_csv.dataset.at(1).at(0) == "03");
+  assert(dummy_csv.dataset.at(1).at(1) == "2");
+}
 
 void test_collector_ast_node_visitor()
 {
@@ -731,9 +757,6 @@ void test_ast_node_to_string()
   auto describe = Cast_If(Describe_Ast_Node, *node);
   assert(describe);
 
-  // @todo João, achar uma forma de testar o to_string, tem o `serial_number` que muda.
-  // Rescrever o to_string de todos os nós de um forma mais legível e completa... pensei em usar macros e 
-  // incluir opção de formatar e printar serial fixo... ou fazer o serial resetar em cada teste... o que é mais simples...
   assert(describe->to_string() == "Describe_Ast_Node { serial: 1, ident_name: \"Dummy\" }");
 
   Ast_Node::serial_counter = 0;
@@ -880,6 +903,8 @@ int main()
   std::cout << "test_run_sql_on_csv02...................................OK" << std::endl;
   test_run_sql_on_csv03();
   std::cout << "test_run_sql_on_csv03...................................OK" << std::endl;
+  test_run_sql_on_csv04();
+  std::cout << "test_run_sql_on_csv04...................................OK" << std::endl;
   test_collector_ast_node_visitor();
   std::cout << "test_collector_ast_node_visitor.........................OK" << std::endl;
   test_builtin_function_definition();
