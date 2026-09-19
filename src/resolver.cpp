@@ -243,8 +243,6 @@ bool Function_Call_Expression_Resolver::is_arguments_valid()
 
       if (!resolver.is_arguments_valid()) return false;
     }
-
-    // @todo João, confirmar que não precisa mesmo validar mais nada aqui... definir onde vai ser validado cada coisa...
   }
 
   return true;

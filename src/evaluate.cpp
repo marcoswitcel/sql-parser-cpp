@@ -352,7 +352,8 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
   
   if (hasGroupBy || hasAggregationFunction)
   {
-    // @todo João, em caso de group by pode identificadores mas no caso de apenas o COUNT ou funções de agregação não pode...
+    // @note em caso de group by pode identificadores mas no caso de apenas o COUNT ou funções de agregação não pode
+    // Mais pra baixo é checada essa diferença e bloqueado os campos inválidos.
     for (auto &field : select.fields)
     {
       if (auto ident = Cast_If(Ident_Expression_Ast_Node, *field))
@@ -518,7 +519,9 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
         }
         else
         {
-          // @todo João, avaliar se apenas funções mesmo
+          // @note por hora entendo que se chegou aqui só terá funções de agregação, porém, não lembro se na especificação
+          // SQL existe alguma forma de mencionar campos sem ter o Group By explícito no select, quando for apenas com funções
+          // acredito que todos os campos serão expressões baseadas em funções de agregação mesmo.
           assert(false);
         }
       }
