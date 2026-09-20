@@ -301,7 +301,6 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
         new_header.push_back(call_expr->as);
       }
 
-      // @todo joão, falta validar idents...
       auto function_call_resolver = new Function_Call_Expression_Resolver(&csv.header, call_expr);
 
       if (function_call_resolver->is_arguments_valid())
