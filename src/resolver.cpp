@@ -231,6 +231,13 @@ std::string Function_Call_Expression_Resolver::resolve(Tabular_Data_Row &data_ro
   return "[FUNCTION CALL RETURN]";
 }
 
+/**
+ * @brief checa na lista de argumentos se todas chamadas de função tem argumentos válidos
+ * @todo João, considerar mover esse método para a struct `Function_Call_Expression_Ast_Node`
+ * 
+ * @return true 
+ * @return false 
+ */
 bool Function_Call_Expression_Resolver::is_arguments_valid()
 {
   for (auto argument : this->call_expr->argument_list)

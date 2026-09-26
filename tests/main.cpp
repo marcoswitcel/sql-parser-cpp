@@ -653,6 +653,7 @@ void test_run_sql_on_csv04()
 {
   CSVData dummy_csv = make_dummy_csv();
 
+  // @todo João, aqui por algum motivo ele não parece popular o `select.where` mas mesmo assim funciona... tá estranho, debugar um dia
   SQL_Parse_Context parser("SELECT number, COUNT(*) FROM dummy Where number <> '05' Group By number Order By 1 Asc");
 
   Ast_Node* node = parser.eat_node();
@@ -675,6 +676,34 @@ void test_run_sql_on_csv04()
   assert(dummy_csv.dataset.at(0).at(1) == "1");
   assert(dummy_csv.dataset.at(1).at(0) == "03");
   assert(dummy_csv.dataset.at(1).at(1) == "2");
+}
+
+void test_run_sql_on_csv05()
+{
+  CSVData dummy_csv = make_dummy_csv();
+
+  // @todo João, ajustar para aceitar `AND TO_NUMBER(id) = 1` 
+  SQL_Parse_Context parser("SELECT * FROM dummy Where TO_NUMBER(id) = TO_NUMBER('1') AND id = 1 ");
+
+  Ast_Node* node = parser.eat_node();
+  assert(node && node->type == Ast_Node_Type::Select_Ast_Node);
+
+  auto select = dynamic_cast<Select_Ast_Node*>(node);
+  /**
+   * A função `run_select_on_csv` tem diversos asserts e logs para o console, se
+   * ela não emitiu nenhum log e não disparou o assert, num geral entendesse que
+   * a operação executou corretamente.
+   * 
+   * @note evoluir esses testes no futuro
+   * 
+   */
+  assert(run_select_on_csv(*select, dummy_csv, false));
+
+  assert(dummy_csv.header.size() == 3);
+  assert(dummy_csv.dataset.size() == 1);
+  assert(dummy_csv.dataset.at(0).at(0) == "1");
+  assert(dummy_csv.dataset.at(0).at(1) == "05");
+  assert(dummy_csv.dataset.at(0).at(2) == "texto simples");
 }
 
 void test_collector_ast_node_visitor()
@@ -905,6 +934,8 @@ int main()
   std::cout << "test_run_sql_on_csv03...................................OK" << std::endl;
   test_run_sql_on_csv04();
   std::cout << "test_run_sql_on_csv04...................................OK" << std::endl;
+  test_run_sql_on_csv05();
+  std::cout << "test_run_sql_on_csv05...................................OK" << std::endl;
   test_collector_ast_node_visitor();
   std::cout << "test_collector_ast_node_visitor.........................OK" << std::endl;
   test_builtin_function_definition();

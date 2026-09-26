@@ -194,6 +194,66 @@ bool does_field_exist(CSVData &csv, std::string field_name)
   return it != csv.header.end();
 }
 
+bool is_where_valid_for_execution(Binary_Expression_Ast_Node* node)
+{
+  auto left_expr = node->left.get();
+  auto right_expr = node->right.get();
+  bool is_left_valid = true;
+  bool is_right_valid = true;
+
+  
+  if (auto bin_expr = Cast_If(Binary_Expression_Ast_Node, *left_expr)) {
+    is_left_valid = is_where_valid_for_execution(bin_expr);
+  }
+  else if (auto call_expr = Cast_If(Function_Call_Expression_Ast_Node, *left_expr))
+  {
+    is_left_valid = known_function_name_and_argument_list(call_expr);
+
+    // se válido no primeiro nível checa recursivamente
+    if (is_left_valid)
+    {
+      // @note por hora o método `is_arguments_valid` não precisa dos cabeçalhos...
+      Tabular_Data_Header header;
+      auto function_call_resolver = new Function_Call_Expression_Resolver(&header, call_expr);
+
+      is_left_valid = function_call_resolver->is_arguments_valid();
+    }
+  }
+
+
+  if (auto bin_expr = Cast_If(Binary_Expression_Ast_Node, *right_expr)) {
+    is_right_valid = is_where_valid_for_execution(bin_expr);
+  }
+  else if (auto call_expr = Cast_If(Function_Call_Expression_Ast_Node, *right_expr))
+  {
+    is_right_valid = known_function_name_and_argument_list(call_expr);
+
+    // se válido no primeiro nível checa recursivamente
+    if (is_right_valid)
+    {
+      // @note por hora o método `is_arguments_valid` não precisa dos cabeçalhos...
+      Tabular_Data_Header header;
+      auto function_call_resolver = new Function_Call_Expression_Resolver(&header, call_expr);
+
+      is_right_valid = function_call_resolver->is_arguments_valid();
+    }
+  }
+
+
+  if (!is_left_valid)
+  {
+    std::cout << "A expressão a seguir não pode ser interpretada: " << std::endl << left_expr->to_expression() << std::endl;
+  }
+
+  if (!is_right_valid)
+  {
+    std::cout << "A expressão a seguir não pode ser interpretada: " << std::endl << right_expr->to_expression() << std::endl;
+  }
+
+
+  return is_left_valid && is_right_valid;
+}
+
 bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_as_table)
 {
 
@@ -330,7 +390,10 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
     return false;
   }
 
-  // @todo João, validar no where as funcions call
+  if (select.where && !is_where_valid_for_execution(select.where->conditions.get()))
+  {
+    return false;
+  }
 
   bool hasAggregationFunction = false;
   
