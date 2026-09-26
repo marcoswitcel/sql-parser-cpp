@@ -330,6 +330,8 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
     return false;
   }
 
+  // @todo João, validar no where as funcions call
+
   bool hasAggregationFunction = false;
   
   for (auto &field : select.fields)
