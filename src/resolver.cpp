@@ -223,7 +223,8 @@ std::string Function_Call_Expression_Resolver::resolve(Tabular_Data_Row &data_ro
       catch (std::out_of_range& ex) {}
     }
 
-    
+    // @note o problema de retornar como string é que por exemplo números inteiros com 1 viram 1.0000...
+    // preciso mudar a API das classes Resolver pra permitir retornar outra coisa além de string...    
     return std::to_string(value);
   }
 
@@ -276,6 +277,8 @@ struct Binary_Expression_Resolver : Field_Resolver
 
 bool known_function_name_and_argument_list(Function_Call_Expression_Ast_Node* call_expr)
 {
+  call_expr->infer_type();
+
   if (call_expr->tagged_name == Builtin_Function_Names::CURRENT_DATE)
   {
     return call_expr->argument_list.size() == 0;

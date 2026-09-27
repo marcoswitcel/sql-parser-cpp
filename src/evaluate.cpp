@@ -105,6 +105,14 @@ bool evaluate_equals_binary_ast_node(Binary_Expression_Ast_Node* node, CSVData &
     return false;
   }
 
+  // Quando chega nessa etapa o método infer_type das instâncias de `Function_Call_Expression_Ast_Node` já deve ter sido chamado
+  // @note seria legal retornar o valor bruto ao invés das strings... muita conversão desnecessária
+  if (node->left->inferred_type == Inferred_Type::Number &&
+    node->right->inferred_type == Inferred_Type::Number)
+  {
+    return std::stof(lhs) == std::stof(rhs);
+  }
+
   // @todo João, não lida com números, possivelmente se aplica em outras sessões também
   return lhs.compare(rhs) == 0;
 }

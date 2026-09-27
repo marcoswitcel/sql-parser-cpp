@@ -682,8 +682,7 @@ void test_run_sql_on_csv05()
 {
   CSVData dummy_csv = make_dummy_csv();
 
-  // @todo João, ajustar para aceitar `AND TO_NUMBER(id) = 1` 
-  SQL_Parse_Context parser("SELECT * FROM dummy Where TO_NUMBER(id) = TO_NUMBER('1') AND id = 1 ");
+  SQL_Parse_Context parser("SELECT * FROM dummy Where TO_NUMBER(id) = TO_NUMBER('1') AND id = 1 AND TO_NUMBER(id) = 1");
 
   Ast_Node* node = parser.eat_node();
   assert(node && node->type == Ast_Node_Type::Select_Ast_Node);
