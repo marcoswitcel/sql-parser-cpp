@@ -558,7 +558,7 @@ struct Ordering_Expression_Ast_Node: Expression_Ast_Node
     visitor.visit(*this);
   }
 
-  virtual std::string to_expression()
+  std::string to_expression() override
   {
     std::string result = this->expr->to_expression();
     
@@ -595,7 +595,7 @@ struct Where_Ast_Node: Ast_Node
     visitor.visit(*this);
   }
 
-  virtual std::string to_expression()
+  std::string to_expression() override
   {
     std::string result = "Where ";
 
@@ -628,7 +628,7 @@ struct Group_By_Ast_Node: Ast_Node
     visitor.visit(*this);
   }
 
-  virtual std::string to_expression()
+  std::string to_expression() override
   {
     std::string result = "Group By";
 
@@ -669,7 +669,7 @@ struct Order_By_Ast_Node: Ast_Node
     visitor.visit(*this);
   }
 
-  virtual std::string to_expression()
+  std::string to_expression() override
   {
     std::string result = "Order By";
 
