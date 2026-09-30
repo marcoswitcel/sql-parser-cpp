@@ -15,12 +15,40 @@
 #include "./utils.cpp"
 #include "./trace.hpp"
 
-#define Ast_Node_To_String_Start(TYPE) std::ostringstream private_builder; private_builder << #TYPE " { serial: " << this->serial_number;
-#define Ast_Node_To_String_As_Field() if (!this->as.empty()) private_builder << ", as: \"" << this->as <<  "\"";
-#define Ast_Node_To_String_Add_String_Field(FIELD_NAME, VALUE) private_builder << ", " #FIELD_NAME ": \"" << (VALUE) << "\"";
-#define Ast_Node_To_String_Add_Field(FIELD_NAME, VALUE) private_builder << ", " #FIELD_NAME ": " << (VALUE);
-#define Ast_Node_To_String_Add_Nullable_Field(FIELD_NAME, EXPRESSION) private_builder << ", " #FIELD_NAME ": " << ((this->FIELD_NAME) ? (EXPRESSION) : "Null");
+// Criar uma classe com o padrão builder para emitir o texto formatado e padronizado
+// teriado funcionado também, se a oportunidade sugir ainda dá pra refazer essa
+// implementação do `to_string` sem as macros
 
+/**
+ * @brief iniciar o bloco de implementação do `to_string` para o método. Deve ser usado
+ * dentro do bloco de código do método `to_string`
+ * 
+ */
+#define Ast_Node_To_String_Start(TYPE) std::ostringstream private_builder; private_builder << #TYPE " { serial: " << this->serial_number;
+/**
+ * @brief Adiciona o campo padrão 'as' ao output
+ * 
+ */
+#define Ast_Node_To_String_As_Field() if (!this->as.empty()) private_builder << ", as: \"" << this->as <<  "\"";
+/**
+ * @brief Adiciona um campo ao output do método `to_string`, serve para números, enums e símbolos
+ * 
+ */
+#define Ast_Node_To_String_Add_String_Field(FIELD_NAME, VALUE) private_builder << ", " #FIELD_NAME ": \"" << (VALUE) << "\"";
+/**
+ * @brief Adiciona um campo contendo um string
+ * 
+ */
+#define Ast_Node_To_String_Add_Field(FIELD_NAME, VALUE) private_builder << ", " #FIELD_NAME ": " << (VALUE);
+/**
+ * @brief Adiciona campo que pode conter null ao output
+ * 
+ */
+#define Ast_Node_To_String_Add_Nullable_Field(FIELD_NAME, EXPRESSION) private_builder << ", " #FIELD_NAME ": " << ((this->FIELD_NAME) ? (EXPRESSION) : "Null");
+/**
+ * @brief Adiciona campo que contém um lista de valores
+ * 
+ */
 #define Ast_Node_To_String_List_Field(FIELD_NAME, EXPRESSION) \
   private_builder << ", " #FIELD_NAME ": [";                  \
   for (size_t i = 0; i < (this->FIELD_NAME).size(); i++)      \
@@ -33,8 +61,15 @@
     private_builder << (EXPRESSION);                          \
   }                                                           \
   private_builder << "]";
-
+/**
+ * @brief Finaliza bloco de implementação
+ * 
+ */
 #define Ast_Node_To_String_End() private_builder << " }";
+/**
+ * @brief Macro para recuperar o valor para fazer o retorno
+ * 
+ */
 #define Ast_Node_To_String_Get_Result() (private_builder.str());
 
 enum class Inferred_Type
@@ -103,7 +138,6 @@ struct Ast_Node
 
   /**
    * @brief retorna um representação textual útil para logs e depuração em geral
-   * @note João, considerar implementar alguma função por template ou macro para auxiliar no print de depuração padronizado
    * 
    * @return std::string 
    */
@@ -121,10 +155,7 @@ struct Ast_Node
    * 
    * @return std::string 
    */
-  virtual std::string to_expression()
-  {
-    return "[expression]";
-  }
+  virtual std::string to_expression() = 0;
 };
 
 uint64_t Ast_Node::serial_counter = 0;
