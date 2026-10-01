@@ -19,6 +19,12 @@ struct Ast_Node_Visitor
   virtual void visit(Where_Ast_Node &node) = 0;
   virtual void visit(Group_By_Ast_Node &node) = 0;
   virtual void visit(Order_By_Ast_Node &node) = 0;
+  /**
+   * @brief visita todas as subclasses
+   * @note João, considerar quebrar em vários métodos, um pra cada subclasse,
+   * talvez deixar o `Expression_Ast_Node`.
+   * @param node 
+   */
   virtual void visit(Expression_Ast_Node &node) = 0;
   virtual void visit(Describe_Ast_Node &node) = 0;
 };
