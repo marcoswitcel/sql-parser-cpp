@@ -282,6 +282,37 @@ bool is_all_idents_valid_in_select(Collector_Ast_Node_Visitor &collector, CSVDat
   return true;
 }
 
+bool is_all_idents_valid_in_where(Collector_Ast_Node_Visitor &collector, CSVData &csv)
+{
+  for (auto entry : collector.idents)
+  {
+    if (entry.type != Section_Type_Entry::Where) continue;
+
+    std::string &field = entry.ident;
+
+    if (!does_field_exist(csv, field))
+    {
+      bool found = false;
+      for (auto entry : collector.idents)
+      {
+        // se tiver um 'alias', pode prosseguir
+        if (entry.type == Section_Type_Entry::Select && entry.as == field)
+        {
+          found = true;
+          continue;
+        }
+      }
+
+      if (found) continue;
+
+      std::cout << "Error: campo '" << field << "' requisitado no Where não existe no csv." << std::endl;
+      return false;
+    }
+  }
+
+  return true;
+}
+
 /**
  * @brief 
  * 
@@ -452,6 +483,8 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
       }
     }
   }
+
+  if (!is_all_idents_valid_in_where(collector, csv)) return false;
   
   const auto has_where = select.where && select.where->conditions.get();
   const auto has_group_by = (select.group_by && select.group_by->groups.size() > 0);
