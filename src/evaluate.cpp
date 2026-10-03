@@ -440,7 +440,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
     return false;
   }
 
-  bool hasAggregationFunction = false;
+  bool has_aggregation_function = false;
   
   for (auto &field : select.fields)
   {
@@ -448,18 +448,18 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
     {
       if (is_an_aggregation_funcion(func->tagged_name))
       {
-        hasAggregationFunction = true;
+        has_aggregation_function = true;
       }
     }
   }
   
-  const auto hasWhere = select.where && select.where->conditions.get();
-  const auto hasGroupBy = (select.group_by && select.group_by->groups.size() > 0);
-  const auto hasOrderBy = (select.order_by && select.order_by->orders.size() > 0);
+  const auto has_where = select.where && select.where->conditions.get();
+  const auto has_group_by = (select.group_by && select.group_by->groups.size() > 0);
+  const auto has_order_by = (select.order_by && select.order_by->orders.size() > 0);
   vector<CSV_Data_Row> new_dataset;
   std::unique_ptr<Aggregator> root_aggregator;
   
-  if (hasGroupBy || hasAggregationFunction)
+  if (has_group_by || has_aggregation_function)
   {
     // @note em caso de group by pode identificadores mas no caso de apenas o COUNT ou funções de agregação não pode
     // Mais pra baixo é checada essa diferença e bloqueado os campos inválidos.
@@ -508,7 +508,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
     }
     
     // montando estrutura de agregadores, no caso de ter group by
-    if (hasGroupBy)
+    if (has_group_by)
     {
       for (size_t i = select.group_by->groups.size(); i > 0; i--)
       {
@@ -538,12 +538,12 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
       }
     }
     
-    if (hasGroupBy)
+    if (has_group_by)
     {
       // executando processo de agregação
       for (CSV_Data_Row &data_row: csv.dataset)
       {
-        if (hasWhere)
+        if (has_where)
         {
           if (!evaluate_relational_binary_ast_node(select.where->conditions.get(), csv, data_row))
           {
@@ -606,7 +606,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
       // executando processo de agregação
       for (CSV_Data_Row &data_row: csv.dataset)
       {
-        if (hasWhere)
+        if (has_where)
         {
           if (!evaluate_relational_binary_ast_node(select.where->conditions.get(), csv, data_row))
           {
@@ -651,7 +651,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
     // caminho rápido quando não há agregador
     for (CSV_Data_Row &data_row: csv.dataset)
     {
-      if (hasWhere)
+      if (has_where)
       {
         if (!evaluate_relational_binary_ast_node(select.where->conditions.get(), csv, data_row))
         {
@@ -675,7 +675,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
   csv.header = new_header;
   csv.dataset = new_dataset;
 
-  if (hasOrderBy)
+  if (has_order_by)
   {
     // @todo João, tem um erro aqui ainda... pelo menos um... quando o csv chega aqui ele já foi maniupaldo
     // e o order by deve poder acessar campos foram da lista de campos que devem ser retornardos em tela, ele pode
