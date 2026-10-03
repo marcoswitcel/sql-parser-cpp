@@ -705,6 +705,11 @@ void test_run_sql_on_csv05()
   assert(dummy_csv.dataset.at(0).at(2) == "texto simples");
 }
 
+// @todo João, testar que rejeita símbolos inválidos no select, where, group by e order by
+// @todo João, talvez testar diretamente o collector
+// @todo João, testar que aceitar ordenar por nome e alias
+// @todo João, testar group by gera uma lista de símbolo diferente para uso com o order by
+
 void test_collector_ast_node_visitor()
 {
   SQL_Parse_Context parser("SELECT \"Id\", Name, 'valor fixo' As \"Ident With Spaces\"  FROM Dummy Where Id > 50 Group By Id Order By 1 Asc, 2 Asc ");
