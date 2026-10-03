@@ -215,6 +215,12 @@ Ast_Node* SQL_Parse_Context::eat_node()
                     auto number = new Number_Literal_Expression_Ast_Node();
                     number->value =  static_cast<Number_Token*>(token.data)->value;
 
+                    if (number->value == 0)
+                    {
+                      this->report_error("Valor inválido para o Order By: 0");
+                      return NULL;
+                    }
+
                     auto ordering = std::make_unique<Ordering_Expression_Ast_Node>();
                     ordering->expr = std::unique_ptr<Expression_Ast_Node>(number);
                     
