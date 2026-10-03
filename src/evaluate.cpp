@@ -641,16 +641,38 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
   if (hasOrderBy)
   {
     auto &order_expr = select.order_by->orders.at(0);
-
-    assert(order_expr->expr->type == Ast_Node_Type::Number_Literal_Expression_Ast_Node);
   
-    auto number = static_cast<Number_Literal_Expression_Ast_Node*>(order_expr->expr.get());
-    auto column_index = number->value;
+    auto column_index = 0;
     
-    assert(column_index > 0);
-    // decremente porque recebemos 1 para primeira coluna
-    column_index--;
-    assert(static_cast<size_t>(column_index)  < csv.header.size());
+    if (order_expr->expr->type == Ast_Node_Type::Number_Literal_Expression_Ast_Node)
+    {
+      auto number = static_cast<Number_Literal_Expression_Ast_Node*>(order_expr->expr.get());
+      column_index = number->value;
+      // @todo João, falta aviso de erro aqui para caso passe 0, talvez rejeitar no parse já...
+      assert(column_index > 0);
+      // decremente porque recebemos 1 para primeira coluna
+      column_index--;
+    }
+    else
+    {
+      assert(order_expr->expr->type == Ast_Node_Type::Ident_Expression_Ast_Node);
+      auto ident = static_cast<Ident_Expression_Ast_Node*>(order_expr->expr.get());
+
+      auto it = std::find(csv.header.begin(), csv.header.end(), ident->ident_name);
+      
+      if (it == csv.header.end())
+      {
+        assert(false);
+        std::cout << "Error: field_name: " << ident->ident_name << " não existe na tabela." << std::endl;
+      }
+
+      // @todo João, falta validar se o campo existe na lista de campos declarados, ou pode ordenar por um campo não solicitado?
+      column_index = std::distance(csv.header.begin(), it);
+    }
+    
+    assert(column_index >= 0);
+
+    assert(static_cast<size_t>(column_index) < csv.header.size());
 
     if (order_expr->dir == Token_Type::Asc)
     {

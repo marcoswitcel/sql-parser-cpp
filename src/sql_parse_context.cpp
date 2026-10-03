@@ -229,6 +229,25 @@ Ast_Node* SQL_Parse_Context::eat_node()
 
                     expect_comma = true;
                   }
+                  else if (token.type == Token_Type::Ident && !expect_comma)
+                  {
+                    auto ident = new Ident_Expression_Ast_Node();
+                    ident->ident_name =  static_cast<Ident_Token*>(token.data)->ident;
+
+                    auto ordering = std::make_unique<Ordering_Expression_Ast_Node>();
+                    ordering->expr = std::unique_ptr<Expression_Ast_Node>(ident);
+                    
+                    Token peak_token = this->peek_token();
+                    if (peak_token.type == Token_Type::Asc || peak_token.type == Token_Type::Desc)
+                    {
+                      token = this->eat_token();
+                      ordering->dir = peak_token.type;
+                    }
+                    
+                    select->order_by->orders.push_back(std::move(ordering));
+
+                    expect_comma = true;
+                  }
                   else if (token.type == Token_Type::Comma && expect_comma)
                   {
                     expect_comma = false;
