@@ -648,9 +648,10 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
     {
       auto number = static_cast<Number_Literal_Expression_Ast_Node*>(order_expr->expr.get());
       column_index = number->value;
-      // @todo João, falta aviso de erro aqui para caso passe 0, talvez rejeitar no parse já...
+      // @note o valor `0` é refeitado no parse, se não for causará problemas, por isso os assert's que seguem
       assert(column_index > 0);
-      // decremente porque recebemos 1 para primeira coluna
+
+      // decremente porque recebemos 1 para primeira coluna mas no array é 0 a primeira
       column_index--;
     }
     else
