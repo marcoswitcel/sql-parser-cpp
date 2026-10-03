@@ -8,6 +8,23 @@
 #include "./ast_node.hpp"
 #include "./ast_node_visitor.hpp"
 
+enum class Section_Type_Entry
+{
+  // o registro veio do select
+  Select,
+  Where,
+  Group_By,
+  Order_By,
+  // o registro é o símbolo do comando describe
+  Describe,
+};
+
+struct Ident_Entry
+{
+  Section_Type_Entry type;
+  std::string ident;
+  std::string as;
+};
 
 struct Collector_Ast_Node_Visitor : Ast_Node_Visitor
 {
@@ -15,13 +32,16 @@ struct Collector_Ast_Node_Visitor : Ast_Node_Visitor
   // vou ter que considerar duplicidades, mas acho que num geral só preciso saber de cada ident uma vez por categoria
   // então pode ter o mesmo ident em categorias diferentes, mas não dentro da mesma categoria...
   // Não vi necessidade de fazer o mesmo pro resto, por hora não tem caso de uso, e se tiver, posso fazer com calma...
-  std::vector<std::string> idents; 
+  std::vector<Ident_Entry> idents; 
   std::vector<std::string> strings;
   std::vector<int64_t> numbers;
   std::vector<std::string> froms;
+  Section_Type_Entry current_type;
 
   void visit(Select_Ast_Node &node)
   {
+    this->current_type = Section_Type_Entry::Select;
+
     for (auto field : node.fields)
     {
       // @todo João, aqui é um exemplo de lguar que precisaria ser ajustado, para
@@ -31,9 +51,16 @@ struct Collector_Ast_Node_Visitor : Ast_Node_Visitor
     }
 
     this->visit(*node.from);
+
     // campos opcionais
+
+    this->current_type = Section_Type_Entry::Where;
     if (node.where) this->visit(*node.where);
+
+    this->current_type = Section_Type_Entry::Group_By;
     if (node.group_by) this->visit(*node.group_by);
+    
+    this->current_type = Section_Type_Entry::Order_By;
     if (node.order_by) this->visit(*node.order_by);
   }
 
@@ -68,7 +95,8 @@ struct Collector_Ast_Node_Visitor : Ast_Node_Visitor
   {
     if (auto ident = Cast_If(Ident_Expression_Ast_Node, node))
     {
-      idents.push_back(ident->ident_name);
+      Ident_Entry entry = { .type = this->current_type, .ident = ident->ident_name, .as = ident->as };
+      idents.push_back(entry);
     }
     else if (auto number = Cast_If(Number_Literal_Expression_Ast_Node, node))
     {
@@ -101,11 +129,16 @@ struct Collector_Ast_Node_Visitor : Ast_Node_Visitor
       assert(false);
     }
 
-    // @note João, considerar como incluir o renome de campos como idents aqui.. no futuro vou precisar deles...
+    // @todo João, considerar como incluir o renome de campos como idents aqui.. no futuro vou precisar deles...
+    // expressões complexas deverão ser suportadas para fim de referência no where
+    // Exemple: select Id + 2 as Ids where Ids > 2;
   }
 
   void visit(Describe_Ast_Node &node)
   {
-    idents.push_back(node.ident_name->ident_name);
+    this->current_type = Section_Type_Entry::Describe;
+    
+    Ident_Entry entry = { .type = this->current_type, .ident = node.ident_name->ident_name, .as = "" };
+    idents.push_back(entry);
   }
 };

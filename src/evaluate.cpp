@@ -262,6 +262,52 @@ bool is_where_valid_for_execution(Binary_Expression_Ast_Node* node)
   return is_left_valid && is_right_valid;
 }
 
+bool is_all_idents_valid_in_select(Collector_Ast_Node_Visitor &collector, CSVData &csv)
+{
+  for (auto entry : collector.idents)
+  {
+    if (entry.type != Section_Type_Entry::Select) continue;
+
+    std::string &field = entry.ident;
+    
+    if (field  == "*") continue;
+
+    if (!does_field_exist(csv, field))
+    {
+      std::cout << "Error: campo '" << field << "' requisitado no Select não existe no csv." << std::endl;
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/**
+ * @brief 
+ * 
+ * @param collector 
+ * @param csv essa instância já terá passado pela manipulação para computar os valores da tabela, então encontrará os alias válidos 
+ * @return true 
+ * @return false 
+ */
+bool is_all_idents_valid_order_by(Collector_Ast_Node_Visitor &collector, CSVData &csv)
+{
+  for (auto entry : collector.idents)
+  {
+    if (entry.type != Section_Type_Entry::Order_By) continue;
+
+    std::string &field = entry.ident;
+
+    if (!does_field_exist(csv, field))
+    {
+      std::cout << "Error: campo '" << field << "' requisitado no Order By não existe no csv." << std::endl;
+      return false;
+    }
+  }
+
+  return true;
+}
+
 bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_as_table)
 {
 
@@ -269,16 +315,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
 
   select.accept(collector);
 
-  for (auto field : collector.idents)
-  {
-    if (field == "*") continue;
-
-    if (!does_field_exist(csv, field))
-    {
-      std::cout << "Error: field_name: " << field << " não existe no csv." << std::endl;
-      return false;
-    }
-  }
+  if (!is_all_idents_valid_in_select(collector, csv)) return false;
 
   vector<std::string> new_header;
   vector<Field_Resolver*> field_resolver;
@@ -640,6 +677,14 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
 
   if (hasOrderBy)
   {
+    // @todo João, tem um erro aqui ainda... pelo menos um... quando o csv chega aqui ele já foi maniupaldo
+    // e o order by deve poder acessar campos foram da lista de campos que devem ser retornardos em tela, ele pode
+    // usar uma coluna não visível para ordenação. Tem um diferença quando tem group by, nesse caso a lista de campos
+    // o definidas no select são todos o que podem ser usados no order by.
+    // @note Isso aqui funciona, porém, deixa processar muita coisa para dizer que um Ident declarado no Order_By
+    // não existe nas colunas esperadas no retorno 
+    if (!is_all_idents_valid_order_by(collector, csv)) return false;
+
     auto &order_expr = select.order_by->orders.at(0);
   
     auto column_index = 0;
@@ -663,8 +708,8 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
       
       if (it == csv.header.end())
       {
-        assert(false);
         std::cout << "Error: field_name: " << ident->ident_name << " não existe na tabela." << std::endl;
+        assert(false);
       }
 
       // @todo João, falta validar se o campo existe na lista de campos declarados, ou pode ordenar por um campo não solicitado?
