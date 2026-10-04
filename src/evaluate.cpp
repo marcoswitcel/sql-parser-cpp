@@ -710,8 +710,8 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
 
   if (has_order_by)
   {
-    // @todo João, tem um erro aqui ainda... pelo menos um... quando o csv chega aqui ele já foi maniupaldo
-    // e o order by deve poder acessar campos foram da lista de campos que devem ser retornardos em tela, ele pode
+    // @todo João, tem um erro aqui ainda... pelo menos um... quando o csv chega aqui ele já foi manipulado
+    // e o order by deve poder acessar campos fora da lista de campos que devem ser retornardos em tela, ele pode
     // usar uma coluna não visível para ordenação. Tem um diferença quando tem group by, nesse caso a lista de campos
     // o definidas no select são todos o que podem ser usados no order by.
     // @note Isso aqui funciona, porém, deixa processar muita coisa para dizer que um Ident declarado no Order_By

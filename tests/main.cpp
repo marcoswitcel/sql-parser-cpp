@@ -739,7 +739,7 @@ void test_run_sql_on_csv06()
 
 void test_collector_ast_node_visitor()
 {
-  SQL_Parse_Context parser("SELECT \"Id\", Name, 'valor fixo' As \"Ident With Spaces\"  FROM Dummy Where Id > 50 Group By Id Order By Id Asc, 1 Asc, 2 Asc ");
+  SQL_Parse_Context parser("SELECT \"Id\", Name, 'valor fixo' As \"Ident With Spaces\", UPPER(Name) As NAME  FROM Dummy Where Id > 50 Group By Id Order By Id Asc, 1 Asc, 2 Asc ");
   
   Ast_Node* node = parser.eat_node();
   
@@ -753,7 +753,7 @@ void test_collector_ast_node_visitor()
   assert(collector.froms.size() == 1);
   // @note João, por hora os símbolos são contados por menção, e o comando "as" não gera símbolo... ambas as situações podem precisar ser revisadas.
   // O from também poderia gerar um ident, embora num geral não seja muito útil, tecnicamente é um ident... Hoje fica separado no froms
-  assert(collector.idents.size() == 5);
+  assert(collector.idents.size() == 6);
 
   auto ident0 = collector.idents[0];
   assert(ident0.type == Section_Type_Entry::Select);
@@ -766,24 +766,28 @@ void test_collector_ast_node_visitor()
   assert(ident1.as.empty());
 
   auto ident2 = collector.idents[2];
-  assert(ident2.type == Section_Type_Entry::Where);
-  assert(ident2.ident == "Id");
+  assert(ident2.type == Section_Type_Entry::Select);
+  assert(ident2.ident == "Name");
   assert(ident2.as.empty());
 
   auto ident3 = collector.idents[3];
-  assert(ident3.type == Section_Type_Entry::Group_By);
+  assert(ident3.type == Section_Type_Entry::Where);
   assert(ident3.ident == "Id");
   assert(ident3.as.empty());
 
   auto ident4 = collector.idents[4];
-  assert(ident4.type == Section_Type_Entry::Order_By);
+  assert(ident4.type == Section_Type_Entry::Group_By);
   assert(ident4.ident == "Id");
   assert(ident4.as.empty());
 
+  auto ident5 = collector.idents[5];
+  assert(ident5.type == Section_Type_Entry::Order_By);
+  assert(ident5.ident == "Id");
+  assert(ident5.as.empty());
 
   assert(collector.numbers.size() == 3);
   assert(collector.strings.size() == 1);
-  assert(collector.alias.size() == 1);
+  assert(collector.alias.size() == 2);
 }
 
 void test_builtin_function_definition()
