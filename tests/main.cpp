@@ -756,6 +756,7 @@ void test_collector_ast_node_visitor()
 
   assert(collector.numbers.size() == 3);
   assert(collector.strings.size() == 1);
+  assert(collector.alias.size() == 1);
 }
 
 void test_builtin_function_definition()

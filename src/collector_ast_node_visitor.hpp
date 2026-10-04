@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <assert.h>
 
+#include "./ordered_map.hpp"
 #include "./ast_node.hpp"
 #include "./ast_node_visitor.hpp"
 
@@ -32,7 +33,8 @@ struct Collector_Ast_Node_Visitor : Ast_Node_Visitor
   // vou ter que considerar duplicidades, mas acho que num geral só preciso saber de cada ident uma vez por categoria
   // então pode ter o mesmo ident em categorias diferentes, mas não dentro da mesma categoria...
   // Não vi necessidade de fazer o mesmo pro resto, por hora não tem caso de uso, e se tiver, posso fazer com calma...
-  std::vector<Ident_Entry> idents; 
+  std::vector<Ident_Entry> idents;
+  Ordered_Map<std::string, Expression_Ast_Node*> alias;
   std::vector<std::string> strings;
   std::vector<int64_t> numbers;
   std::vector<std::string> froms;
@@ -127,6 +129,12 @@ struct Collector_Ast_Node_Visitor : Ast_Node_Visitor
     {
       // @note se cair aqui é porque foi esquecido de lidar com alguma sub-expressão
       assert(false);
+    }
+
+    // armazena todos os alias
+    if (this->current_type == Section_Type_Entry::Select && !node.as.empty())
+    {
+      alias.put(node.as, &node);
     }
 
     // @todo João, considerar como incluir o renome de campos como idents aqui.. no futuro vou precisar deles...
