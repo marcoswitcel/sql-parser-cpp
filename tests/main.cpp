@@ -712,7 +712,7 @@ void test_run_sql_on_csv05()
 
 void test_collector_ast_node_visitor()
 {
-  SQL_Parse_Context parser("SELECT \"Id\", Name, 'valor fixo' As \"Ident With Spaces\"  FROM Dummy Where Id > 50 Group By Id Order By 1 Asc, 2 Asc ");
+  SQL_Parse_Context parser("SELECT \"Id\", Name, 'valor fixo' As \"Ident With Spaces\"  FROM Dummy Where Id > 50 Group By Id Order By Id Asc, 1 Asc, 2 Asc ");
   
   Ast_Node* node = parser.eat_node();
   
@@ -726,7 +726,34 @@ void test_collector_ast_node_visitor()
   assert(collector.froms.size() == 1);
   // @note João, por hora os símbolos são contados por menção, e o comando "as" não gera símbolo... ambas as situações podem precisar ser revisadas.
   // O from também poderia gerar um ident, embora num geral não seja muito útil, tecnicamente é um ident... Hoje fica separado no froms
-  assert(collector.idents.size() == 4);
+  assert(collector.idents.size() == 5);
+
+  auto ident0 = collector.idents[0];
+  assert(ident0.type == Section_Type_Entry::Select);
+  assert(ident0.ident == "Id");
+  assert(ident0.as.empty());
+
+  auto ident1 = collector.idents[1];
+  assert(ident1.type == Section_Type_Entry::Select);
+  assert(ident1.ident == "Name");
+  assert(ident1.as.empty());
+
+  auto ident2 = collector.idents[2];
+  assert(ident2.type == Section_Type_Entry::Where);
+  assert(ident2.ident == "Id");
+  assert(ident2.as.empty());
+
+  auto ident3 = collector.idents[3];
+  assert(ident3.type == Section_Type_Entry::Group_By);
+  assert(ident3.ident == "Id");
+  assert(ident3.as.empty());
+
+  auto ident4 = collector.idents[4];
+  assert(ident4.type == Section_Type_Entry::Order_By);
+  assert(ident4.ident == "Id");
+  assert(ident4.as.empty());
+
+
   assert(collector.numbers.size() == 3);
   assert(collector.strings.size() == 1);
 }
