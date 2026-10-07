@@ -188,7 +188,8 @@ bool evaluate_relational_binary_ast_node(Binary_Expression_Ast_Node* node, CSVDa
       evaluate_relational_binary_ast_node(static_cast<Binary_Expression_Ast_Node *>(node->right.get()), csv, data_row);
   }
 
-  // @todo João, por hora o makefile faz cair em uma das de cima
+  // @note o sistema não deve parsear nada diferente das opções acima, porém se o "if-else" ficar
+  // desatualizado pode cair no fluxo abaixo, no build de dev alerta com o assert 
   assert(false);
   return false;
 }
