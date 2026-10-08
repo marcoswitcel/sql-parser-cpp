@@ -46,9 +46,10 @@ struct Collector_Ast_Node_Visitor : Ast_Node_Visitor
 
     for (auto field : node.fields)
     {
-      // @todo João, aqui é um exemplo de lguar que precisaria ser ajustado, para
+      // @note João, aqui é um exemplo de lguar que precisaria ser ajustado, para
       // o dispatch funcionar para a classe mais específica precisaria escrever:
       // field->accept(*this); 
+      // Só não sei se é muita vantagem fazer assim por hora, então vou deixar como está
       this->visit(*field);
     }
 

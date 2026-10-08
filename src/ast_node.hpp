@@ -355,13 +355,9 @@ struct From_Ast_Node: Ast_Node
   }    
 };
 
-// @todo João, avaliar por que não é usado a literal expression
-struct Literal_Expression_Ast_Node: Expression_Ast_Node
-{
-  virtual std::string to_string() = 0;
-};
+struct Literal_Expression_Ast_Node: Expression_Ast_Node {};
 
-struct String_Literal_Expression_Ast_Node: Expression_Ast_Node
+struct String_Literal_Expression_Ast_Node: Literal_Expression_Ast_Node
 {
   std::string value;
   
@@ -393,7 +389,7 @@ struct String_Literal_Expression_Ast_Node: Expression_Ast_Node
   }
 };
 
-struct Number_Literal_Expression_Ast_Node: Expression_Ast_Node
+struct Number_Literal_Expression_Ast_Node: Literal_Expression_Ast_Node
 {
   int64_t value;
   

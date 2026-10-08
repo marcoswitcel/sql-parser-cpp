@@ -733,9 +733,37 @@ void test_run_sql_on_csv06()
   assert(dummy_csv.dataset.at(3).at(0) == "1");
 }
 
+void test_run_sql_on_csv07()
+{
+  CSVData dummy_csv = make_dummy_csv();
+
+  SQL_Parse_Context parser("SELECT number, MAX(id) FROM dummy Group By number Order By number Asc");
+
+  Ast_Node* node = parser.eat_node();
+  assert(node && node->type == Ast_Node_Type::Select_Ast_Node);
+
+  auto select = dynamic_cast<Select_Ast_Node*>(node);
+  /**
+   * A função `run_select_on_csv` tem diversos asserts e logs para o console, se
+   * ela não emitiu nenhum log e não disparou o assert, num geral entendesse que
+   * a operação executou corretamente.
+   * 
+   * @note evoluir esses testes no futuro
+   * 
+   */
+  assert(run_select_on_csv(*select, dummy_csv, false));
+
+  assert(dummy_csv.header.size() == 2);
+  assert(dummy_csv.dataset.size() == 3);
+  assert(dummy_csv.dataset.at(0).at(0) == "01");
+  assert(dummy_csv.dataset.at(0).at(1) == "4.000000");
+  assert(dummy_csv.dataset.at(1).at(0) == "03");
+  assert(dummy_csv.dataset.at(1).at(1) == "3.000000");
+  assert(dummy_csv.dataset.at(2).at(0) == "05");
+  assert(dummy_csv.dataset.at(2).at(1) == "1.000000");
+}
+
 // @todo João, testar que rejeita símbolos inválidos no select, where, group by e order by
-// @todo João, testar que aceitar ordenar por nome
-// @todo João, testar group by gera uma lista de símbolo diferente para uso com o order by
 
 void test_collector_ast_node_visitor()
 {
@@ -1001,6 +1029,8 @@ int main()
   std::cout << "test_run_sql_on_csv05...................................OK" << std::endl;
   test_run_sql_on_csv06();
   std::cout << "test_run_sql_on_csv06...................................OK" << std::endl;
+  test_run_sql_on_csv07();
+  std::cout << "test_run_sql_on_csv07...................................OK" << std::endl;
   test_collector_ast_node_visitor();
   std::cout << "test_collector_ast_node_visitor.........................OK" << std::endl;
   test_builtin_function_definition();
