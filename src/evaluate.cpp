@@ -263,7 +263,7 @@ bool is_where_valid_for_execution(Binary_Expression_Ast_Node* node)
   return is_left_valid && is_right_valid;
 }
 
-bool is_all_idents_valid_in_select(Collector_Ast_Node_Visitor &collector, CSVData &csv)
+bool is_all_idents_valid_in_select(Collector_Ast_Node_Visitor &collector, CSVData &csv, bool is_verbose)
 {
   for (auto entry : collector.idents)
   {
@@ -275,7 +275,10 @@ bool is_all_idents_valid_in_select(Collector_Ast_Node_Visitor &collector, CSVDat
 
     if (!does_field_exist(csv, field))
     {
-      std::cout << "Error: campo '" << field << "' requisitado no Select não existe no csv." << std::endl;
+      if (is_verbose)
+      {
+        std::cout << "Error: campo '" << field << "' requisitado no Select não existe no csv." << std::endl;
+      }
       return false;
     }
   }
@@ -283,7 +286,7 @@ bool is_all_idents_valid_in_select(Collector_Ast_Node_Visitor &collector, CSVDat
   return true;
 }
 
-bool is_all_idents_valid_in_where(Collector_Ast_Node_Visitor &collector, CSVData &csv)
+bool is_all_idents_valid_in_where(Collector_Ast_Node_Visitor &collector, CSVData &csv, bool is_verbose)
 {
   for (auto entry : collector.idents)
   {
@@ -306,7 +309,10 @@ bool is_all_idents_valid_in_where(Collector_Ast_Node_Visitor &collector, CSVData
 
       if (found) continue;
 
-      std::cout << "Error: campo '" << field << "' requisitado no Where não existe no csv." << std::endl;
+      if (is_verbose)
+      {
+        std::cout << "Error: campo '" << field << "' requisitado no Where não existe no csv." << std::endl;
+      }
       return false;
     }
   }
@@ -322,7 +328,7 @@ bool is_all_idents_valid_in_where(Collector_Ast_Node_Visitor &collector, CSVData
  * @return true 
  * @return false 
  */
-bool is_all_idents_valid_order_by(Collector_Ast_Node_Visitor &collector, CSVData &csv)
+bool is_all_idents_valid_order_by(Collector_Ast_Node_Visitor &collector, CSVData &csv, bool is_verbose)
 {
   for (auto entry : collector.idents)
   {
@@ -332,7 +338,10 @@ bool is_all_idents_valid_order_by(Collector_Ast_Node_Visitor &collector, CSVData
 
     if (!does_field_exist(csv, field))
     {
-      std::cout << "Error: campo '" << field << "' requisitado no Order By não existe no csv." << std::endl;
+      if (is_verbose)
+      {
+        std::cout << "Error: campo '" << field << "' requisitado no Order By não existe no csv." << std::endl;
+      }
       return false;
     }
   }
@@ -347,7 +356,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
 
   select.accept(collector);
 
-  if (!is_all_idents_valid_in_select(collector, csv)) return false;
+  if (!is_all_idents_valid_in_select(collector, csv, is_printing_as_table)) return false;
 
   vector<std::string> new_header;
   vector<Field_Resolver*> field_resolver;
@@ -485,7 +494,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
     }
   }
 
-  if (!is_all_idents_valid_in_where(collector, csv)) return false;
+  if (!is_all_idents_valid_in_where(collector, csv, is_printing_as_table)) return false;
   
   const auto has_where = select.where && select.where->conditions.get();
   const auto has_group_by = (select.group_by && select.group_by->groups.size() > 0);
@@ -522,7 +531,10 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
         
         if (!found)
         {
-          std::cout << "Por hora todos os identificadores do select precisam estar contidos na cláusula Group By." << std::endl;
+          if (is_printing_as_table)
+          {
+            std::cout << "Por hora todos os identificadores do select precisam estar contidos na cláusula Group By." << std::endl;
+          }
           return false;
         }
       }
@@ -717,7 +729,7 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
     // o definidas no select são todos o que podem ser usados no order by.
     // @note Isso aqui funciona, porém, deixa processar muita coisa para dizer que um Ident declarado no Order_By
     // não existe nas colunas esperadas no retorno 
-    if (!is_all_idents_valid_order_by(collector, csv)) return false;
+    if (!is_all_idents_valid_order_by(collector, csv, is_printing_as_table)) return false;
 
     auto &order_expr = select.order_by->orders.at(0);
   

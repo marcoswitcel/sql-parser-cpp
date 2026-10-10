@@ -762,7 +762,58 @@ void test_run_sql_on_csv07()
   assert(dummy_csv.dataset.at(2).at(1) == "1.000000");
 }
 
-// @todo João, testar que rejeita símbolos inválidos no select, where, group by e order by
+void test_run_sql_on_csv_reject_errors()
+{
+  CSVData dummy_csv = make_dummy_csv();
+
+  {
+    SQL_Parse_Context parser("SELECT nome_que_nao_existe FROM dummy ");
+  
+    Ast_Node* node = parser.eat_node();
+  
+    assert(node && node->type == Ast_Node_Type::Select_Ast_Node);
+    
+    auto select = dynamic_cast<Select_Ast_Node*>(node);
+  
+    assert(!run_select_on_csv(*select, dummy_csv, false));
+  }
+
+  {
+    SQL_Parse_Context parser("SELECT number FROM dummy Where nome_que_nao_existe = 1 ");
+  
+    Ast_Node* node = parser.eat_node();
+  
+    assert(node && node->type == Ast_Node_Type::Select_Ast_Node);
+    
+    auto select = dynamic_cast<Select_Ast_Node*>(node);
+  
+    assert(!run_select_on_csv(*select, dummy_csv, false));
+  }
+
+  {
+    SQL_Parse_Context parser("SELECT number FROM dummy Where number = 1 Group By nome_que_nao_existe ");
+  
+    Ast_Node* node = parser.eat_node();
+  
+    assert(node && node->type == Ast_Node_Type::Select_Ast_Node);
+    
+    auto select = dynamic_cast<Select_Ast_Node*>(node);
+  
+    assert(!run_select_on_csv(*select, dummy_csv, false));
+  }
+
+  {
+    SQL_Parse_Context parser("SELECT number FROM dummy Where number = 1 Group By number Order By nome_que_nao_existe");
+  
+    Ast_Node* node = parser.eat_node();
+  
+    assert(node && node->type == Ast_Node_Type::Select_Ast_Node);
+    
+    auto select = dynamic_cast<Select_Ast_Node*>(node);
+  
+    assert(!run_select_on_csv(*select, dummy_csv, false));
+  }
+}
 
 void test_collector_ast_node_visitor()
 {
@@ -1030,6 +1081,8 @@ int main()
   std::cout << "test_run_sql_on_csv06...................................OK" << std::endl;
   test_run_sql_on_csv07();
   std::cout << "test_run_sql_on_csv07...................................OK" << std::endl;
+  test_run_sql_on_csv_reject_errors();
+  std::cout << "test_run_sql_on_csv_reject_errors.......................OK" << std::endl;
   test_collector_ast_node_visitor();
   std::cout << "test_collector_ast_node_visitor.........................OK" << std::endl;
   test_builtin_function_definition();
