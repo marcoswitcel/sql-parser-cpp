@@ -653,8 +653,6 @@ void test_run_sql_on_csv04()
 {
   CSVData dummy_csv = make_dummy_csv();
 
-  // @todo João, aqui por algum motivo ele não parece popular o `select.where` mas mesmo assim funciona... tá estranho, debugar um dia
-  // debuguei mas não cheguei em nenhuma conclusão... debugar de novo amanhã
   SQL_Parse_Context parser("SELECT number, COUNT(*) FROM dummy Where number <> '05' Group By number Order By 1 Asc");
 
   Ast_Node* node = parser.eat_node();
