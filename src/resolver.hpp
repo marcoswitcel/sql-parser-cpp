@@ -96,6 +96,13 @@ struct Aggregation_Field_Resolver
 {
   virtual ~Aggregation_Field_Resolver() = default;
 
+  /**
+   * @brief computa o resultado para a expressão de agregação
+   * 
+   * @param grouped_data dados das colunas agregadas, não contém o nome da coluna, apenas os valores computados para esse grupo
+   * @param rows linhas agregadas para esse subgrupo
+   * @return std::string 
+   */
   virtual std::string resolve(Tabular_Data_Row &grouped_data, vector<Tabular_Data_Row*> &rows) = 0;
 };
 

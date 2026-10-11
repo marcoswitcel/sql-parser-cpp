@@ -137,10 +137,6 @@ struct Collector_Ast_Node_Visitor : Ast_Node_Visitor
     {
       alias.put(node.as, &node);
     }
-
-    // @todo João, considerar como incluir o renome de campos como idents aqui.. no futuro vou precisar deles...
-    // expressões complexas deverão ser suportadas para fim de referência no where
-    // Exemple: select Id + 2 as Ids where Ids > 2;
   }
 
   void visit(Describe_Ast_Node &node)
