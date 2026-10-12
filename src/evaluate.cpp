@@ -754,11 +754,15 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
       
       if (it == csv.header.end())
       {
-        std::cout << "Error: field_name: " << ident->ident_name << " não existe na tabela." << std::endl;
+        if (is_printing_as_table)
+        {
+          std::cout << "Error: field_name: " << ident->ident_name << " não existe na tabela." << std::endl;
+        }
+        
         assert(false);
+        return false;
       }
 
-      // @todo João, falta validar se o campo existe na lista de campos declarados, ou pode ordenar por um campo não solicitado?
       column_index = std::distance(csv.header.begin(), it);
     }
     
