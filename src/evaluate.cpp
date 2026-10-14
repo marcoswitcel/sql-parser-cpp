@@ -22,7 +22,18 @@
 
 using std::vector;
 
-
+/**
+ * @brief 
+ * @todo João, considerar criar uma classe de log (reporter) para imprimir os logs, assim só preciso definir se deve ou não
+ * emitir na criação e nos outros pontos apenas chama o método de log sem o if...
+ * 
+ * @param text_input 
+ * @param input_index_parameter 
+ * @param like_pattern 
+ * @param pattern_index_parameter 
+ * @return true 
+ * @return false 
+ */
 bool run_like_pattern_on_internal(const std::string &text_input, size_t input_index_parameter, const std::string &like_pattern, size_t pattern_index_parameter)
 {
   size_t input_index = input_index_parameter;
@@ -381,7 +392,10 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
       {
         if (!contains(csv.header, ident->ident_name))
         {
-          std::cout << "Coluna inexistente no dataset: " << ident->ident_name << std::endl;
+          if (is_printing_as_table)
+          {
+            std::cout << "Coluna inexistente no dataset: " << ident->ident_name << std::endl;
+          }
           return false;
         }
   
@@ -456,13 +470,19 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
       else
       {
         delete function_call_resolver;
-        std::cout << "A expressão a seguir não pode ser interpretada: " << std::endl << field->to_expression() << std::endl;
+        if (is_printing_as_table)
+        {
+          std::cout << "A expressão a seguir não pode ser interpretada: " << std::endl << field->to_expression() << std::endl;
+        }
         return false;
       }
     }
     else
     {
-      std::cout << "A expressão a seguir não pode ser interpretada: " << std::endl << field->to_expression() << std::endl;
+      if (is_printing_as_table)
+      {
+        std::cout << "A expressão a seguir não pode ser interpretada: " << std::endl << field->to_expression() << std::endl;
+      }
       return false;
     }
   }
@@ -524,7 +544,10 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
           }
           else
           {
-            std::cout << "Por hora todas as expressões no Group By precisam ser identificadores simples." << std::endl;
+            if (is_printing_as_table)
+            {
+              std::cout << "Por hora todas as expressões no Group By precisam ser identificadores simples." << std::endl;
+            }
             return false;
           }
         }
@@ -542,13 +565,19 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
       {
         if (!is_an_aggregation_funcion(func->tagged_name))
         {
-          std::cout << "Por hora todas as chamadas de funções precisam ser para funções de agregação. Apenas COUNT, MAX, MIN e etc... são suportados." << std::endl;
+          if (is_printing_as_table)
+          {
+            std::cout << "Por hora todas as chamadas de funções precisam ser para funções de agregação. Apenas COUNT, MAX, MIN e etc... são suportados." << std::endl;
+          }
           return false;
         }
       }
       else
       {
-        std::cout << "Por hora todos os campos do select precisam ser compostos apenas por identificadores ou funções agregadoras." << std::endl;
+        if (is_printing_as_table)
+        {
+          std::cout << "Por hora todos os campos do select precisam ser compostos apenas por identificadores ou funções agregadoras." << std::endl;
+        }
         return false;
       }
     }
@@ -578,7 +607,10 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
         }
         else
         {
-          std::cout << "A expressão a seguir não pode ser aplicada no Group By: " << std::endl << grouping_field->to_expression() << std::endl;
+          if (is_printing_as_table)
+          {
+            std::cout << "A expressão a seguir não pode ser aplicada no Group By: " << std::endl << grouping_field->to_expression() << std::endl;
+          }
           return false;
         }
       }
@@ -636,13 +668,19 @@ bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_a
         {
           if (!is_an_aggregation_funcion(func->tagged_name))
           {
-            std::cout << "Por hora apenas funções de agregação são suportadas." << std::endl;
+            if (is_printing_as_table)
+            {
+              std::cout << "Por hora apenas funções de agregação são suportadas." << std::endl;
+            }
             return false;  
           }
         }
         else
         {
-          std::cout << "Por hora todos os campos do select precisam ser compostos apenas por funções agregadoras quando houver função agregadora." << std::endl;
+          if (is_printing_as_table)
+          {
+            std::cout << "Por hora todos os campos do select precisam ser compostos apenas por funções agregadoras quando houver função agregadora." << std::endl;
+          }
           return false;
         }
       }
