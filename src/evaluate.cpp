@@ -23,9 +23,7 @@
 using std::vector;
 
 /**
- * @brief 
- * @todo João, considerar criar uma classe de log (reporter) para imprimir os logs, assim só preciso definir se deve ou não
- * emitir na criação e nos outros pontos apenas chama o método de log sem o if...
+ * @brief
  * 
  * @param text_input 
  * @param input_index_parameter 
@@ -360,6 +358,18 @@ bool is_all_idents_valid_order_by(Collector_Ast_Node_Visitor &collector, CSVData
   return true;
 }
 
+/**
+ * @brief 
+ *
+ * @todo João, considerar criar uma classe de log (reporter) para imprimir os logs, assim só preciso definir se deve ou não
+ * emitir na criação e nos outros pontos apenas chama o método de log sem o if... 
+ *  
+ * @param select comando sql a executar
+ * @param csv csv table com os dados
+ * @param is_printing_as_table define se deve ou não imprimir logs
+ * @return true 
+ * @return false 
+ */
 bool run_select_on_csv(Select_Ast_Node &select, CSVData &csv, bool is_printing_as_table)
 {
 
